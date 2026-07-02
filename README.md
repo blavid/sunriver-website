@@ -40,3 +40,4 @@ Deploy to Vercel, Netlify, or any Node.js host. Point `sunrivertownhome.com` DNS
 - [Next.js 16](https://nextjs.org/) (App Router)
 - [Tailwind CSS 4](https://tailwindcss.com/)
 - TypeScript
+ 
