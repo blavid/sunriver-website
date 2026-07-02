@@ -32,8 +32,7 @@ export const activitySections: ActivitySection[] = [
         name: "South Bend Bistro",
         description:
           "Sunriver's go-to for a special night out. Pacific Northwest plates — scallops, king salmon, truffle ragù — in an intimate Village setting with a strong local wine list.",
-        image:
-          "https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=800&q=80",
+        image: "/images/photos/activities/Dining/SouthBendBistro.jpeg",
         imageAlt: "Fine dining table setting with wine glasses",
         distance: "5 min by bike to the Village",
         season: "Year-round",
@@ -45,8 +44,7 @@ export const activitySections: ActivitySection[] = [
         name: "Sunriver Brewing Co.",
         description:
           "Award-winning craft brewery with a family-friendly pub, patio, and menu built for après-adventure hunger. A Sunriver institution after biking, hiking, or skiing.",
-        image:
-          "https://images.unsplash.com/photo-1608270586620-248524c67de9?w=800&q=80",
+        image: "/images/photos/activities/Dining/SunriverBrewing.jpeg",
         imageAlt: "Craft beer flight on a wooden table",
         distance: "5 min by bike to the Village",
         season: "Year-round",
@@ -58,8 +56,7 @@ export const activitySections: ActivitySection[] = [
         name: "Hot Lava Bakery",
         description:
           "The only bakery in Sunriver — oversized glazed doughnuts, bagels, quiche, and breakfast burritos. Lines form on summer mornings for good reason.",
-        image:
-          "https://images.unsplash.com/photo-1509440159596-0249088772ff?w=800&q=80",
+        image: "/images/photos/activities/Dining/HotLavaBakery.jpeg",
         imageAlt: "Fresh pastries and croissants in a bakery display",
         distance: "5 min by bike to the Village",
         season: "Year-round",
@@ -70,8 +67,7 @@ export const activitySections: ActivitySection[] = [
         name: "The Drake Pub",
         description:
           "Beloved Bend pub with Northwest comfort food, 25+ taps, and one of the best patios in town. Worth the 20-minute drive for a lively Bend evening.",
-        image:
-          "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80",
+        image: "/images/photos/activities/Dining/DrakePub.jpg",
         imageAlt: "Warmly lit restaurant interior with tables",
         distance: "20 min drive to Bend",
         season: "Year-round",
@@ -96,12 +92,91 @@ export const activitySections: ActivitySection[] = [
         name: "Rio Sol at Sunriver Marina",
         description:
           "Latin American cuisine and craft cocktails on the Deschutes River at the Sunriver Marina. Scenic sunset dinners with water views.",
-        image:
-          "https://images.unsplash.com/photo-1559339352-11d035aa65de?w=800&q=80",
+        image: "/images/photos/activities/Dining/RioSol.jpg",
         imageAlt: "Outdoor dining with river views at sunset",
         distance: "8 min drive",
         season: "Seasonal — check hours",
         tip: "Request a patio table for golden-hour views.",
+      },
+      {
+        id: "el-caporal",
+        name: "El Caporal",
+        description:
+          "Authentic Mexican cuisine with lively margaritas and a warm Village atmosphere.",
+        image: "/images/photos/activities/Dining/ElCaporal.jpg",
+        imageAlt: "Mexican dish with tortillas and salsa",
+        distance: "5 min by bike to the Village",
+        season: "Year-round",
+        tip: "Try the carne asada tacos and house margaritas.",
+      },
+      {
+        id: "blondies-pizza",
+        name: "Blondie's Pizza",
+        description:
+          "Wood-fired, family-friendly pizza in Sunriver — great for groups and takeout.",
+        image: "/images/photos/activities/Dining/BlondiesPizza.jpeg",
+        imageAlt: "Wood-fired pizza fresh from the oven",
+        distance: "5–10 min by bike",
+        season: "Year-round",
+        tip: "Order ahead on busy summer nights.",
+      },
+      {
+        id: "village-bar-grill",
+        name: "Village Bar & Grill",
+        description:
+          "Casual American fare, cocktails, and a friendly local vibe right in the Village.",
+        image:
+          "https://images.unsplash.com/photo-1541542684-3b6c3a6b6c1f?w=800&q=80",
+        imageAlt: "Bar and grill dining area with rustic decor",
+        distance: "Walkable in the Village",
+        season: "Year-round",
+        tip: "Good spot for families and late-night bites.",
+      },
+      {
+        id: "the-wallow",
+        name: "The Wallow",
+        description:
+          "Contemporary Pacific Northwest dishes with seasonal ingredients and a refined yet relaxed dining room.",
+        image: "/images/photos/activities/Dining/TheWallow.jpg",
+        imageAlt: "Elegant plated entree on a table",
+        distance: "20–25 min drive to Bend",
+        season: "Year-round",
+        tip: "Excellent for date nights and special occasions.",
+      },
+      {
+        id: "campfire-cucina",
+        name: "Campfire Cucina",
+        description:
+          "Italian-inspired cooking with wood-fired flavors — pizza, pasta, and shareable small plates.",
+        image:
+          "https://images.unsplash.com/photo-1528731708534-816fe59f90a7?w=800&q=80",
+        imageAlt: "Pasta and Italian dishes on a wooden table",
+        distance: "10–20 min drive",
+        season: "Year-round",
+        tip: "Great for groups — try a few small plates to share.",
+      },
+      {
+        id: "century-common-taps-and-trucks",
+        name: "Century Common Taps & Trucks",
+        description:
+          "A rotating lineup of food trucks paired with local craft taps — casual outdoor dining and community vibes.",
+        image:
+          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80",
+        imageAlt: "Outdoor food trucks and beer taps",
+        distance: "20–25 min drive to Bend",
+        season: "Seasonal — check schedule",
+        tip: "Check the events calendar for truck lineups and tap takeovers.",
+      },
+      {
+        id: "josie-ks-deli",
+        name: "Josie K's Deli",
+        description:
+          "Casual deli fare with hearty sandwiches, salads, and quick grab-and-go options for day trips.",
+        image: "/images/photos/activities/Dining/JosieKsDeli.jpg",
+        imageAlt: "Deli sandwich on a plate",
+        distance: "10–20 min drive",
+        season: "Year-round",
+        tip: "Perfect for picnic boxes and quick lunches.",
       },
     ],
   },
