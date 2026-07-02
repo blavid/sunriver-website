@@ -188,7 +188,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The largest waterfall on the upper Deschutes River, thundering through a rugged lava canyon. Mostly flat, family-friendly, and beautiful year-round.",
         image:
-          "https://images.unsplash.com/photo-1432405972618-c60b0225b8f9?w=800&q=80",
+          "/images/photos/activities/Hiking/BenhamFalls.jpeg",
         imageAlt: "Waterfall cascading through a forest canyon",
         distance: "10 min drive from Sunriver",
         season: "Best in spring for peak flow",
@@ -200,7 +200,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Oregon's most iconic crags — golden cliffs rising above the Crooked River. Misery Ridge is the classic loop with jaw-dropping views. Also world-class rock climbing.",
         image:
-          "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+          "/images/photos/activities/Hiking/smith-rock-vert.jpg",
         imageAlt: "Dramatic rocky cliffs and river canyon",
         distance: "45 min drive north",
         season: "Spring and fall are ideal",
@@ -213,7 +213,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A Central Oregon classic — hike through wildflower meadows and lava fields to impossibly blue alpine lakes beneath the South Sister volcano.",
         image:
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+          "/images/photos/activities/Hiking/Green-Lakes-Trail.webp",
         imageAlt: "Alpine lake surrounded by mountain peaks",
         distance: "45 min drive to trailhead",
         season: "July through September",
@@ -225,7 +225,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A relatively short hike with enormous payoff — stand on the rim of a glacial cirque with views of Broken Top, the Three Sisters, and endless Cascades.",
         image:
-          "https://images.unsplash.com/photo-1454496522488-7a8e488e4376?w=800&q=80",
+          "/images/photos/activities/Hiking/TamMcArthurRimTrail.jpg",
         imageAlt: "Mountain ridge trail with panoramic views",
         distance: "40 min drive",
         season: "Late June through October",
@@ -237,7 +237,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A 97-foot waterfall just outside Bend with a scenic loop trail above the falls. Easy access and one of the most photographed spots in Central Oregon.",
         image:
-          "https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=800&q=80",
+          "/images/photos/activities/Hiking/TumaloFalls.jpeg",
         imageAlt: "Tall waterfall in a lush forest",
         distance: "35 min drive",
         season: "Year-round — check road access in winter",
@@ -249,7 +249,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Climb a cinder cone for 360° views of volcanic landscape, then walk the paved Lava Lands loop through jagged black lava fields. Great for all ages.",
         image:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8e/Lava_Butte_Oregon.jpg/1280px-Lava_Butte_Oregon.jpg",
+          "/images/photos/activities/Hiking/LavaButte.jpg",
         imageAlt: "Lava Butte cinder cone with volcanic landscape",
         distance: "15 min drive",
         season: "Year-round",
@@ -270,7 +270,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Sunriver's premier aquatic center — waterslides, lazy river, lap pool, surf simulator, rock climbing wall, and fitness center. Your stay includes 8 guest passes.",
         image:
-          "https://images.unsplash.com/photo-1576013551627-0cc20b96c2a7?w=800&q=80",
+          "/images/photos/activities/Swimming/SunriverSHARC.avif",
         imageAlt: "Outdoor swimming pool with water slides",
         distance: "5 min drive",
         season: "Year-round (indoor/outdoor)",
@@ -283,7 +283,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A gorgeous alpine lake at 4,900 ft with sandy beaches, paddle rentals, and Mt. Bachelor as a backdrop. The water is cold but refreshing on hot summer days.",
         image:
-          "https://images.unsplash.com/photo-1439856345065-fa9fdb99a4e2?w=800&q=80",
+          "/images/photos/activities/Swimming/ElkLakeResort.jpeg",
         imageAlt: "Clear alpine lake with pine trees and mountains",
         distance: "30 min drive",
         season: "June through September",
@@ -295,7 +295,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "One of the most photographed lakes in Oregon — shallow, crystal-clear water with South Sister reflected on calm mornings. Wade in from the shore or bring a float.",
         image:
-          "https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=800&q=80",
+          "/images/photos/activities/Swimming/SparksLake.jpg",
         imageAlt: "Serene lake reflecting mountain peaks at sunrise",
         distance: "35 min drive",
         season: "July through September",
@@ -307,7 +307,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A deep volcanic lake inside the Newberry Caldera with hot springs on the far shore, boat rentals, and excellent fishing. Two lakes in one caldera — East Lake is nearby.",
         image:
-          "https://images.unsplash.com/photo-1439856345065-fa9fdb99a4e2?w=800&q=80",
+          "/images/photos/activities/Swimming/PaulinaLake.jpg",
         imageAlt: "Mountain lake with forest shoreline",
         distance: "45 min drive",
         season: "June through October",
@@ -315,12 +315,24 @@ export const activitySections: ActivitySection[] = [
         url: "https://www.fs.usda.gov/recarea/deschutes/recarea/?recid=71762",
       },
       {
+        id: "devils-lake",
+        name: "Devil's Lake",
+        description:
+          "A pristine alpine lake tucked in a glacial cirque with stunning mountain views and excellent swimming. Crystal-clear water and a scenic trail loop make it a must-visit destination.",
+        image:
+          "/images/photos/activities/Swimming/DevilsLake.jpg",
+        imageAlt: "Alpine lake surrounded by forested mountains",
+        distance: "40 min drive",
+        season: "July through September",
+        tip: "Arrive early — parking fills quickly on weekends.",
+      },
+      {
         id: "eaglewood-pool",
         name: "Eaglewood Community Pool",
         description:
           "Steps from the back deck — a seasonal community pool exclusive to Eaglewood guests and residents. Perfect for a quick dip without leaving the neighborhood.",
         image:
-          "https://images.unsplash.com/photo-1575429198097-0414c0638a91?w=800&q=80",
+          "/images/photos/activities/Swimming/EaglewoodPool.jpg",
         imageAlt: "Community swimming pool on a sunny day",
         distance: "2 min walk",
         season: "Summer only",
