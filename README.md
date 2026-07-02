@@ -1,36 +1,42 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Sunriver Townhome Website
 
-## Getting Started
+A modern, responsive website for [sunrivertownhome.com](https://sunrivertownhome.com) — a luxury vacation rental in Eaglewood, Sunriver, Oregon.
 
-First, run the development server:
+## Features
+
+- **Home** — Hero, property highlights, guest reviews, photo gallery
+- **The Home** — Full property details, rooms, amenities, house rules
+- **Guest Guide** — Check-in info, quick reference, troubleshooting
+- **Activities** — Dining, hiking, swimming, river floats, skiing, mountain biking, and more
+- **Book** — Links to direct booking (Hosttools), Airbnb, and VRBO
+
+## Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Build & Deploy
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm start
+```
 
-## Learn More
+Deploy to Vercel, Netlify, or any Node.js host. Point `sunrivertownhome.com` DNS to your deployment.
 
-To learn more about Next.js, take a look at the following resources:
+## Customization
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **Content** — Edit `src/lib/content.ts` for property details, restaurants, hikes, troubleshooting
+- **Photos** — Photo URLs are in `src/lib/content.ts`; replace with locally hosted images in `public/` for production
+- **Contact email** — Update `siteConfig.host.email` in `src/lib/content.ts`
+- **VRBO link** — Add your VRBO listing URL to `siteConfig` when ready
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Tech Stack
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Next.js 16](https://nextjs.org/) (App Router)
+- [Tailwind CSS 4](https://tailwindcss.com/)
+- TypeScript
