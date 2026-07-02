@@ -79,8 +79,7 @@ export const activitySections: ActivitySection[] = [
         name: "Sparrow Bakery",
         description:
           "Bend's cult-favorite bakery famous for the ocean roll — a buttery, salted-sweet masterpiece. Also excellent savory pastries and coffee.",
-        image:
-          "https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800&q=80",
+        image: "/images/photos/activities/SparrowBakery.jpg",
         imageAlt: "Fresh baked goods on a counter",
         distance: "20 min drive to Bend",
         season: "Year-round",
@@ -125,8 +124,7 @@ export const activitySections: ActivitySection[] = [
         name: "Village Bar & Grill",
         description:
           "Casual American fare, cocktails, and a friendly local vibe right in the Village.",
-        image:
-          "https://images.unsplash.com/photo-1541542684-3b6c3a6b6c1f?w=800&q=80",
+        image: "/images/photos/activities/VillageBar&Grill.avif",
         imageAlt: "Bar and grill dining area with rustic decor",
         distance: "Walkable in the Village",
         season: "Year-round",
@@ -148,8 +146,7 @@ export const activitySections: ActivitySection[] = [
         name: "Campfire Cucina",
         description:
           "Italian-inspired cooking with wood-fired flavors — pizza, pasta, and shareable small plates.",
-        image:
-          "https://images.unsplash.com/photo-1528731708534-816fe59f90a7?w=800&q=80",
+        image: "/images/photos/activities/CampfireCucina.jpg",
         imageAlt: "Pasta and Italian dishes on a wooden table",
         distance: "10–20 min drive",
         season: "Year-round",
@@ -160,8 +157,7 @@ export const activitySections: ActivitySection[] = [
         name: "Century Common Taps & Trucks",
         description:
           "A rotating lineup of food trucks paired with local craft taps — casual outdoor dining and community vibes.",
-        image:
-          "https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=800&q=80",
+        image: "/images/photos/activities/CenturyCommonsTapsTrucks.webp",
         imageAlt: "Outdoor food trucks and beer taps",
         distance: "20–25 min drive to Bend",
         season: "Seasonal — check schedule",
