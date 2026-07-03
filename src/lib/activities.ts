@@ -39,7 +39,7 @@ export const activitySections: ActivitySection[] = [
         tip: "Reserve ahead in summer and holiday weeks.",
         url: "https://www.southbendbistro.com/",
       },
-      {
+      { 
         id: "sunriver-brewing",
         name: "Sunriver Brewing Co.",
         description:
