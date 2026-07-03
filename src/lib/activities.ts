@@ -49,7 +49,7 @@ export const activitySections: ActivitySection[] = [
         distance: "5 min by bike to the Village",
         season: "Year-round",
         tip: "Fuzztail and Paddy's Irish Lager are guest favorites.",
-        url: "https://www.sunriverbrewing.com/",
+        url: "https://www.sunriverbrewingcompany.com/",
       },
       {
         id: "hot-lava-bakery",
@@ -61,30 +61,19 @@ export const activitySections: ActivitySection[] = [
         distance: "5 min by bike to the Village",
         season: "Year-round",
         tip: "Arrive before 9:30 AM in peak season.",
-      },
-      {
-        id: "drake-pub",
-        name: "The Drake Pub",
-        description:
-          "Beloved Bend pub with Northwest comfort food, 25+ taps, and one of the best patios in town. Worth the 20-minute drive for a lively Bend evening.",
-        image: "/images/photos/activities/Dining/DrakePub.jpg",
-        imageAlt: "Warmly lit restaurant interior with tables",
-        distance: "20 min drive to Bend",
-        season: "Year-round",
-        tip: "Sit outside if the weather cooperates — heat lamps keep it cozy.",
-        url: "https://www.drakebend.com/",
+        url: "https://www.hotlavabakery.com/",
       },
       {
         id: "sparrow-bakery",
         name: "Sparrow Bakery",
         description:
           "Bend's cult-favorite bakery famous for the ocean roll — a buttery, salted-sweet masterpiece. Also excellent savory pastries and coffee.",
-        image: "/images/photos/activities/SparrowBakery.jpg",
+        image: "/images/photos/activities/DiningSparrowBakery.jpg",
         imageAlt: "Fresh baked goods on a counter",
         distance: "20 min drive to Bend",
         season: "Year-round",
         tip: "Ocean rolls sell out — go early or pre-order.",
-        url: "https://www.sparrowbakery.com/",
+        url: "https://www.thesparrowbakery.net/restaurant/",
       },
       {
         id: "rio-sol",
@@ -96,6 +85,7 @@ export const activitySections: ActivitySection[] = [
         distance: "8 min drive",
         season: "Seasonal — check hours",
         tip: "Request a patio table for golden-hour views.",
+        url: "https://www.riosollatinkitchen.com/",
       },
       {
         id: "el-caporal",
@@ -107,6 +97,7 @@ export const activitySections: ActivitySection[] = [
         distance: "5 min by bike to the Village",
         season: "Year-round",
         tip: "Try the carne asada tacos and house margaritas.",
+        url: "https://www.elcaporalco.com/",
       },
       {
         id: "blondies-pizza",
@@ -118,6 +109,7 @@ export const activitySections: ActivitySection[] = [
         distance: "5–10 min by bike",
         season: "Year-round",
         tip: "Order ahead on busy summer nights.",
+        url: "https://blondiespizzasunriver.com/",
       },
       {
         id: "village-bar-grill",
@@ -129,6 +121,7 @@ export const activitySections: ActivitySection[] = [
         distance: "Walkable in the Village",
         season: "Year-round",
         tip: "Good spot for families and late-night bites.",
+        url: "https://www.sunrivervbag.com/",
       },
       {
         id: "the-wallow",
@@ -140,6 +133,7 @@ export const activitySections: ActivitySection[] = [
         distance: "20–25 min drive to Bend",
         season: "Year-round",
         tip: "Excellent for date nights and special occasions.",
+        url: "https://www.thewallowgrill.com/",
       },
       {
         id: "campfire-cucina",
@@ -151,6 +145,7 @@ export const activitySections: ActivitySection[] = [
         distance: "10–20 min drive",
         season: "Year-round",
         tip: "Great for groups — try a few small plates to share.",
+        url: "https://www.pizzasunriver.com/",
       },
       {
         id: "century-common-taps-and-trucks",
@@ -162,6 +157,7 @@ export const activitySections: ActivitySection[] = [
         distance: "20–25 min drive to Bend",
         season: "Seasonal — check schedule",
         tip: "Check the events calendar for truck lineups and tap takeovers.",
+        url: "https://www.centurycommonstaps.com/",
       },
       {
         id: "josie-ks-deli",
@@ -173,6 +169,7 @@ export const activitySections: ActivitySection[] = [
         distance: "10–20 min drive",
         season: "Year-round",
         tip: "Perfect for picnic boxes and quick lunches.",
+        url: "https://www.josiek.com/",
       },
     ],
   },

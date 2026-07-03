@@ -137,7 +137,7 @@ export const rooms = [
   {
     name: "Laundry Room",
     features: [
-      "Large capacity Washer & dryer",
+      "Large capacity washer & dryer",
       "Iron & ironing board",
       "Laundry detergent",
     ],
