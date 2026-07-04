@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 
 const variants = {
@@ -60,6 +61,24 @@ export function PageHeader({
           </p>
         )}
       </div>
+    </div>
+  );
+}
+
+export function PageBackground({
+  src,
+  alt = "",
+  children,
+}: {
+  src: string;
+  alt?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative overflow-hidden">
+      <Image src={src} alt={alt} fill className="object-cover" sizes="100vw" />
+      <div className="absolute inset-0 bg-gradient-to-t from-sage-950/90 via-sage-950/30 to-sage-950/10" />
+      <div className="relative">{children}</div>
     </div>
   );
 }

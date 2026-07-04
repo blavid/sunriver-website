@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { HighlightIcon } from "@/components/Icons";
 import { PhotoGallery } from "@/components/PhotoGallery";
-import { PageHeader, Section, SectionTitle } from "@/components/ui";
-import { amenities, highlights, houseRules, rooms } from "@/lib/content";
+import { PageBackground, PageHeader, Section, SectionTitle } from "@/components/ui";
+import { amenities, highlights, houseRules, pageBackgrounds, rooms } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "The Home",
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
 
 export default function TheHomePage() {
   return (
-    <>
+    <PageBackground src={pageBackgrounds.theHome} alt="The home background image">
       <PageHeader
         title="The Home"
         subtitle="Updated 2 master suites, hot tub, SHARC passes, and bikes — everything you need for a luxury Sunriver stay."
@@ -107,6 +107,6 @@ export default function TheHomePage() {
         <SectionTitle title="Photo gallery" subtitle="Every corner of the home, inside and out." />
         <PhotoGallery />
       </Section>
-    </>
+    </PageBackground>
   );
 }

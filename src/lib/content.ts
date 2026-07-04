@@ -20,6 +20,14 @@ export const siteConfig = {
 
 export const heroImage = "/images/photos/house/exterior-front-1.jpg";
 
+export const pageBackgrounds = {
+  home: heroImage,
+  theHome: "/images/photos/house/living-room-1.jpg",
+  guestGuide: "/images/photos/house/back-deck-1.jpg",
+  book: "/images/photos/house/exterior-back-1.jpg",
+  activities: "/images/photos/activities/Dining/RioSol.jpg",
+};
+
 export const photos = [
   "/images/photos/house/exterior-front-1.jpg",
   "/images/photos/house/living-room-1.jpg",

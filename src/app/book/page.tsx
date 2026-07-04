@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { Button, PageHeader, Section, SectionTitle } from "@/components/ui";
-import { siteConfig } from "@/lib/content";
+import { Button, PageBackground, PageHeader, Section, SectionTitle } from "@/components/ui";
+import { pageBackgrounds, siteConfig } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "Book Your Stay",
@@ -10,7 +10,7 @@ export const metadata: Metadata = {
 
 export default function BookPage() {
   return (
-    <>
+    <PageBackground src={pageBackgrounds.book} alt="Book your stay at Sunriver Townhome">
       <PageHeader
         title="Book Your Stay"
         subtitle="We offer direct booking with live availability and rates, plus listings on Airbnb and VRBO."
@@ -104,6 +104,6 @@ export default function BookPage() {
           </a>
         </div>
       </Section>
-    </>
+    </PageBackground>
   );
 }
