@@ -68,7 +68,7 @@ export const activitySections: ActivitySection[] = [
         name: "Sparrow Bakery",
         description:
           "Bend's cult-favorite bakery famous for the ocean roll — a buttery, salted-sweet masterpiece. Also excellent savory pastries and coffee.",
-        image: "/images/photos/activities/DiningSparrowBakery.jpg",
+        image: "/images/photos/activities/Dining/SparrowBakery.jpg",
         imageAlt: "Fresh baked goods on a counter",
         distance: "20 min drive to Bend",
         season: "Year-round",
@@ -116,7 +116,7 @@ export const activitySections: ActivitySection[] = [
         name: "Village Bar & Grill",
         description:
           "Casual American fare, cocktails, and a friendly local vibe right in the Village.",
-        image: "/images/photos/activities/VillageBar&Grill.avif",
+        image: "/images/photos/activities/Dining/VillageBar&Grill.avif",
         imageAlt: "Bar and grill dining area with rustic decor",
         distance: "Walkable in the Village",
         season: "Year-round",
@@ -140,7 +140,7 @@ export const activitySections: ActivitySection[] = [
         name: "Campfire Cucina",
         description:
           "Italian-inspired cooking with wood-fired flavors — pizza, pasta, and shareable small plates.",
-        image: "/images/photos/activities/CampfireCucina.jpg",
+        image: "/images/photos/activities/Dining/CampfireCucina.jpg",
         imageAlt: "Pasta and Italian dishes on a wooden table",
         distance: "10–20 min drive",
         season: "Year-round",
@@ -152,7 +152,7 @@ export const activitySections: ActivitySection[] = [
         name: "Century Common Taps & Trucks",
         description:
           "A rotating lineup of food trucks paired with local craft taps — casual outdoor dining and community vibes.",
-        image: "/images/photos/activities/CenturyCommonsTapsTrucks.webp",
+        image: "/images/photos/activities/Dining/CenturyCommonsTapsTrucks.webp",
         imageAlt: "Outdoor food trucks and beer taps",
         distance: "20–25 min drive to Bend",
         season: "Seasonal — check schedule",
@@ -349,7 +349,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The quintessential Central Oregon summer experience — float the gentle Deschutes on a tube or kayak through pine forests. Popular routes run from Sunriver toward Bend.",
         image:
-          "https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=800&q=80",
+          "/images/photos/activities/RiverFloats/FloatDeschutes.jpg",
         imageAlt: "Kayaking on a calm river through forest",
         distance: "Launch points within Sunriver",
         season: "June through August",
@@ -361,7 +361,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Guided rafting trips on the Deschutes — from mellow scenic floats to Class III rapids through Big Eddy. Professional guides, all gear included.",
         image:
-          "https://images.unsplash.com/photo-1682687220063-4742bd7fd538?w=800&q=80",
+          "/images/photos/activities/RiverFloats/SunCountryTours.webp",
         imageAlt: "Whitewater raft navigating river rapids",
         distance: "Pickup in Bend or Sunriver area",
         season: "May through September",
@@ -374,7 +374,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The Deschutes' most famous whitewater stretch — Class III rapids through a scenic canyon. Half-day guided trips suitable for adventurous beginners.",
         image:
-          "https://images.unsplash.com/photo-1544551763-77ef69d985c0?w=800&q=80",
+          "/images/photos/activities/RiverFloats/BigEddy.jpg",
         imageAlt: "Raft going through whitewater rapids",
         distance: "30 min drive to put-in",
         season: "May through August",
@@ -387,7 +387,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Calmer sections of the Deschutes near Sunriver are perfect for stand-up paddleboarding and kayak exploring. Several outfitters rent gear by the half-day.",
         image:
-          "https://images.unsplash.com/photo-1530866495565-9d6d0c4e8b4e?w=800&q=80",
+          "/images/photos/activities/RiverFloats/SUP.webp",
         imageAlt: "Stand-up paddleboarding on a calm lake",
         distance: "Sunriver Marina",
         season: "June through September",
@@ -407,7 +407,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "3,365 acres of lift-served terrain on a single volcano — groomers, bowls, glades, and a legendary spring skiing season that runs into May. 24 minutes from the house.",
         image:
-          "https://images.unsplash.com/photo-1551524556-7dd5cb516f31?w=800&q=80",
+          "/images/photos/activities/SkiingSnowboarding/MtBachelor.jpg",
         imageAlt: "Skier carving down a snowy mountain slope",
         distance: "24 min drive",
         season: "November through May",
@@ -420,7 +420,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "56 km of groomed cross-country trails through snow-covered forests at the base of the volcano. Rentals and lessons available for all skill levels.",
         image:
-          "https://images.unsplash.com/photo-1522163182402-834f871fd851?w=800&q=80",
+          "/images/photos/activities/SkiingSnowboarding/NordicCenterjpeg",
         imageAlt: "Cross-country skier on a snowy forest trail",
         distance: "24 min drive",
         season: "December through March",
@@ -433,7 +433,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A fun, family-friendly ski area on Santiam Pass with night skiing, affordable tickets, and a laid-back vibe. Smaller than Bachelor but less crowded.",
         image:
-          "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?w=800&q=80",
+          "/images/photos/activities/SkiingSnowboarding/HoodooSkiArea.jpeg",
         imageAlt: "Snowboarder on a mountain with pine trees",
         distance: "50 min drive",
         season: "December through March",
@@ -446,7 +446,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Not just for winter — ride the Pine Marten lift in summer for hiking, mountain biking, and panoramic views from 9,000 ft. Cool escape on hot days.",
         image:
-          "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&q=80",
+          "/images/photos/activities/SkiingSnowboarding/SummerChairLift.webp",
         imageAlt: "Mountain summit view above the clouds",
         distance: "24 min drive",
         season: "July through September",
