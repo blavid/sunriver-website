@@ -17,14 +17,14 @@ export default function TheHomePage() {
         src={pageBackgrounds.theHome}
         alt="The home background image"
         title="The Home"
-        subtitle="Updated 2 master suites, hot tub, SHARC passes, and bikes — everything you need for a luxury Sunriver stay."
+        subtitle="Newly remodeled 2 master suites, hot tub, SHARC passes, and bikes — everything you need for a luxury Sunriver stay."
       />
 
       <Section>
         <div className="prose-sage max-w-3xl space-y-4 text-base leading-relaxed text-sage-700">
           <p>
             Enjoy all that Central Oregon offers from the comfort and convenience of
-            our well-appointed, newly updated home. Tucked between the 1st and 10th
+            our well-appointed, newly remodeled home. Tucked between the 1st and 10th
             holes of the Woodlands Golf course, our townhouse offers everything you
             would expect from a luxury vacation home.
           </p>

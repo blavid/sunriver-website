@@ -32,7 +32,7 @@ export default function HomePage() {
             Your Central Oregon home base
           </h1>
           <p className="mt-5 max-w-xl text-lg leading-relaxed text-sage-200">
-            Updated luxury townhome on the Woodlands Golf Course — hot tub, SHARC
+            Newly remodeled luxury townhome on the Woodlands Golf Course — hot tub, SHARC
             passes, bikes, and everything you need for an unforgettable stay.
           </p>
 

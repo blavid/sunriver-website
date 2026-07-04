@@ -31,7 +31,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Sunriver Townhome | Eaglewood Vacation Rental",
     description:
-      "Updated 3-bedroom luxury townhome with hot tub, SHARC passes, and bikes in Sunriver, Oregon.",
+      "Newly remodeled 3-bedroom luxury townhome with hot tub, SHARC passes, and bikes in Sunriver, Oregon.",
     url: "https://sunrivertownhome.com",
     siteName: "Sunriver Townhome",
     locale: "en_US",
