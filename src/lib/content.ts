@@ -174,12 +174,90 @@ export const houseRules = [
 ];
 
 export const troubleshooting = [
+    {
+    issue: "Circuit breaker tripped",
+    steps: [
+      "Locate the breaker panel in the downstairs bedroom behind the skiing picture. The picture frame is on a hinge. Just pull it open to reveal the panel.",
+      "Reset the tripped breaker by flipping it all the way to OFF and then back to ON.",
+    ],
+  },
+      {
+    issue: "Hot tub too hot or too cold",
+    steps: [
+      "Turn the hot tub temperature up or down using the control panel on the side of the tub. The temperature will adjust gradually over 30–60 minutes.",
+      "If it is in ECO mode, the temperature will not adjust. Press the ECO button to turn it off.",
+    ],
+  },
+      {
+    issue: "How do I change the thermostat temperature?",
+    steps: [
+      "Our home is equipped with a furnace for heating and an air conditioner for cooling.",
+      "The thermostat is located in the hallway near the kitchen.",
+      "Rotate the dial to adjust the temperature.",
+      "You can change the mode from heating to cooling by pressing down on the dial and rotating to the desired mode.",
+    ],
+  },
+      {
+    issue: "Where do I put the trash and recycling?",
+    steps: [
+      "Trash and recycling bins are located on the front porch in the trash closet.",
+      "Please separate recyclables from trash. Trash is on the left, recycling on the right.",
+      "Glass bottles and jars should be rinsed and placed in the recycling bin. Please do not put glass in the trash or with the mixed recyclables.",
+    ],
+  },
+      {
+    issue: "BBQ grill not working",
+    steps: [
+      "Open the cabinet under the grill and ensure that the propane tank valve is fully open.",
+      "If the grill still doesn't light, check that the igniter button is working. If not, use a long lighter to ignite the burners.",
+      "If the propane tank is empty, there is a spare tank in the garage. Please return the empty tank to the garage when you leave.",
+    ],
+  },
+      {
+    issue: "How do I use the dishwasher?",
+    steps: [
+      "Dishwasher detergent tabs are located under the sink. Use one tab per load.",
+      "Load dishes and press the start button. Close the door and the dishwasher will start automatically.",
+      "It's much easier to load heavy items toward the back.",
+    ],
+  },
+      {
+    issue: "Smart lights not working",
+    steps: [
+      "If Alexa won't turn on or off the lights, try the wall switch.",
+      "If that doesn't work, you may need to reset the smart light by switching the circuit breaker off and on again. The breaker panel is in the downstairs bedroom behind the skiing picture.",
+    ],
+  },
+      {
+    issue: "How do I lock the bikes?",
+    steps: [
+      "There are several cable locks in the garage. Use one to secure the bike frame and wheel to a fixed object.",
+      "The combination is 0-0-1-9.",
+    ],
+  },
+      {
+    issue: "How do I do laundry?",
+    steps: [
+      "All laundry supplies are provided in the laundry room. Detergent, fabric softener, and dryer sheets are all included.",
+      "Just turn on the washer or dryer and select your desired cycle then hold down the start button for 3 seconds to start the cycle.",
+    ],
+  },
+      {
+    issue: "Hot tub is dirty or has a strange smell",
+    steps: [
+      "Take a photo of the water and send it to us. We'll contact our maintenance team to check the water chemistry and make sure it's safe to use.",
+      "Do not use the hot tub if the water is cloudy, has a strong chemical smell, or has visible debris.",
+      "PLEASE don't pee in the hot tub. It can cause the water chemistry to go out of balance and make it unsafe to use.",
+    ],
+  },
   {
     issue: "WiFi not connecting",
     steps: [
-      "Network name and password are posted on the fridge and in the guest guide folder.",
-      "Try restarting the router — unplug for 30 seconds, then plug back in. It's in the laundry closet.",
-      "If issues persist, text or call Blake and we'll get you back online quickly.",
+      "Network name: Eaglewood Escape Guest",
+      "Password: 'fresh air'",
+      "If issues persist, try restarting your device or forgetting the network and reconnecting.",
+      "If it still doesn't connect, try restarting the router. The router is located in the cabinet under the TV in the living room. Unplug the power, wait 30 seconds, and plug it back in.",
+      "If issues persist, text or call Blake and we'll get you back online as soon as we are able.",
     ],
   },
   {
@@ -195,34 +273,9 @@ export const troubleshooting = [
     issue: "TV or streaming not working",
     steps: [
       "All TVs are logged into Netflix and Prime Video — just select the app and pick a profile.",
-      "Try unplugging the TV for 10 seconds, then plug back in.",
-      "Check that the correct HDMI input is selected on the remote.",
-    ],
-  },
-  {
-    issue: "Thermostat or heat",
-    steps: [
-      "Each room has its own thermostat — adjust on the wall unit or via Alexa ('Alexa, set bedroom to 68').",
-      "Heat pumps work best when set to a steady temperature rather than large swings.",
-      "If a unit isn't responding, check that the corresponding breaker hasn't tripped (panel in garage).",
-    ],
-  },
-  {
-    issue: "Door lock code not working",
-    steps: [
-      "Enter your unique code followed by the checkmark/unlock button.",
-      "Make sure the deadbolt isn't manually locked from inside.",
-      "Codes are active from check-in time (4 PM) on your arrival day.",
-      "Call or text Blake if you're locked out — we're available 24/7.",
-    ],
-  },
-  {
-    issue: "Garbage disposal jammed",
-    steps: [
-      "Turn off the switch under the sink first.",
-      "Use the Allen wrench (under the sink) in the bottom center of the disposal to manually rotate.",
-      "Never put your hand inside the disposal.",
-      "Run cold water, then turn the switch back on.",
+      "If you log into a service with your own account, please log out before you leave.",
+      "You can also use Airplay to stream from your phone or tablet to the TV.",
+      "We do not provide cable or satellite TV service, but you can use streaming services like Hulu, Disney+, and YouTube TV with your own accounts.",
     ],
   },
 ];
@@ -255,57 +308,6 @@ export const guestGuideSections = [
       "McDivot's Cafe at the golf course is a short walk for breakfast or lunch.",
       "Mt. Bachelor is about 24 minutes by car for skiing and summer hiking.",
     ],
-  },
-];
-
-export const restaurants = [
-  {
-    name: "South Bend Bistro",
-    cuisine: "Pacific Northwest fine dining",
-    description:
-      "Intimate bistro in the Village with scallops, truffle ragù, and excellent local wines. A Sunriver favorite for a special night out.",
-    distance: "5 min by bike to the Village",
-    tip: "Reservations recommended, especially in summer.",
-  },
-  {
-    name: "Sunriver Brewing Co.",
-    cuisine: "Craft brewery & pub food",
-    description:
-      "Award-winning craft beers and casual mountain fare. Perfect après-ski or post-hike stop with a family-friendly patio.",
-    distance: "5 min by bike to the Village",
-    tip: "Try the Fuzztail or Paddy's Irish Lager.",
-  },
-  {
-    name: "Hot Lava Bakery",
-    cuisine: "Bakery & breakfast",
-    description:
-      "Sunriver's only bakery — bagels, croissants, giant glazed doughnuts, and breakfast burritos. Expect a line on summer mornings.",
-    distance: "5 min by bike to the Village",
-    tip: "Arrive before 9:30 AM in peak season to skip the wait.",
-  },
-  {
-    name: "Marcello's Cucina Italiana",
-    cuisine: "Italian",
-    description:
-      "Classic Italian dishes in a warm, welcoming setting. Great for families and groups.",
-    distance: "5 min by bike to the Village",
-    tip: "Their pasta dishes are generous — good for sharing.",
-  },
-  {
-    name: "McDivot's Cafe",
-    cuisine: "Casual cafe",
-    description:
-      "Right at the Woodlands Golf Course clubhouse — an easy walk from the house for breakfast, lunch, or an afternoon drink.",
-    distance: "5 min walk",
-    tip: "Sit on the patio for golf course views.",
-  },
-  {
-    name: "The Fold Kitchen",
-    cuisine: "Pizza & cocktails",
-    description:
-      "Excellent craft pizza and stellar cocktails with outdoor seating in the Village.",
-    distance: "5 min by bike to the Village",
-    tip: "Great for a casual group dinner.",
   },
 ];
 
