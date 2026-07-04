@@ -251,7 +251,7 @@ export const activitySections: ActivitySection[] = [
         distance: "15 min drive",
         season: "Year-round",
         tip: "Timed entry may be required in summer — check recreation.gov.",
-        url: "https://www.nps.gov/deso/planyourvisit/lava-lands-visitor-center.htm",
+        url: "https://www.fs.usda.gov/r06/deschutes/recreation/lava-lands-visitor-center",
       },
     ],
   },
@@ -309,7 +309,7 @@ export const activitySections: ActivitySection[] = [
         distance: "45 min drive",
         season: "June through October",
         tip: "Hike to Paulina Peak for a caldera overview before swimming.",
-        url: "https://www.fs.usda.gov/recarea/deschutes/recarea/?recid=71762",
+        url: "https://www.fs.usda.gov/r06/deschutes/recreation/paulina-lake-day-use-area",
       },
       {
         id: "devils-lake",
@@ -472,7 +472,7 @@ export const activitySections: ActivitySection[] = [
         distance: "25 min drive to Bend trailheads",
         season: "April through October",
         tip: "Start with 'Phil's Trail' proper — the original and still the best intro.",
-        url: "https://www.trailforks.com/region/phil-s-trail-area/",
+        url: "https://visitcentraloregon.com/things-to-do/attractions/phils-trail-complex/",
       },
       {
         id: "wanoga-snow",
@@ -497,7 +497,7 @@ export const activitySections: ActivitySection[] = [
         distance: "24 min drive",
         season: "June through September",
         tip: "Rent a downhill bike at the base — it's worth it.",
-        url: "https://www.mtbachelor.com/summer/bike-park/",
+        url: "https://www.mtbachelor.com/the-mountain/bike-park/info/",
       },
       {
         id: "sunriver-paths",
@@ -555,7 +555,7 @@ export const activitySections: ActivitySection[] = [
         distance: "15 min drive",
         season: "May through September",
         tip: "Rent lanterns at the entrance — phone flashlights aren't enough.",
-        url: "https://www.fs.usda.gov/recarea/deschutes/recarea/?recid=38368",
+        url: "https://www.fs.usda.gov/r06/deschutes/recreation/lava-river-cave-interpretive-site",
       },
       {
         id: "high-desert-museum",
