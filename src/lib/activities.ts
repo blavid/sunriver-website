@@ -581,7 +581,7 @@ export const activitySections: ActivitySection[] = [
         distance: "45 min drive",
         season: "June through October",
         tip: "Stop at Paulina Falls on the way in — a quick, rewarding hike.",
-        url: "https://www.fs.usda.gov/recarea/deschutes/recarea/?recid=71762",
+        url: "https://www.fs.usda.gov/r06/deschutes/recreation/newberry-national-volcanic-monument-deschutes-nf",
       },
       {
         id: "stargazing",
@@ -614,6 +614,7 @@ export const activitySections: ActivitySection[] = [
         distance: "5 min walk",
         season: "April through October",
         tip: "McDivot's Cafe at the clubhouse is perfect for a post-round drink.",
+        url: "https://www.sunriverresort.com/play/golf/golf-woodlands",
       },
       {
         id: "crosswater",
@@ -639,7 +640,7 @@ export const activitySections: ActivitySection[] = [
         distance: "8 min drive",
         season: "Year-round",
         tip: "Book the sunset ride for golden light through the trees.",
-        url: "https://www.sunriverstables.com/",
+        url: "hhttps://www.sunriverresort.com/play/stables",
       },
       {
         id: "village-sunriver",
@@ -652,7 +653,7 @@ export const activitySections: ActivitySection[] = [
         distance: "5 min by bike",
         season: "Year-round",
         tip: "Check the events calendar for concerts and festivals.",
-        url: "https://www.sunriverresort.com/explore/village-at-sunriver",
+        url: "https://www.villageatsunriver.com/",
       },
     ],
   },
