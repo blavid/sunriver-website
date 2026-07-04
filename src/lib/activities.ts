@@ -349,7 +349,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The quintessential Central Oregon summer experience — float the gentle Deschutes on a tube or kayak through pine forests. Popular routes run from Sunriver toward Bend.",
         image:
-          "/images/photos/activities/RiverFloats/FloatDeschutes.jpg",
+          "/images/photos/activities/Rafting/FloatDeschutes.jpg",
         imageAlt: "Kayaking on a calm river through forest",
         distance: "Launch points within Sunriver",
         season: "June through August",
@@ -361,7 +361,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Guided rafting trips on the Deschutes — from mellow scenic floats to Class III rapids through Big Eddy. Professional guides, all gear included.",
         image:
-          "/images/photos/activities/RiverFloats/SunCountryTours.webp",
+          "/images/photos/activities/Rafting/SunCountryTours.webp",
         imageAlt: "Whitewater raft navigating river rapids",
         distance: "Pickup in Bend or Sunriver area",
         season: "May through September",
@@ -374,7 +374,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The Deschutes' most famous whitewater stretch — Class III rapids through a scenic canyon. Half-day guided trips suitable for adventurous beginners.",
         image:
-          "/images/photos/activities/RiverFloats/BigEddy.jpg",
+          "/images/photos/activities/Rafting/BigEddy.jpg",
         imageAlt: "Raft going through whitewater rapids",
         distance: "30 min drive to put-in",
         season: "May through August",
@@ -387,7 +387,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Calmer sections of the Deschutes near Sunriver are perfect for stand-up paddleboarding and kayak exploring. Several outfitters rent gear by the half-day.",
         image:
-          "/images/photos/activities/RiverFloats/SUP.webp",
+          "/images/photos/activities/Rafting/SUP.webp",
         imageAlt: "Stand-up paddleboarding on a calm lake",
         distance: "Sunriver Marina",
         season: "June through September",
@@ -407,7 +407,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "3,365 acres of lift-served terrain on a single volcano — groomers, bowls, glades, and a legendary spring skiing season that runs into May. 24 minutes from the house.",
         image:
-          "/images/photos/activities/SkiingSnowboarding/MtBachelor.jpg",
+          "/images/photos/activities/Skiing/MtBachelor.jpg",
         imageAlt: "Skier carving down a snowy mountain slope",
         distance: "24 min drive",
         season: "November through May",
@@ -420,7 +420,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "56 km of groomed cross-country trails through snow-covered forests at the base of the volcano. Rentals and lessons available for all skill levels.",
         image:
-          "/images/photos/activities/SkiingSnowboarding/NordicCenterjpeg",
+          "/images/photos/activities/Skiing/NordicCenterjpeg",
         imageAlt: "Cross-country skier on a snowy forest trail",
         distance: "24 min drive",
         season: "December through March",
@@ -433,7 +433,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A fun, family-friendly ski area on Santiam Pass with night skiing, affordable tickets, and a laid-back vibe. Smaller than Bachelor but less crowded.",
         image:
-          "/images/photos/activities/SkiingSnowboarding/HoodooSkiArea.jpeg",
+          "/images/photos/activities/Skiing/HoodooSkiArea.jpeg",
         imageAlt: "Snowboarder on a mountain with pine trees",
         distance: "50 min drive",
         season: "December through March",
@@ -446,7 +446,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Not just for winter — ride the Pine Marten lift in summer for hiking, mountain biking, and panoramic views from 9,000 ft. Cool escape on hot days.",
         image:
-          "/images/photos/activities/SkiingSnowboarding/SummerChairLift.webp",
+          "/images/photos/activities/Skiing/SummerChairLift.webp",
         imageAlt: "Mountain summit view above the clouds",
         distance: "24 min drive",
         season: "July through September",
