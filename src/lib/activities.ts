@@ -374,7 +374,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The Deschutes' most famous whitewater stretch — Class III rapids through a scenic canyon. Half-day guided trips suitable for adventurous beginners.",
         image:
-          "/images/photos/activities/Rafting/BigEddy.jpg",
+          "/images/photos/activities/Rafting/BigEddy.jpeg",
         imageAlt: "Raft going through whitewater rapids",
         distance: "30 min drive to put-in",
         season: "May through August",
@@ -407,7 +407,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "3,365 acres of lift-served terrain on a single volcano — groomers, bowls, glades, and a legendary spring skiing season that runs into May. 24 minutes from the house.",
         image:
-          "/images/photos/activities/Skiing/MtBachelor.jpg",
+          "/images/photos/activities/Skiing/MtBachelor.jpeg",
         imageAlt: "Skier carving down a snowy mountain slope",
         distance: "24 min drive",
         season: "November through May",
@@ -420,7 +420,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "56 km of groomed cross-country trails through snow-covered forests at the base of the volcano. Rentals and lessons available for all skill levels.",
         image:
-          "/images/photos/activities/Skiing/NordicCenterjpeg",
+          "/images/photos/activities/Skiing/NordicCenter.jpeg",
         imageAlt: "Cross-country skier on a snowy forest trail",
         distance: "24 min drive",
         season: "December through March",
@@ -467,7 +467,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Bend's most beloved trail network — flowing singletrack through ponderosa pine with options from mellow to technical. Dozens of interconnected loops.",
         image:
-          "https://images.unsplash.com/photo-1544197150-b99a580bb7af?w=800&q=80",
+          "/images/photos/activities/Biking/PhilsTrailComplex.jpg",
         imageAlt: "Mountain biker on a forest trail",
         distance: "25 min drive to Bend trailheads",
         season: "April through October",
@@ -480,7 +480,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "In winter, this sno-park transforms into fat-bike and cross-country ski terrain. In summer, nearby trails like Swampy Lakes offer high-elevation riding.",
         image:
-          "https://images.unsplash.com/photo-1571068316344-75bc76f77890?w=800&q=80",
+          "/images/photos/activities/Biking/WanogaBikeTrails.jpeg",
         imageAlt: "Mountain biker riding through a pine forest",
         distance: "20 min drive",
         season: "Year-round (seasonal trail conditions vary)",
@@ -492,7 +492,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Lift-served downhill mountain biking in summer — no pedaling uphill required. Trails from green to double-black with full-suspension rentals at the base.",
         image:
-          "https://images.unsplash.com/photo-1576435728670-68d0fbf94e85?w=800&q=80",
+          "/images/photos/activities/Biking/MtBachelorBikePark.jpg",
         imageAlt: "Downhill mountain biker on a forest trail",
         distance: "24 min drive",
         season: "June through September",
@@ -505,7 +505,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "34+ miles of car-free paved paths through Sunriver — perfect for family rides. Grab a bike from our garage and explore the river, Village, and golf courses.",
         image:
-          "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+          "/images/photos/activities/Biking/SunriverBike.webp",
         imageAlt: "Family biking on a paved path through trees",
         distance: "From the front door",
         season: "Year-round",
@@ -517,7 +517,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Playful, berm-filled flow trails near Bend that feel like a roller coaster on two wheels. Popular with intermediate riders looking for fun, not suffering.",
         image:
-          "https://images.unsplash.com/photo-1576435728670-68d0fbf94e85?w=800&q=80",
+          "/images/photos/activities/Biking/tiddlywinks.jpg",
         imageAlt: "Mountain biker navigating a berm on a flow trail",
         distance: "25 min drive",
         season: "May through October",
@@ -537,7 +537,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The deepest lake in the US, filling a collapsed volcano caldera with impossibly blue water. Rim Drive, boat tours to Wizard Island, and hikes for every ability.",
         image:
-          "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Crater_Lake_National_Park_in_Oregon.jpg/1280px-Crater_Lake_National_Park_in_Oregon.jpg",
+          "/images/photos/activities/DayTrips/CraterLake.jpg",
         imageAlt: "Crater Lake with deep blue water and volcanic rim",
         distance: "2 hour drive",
         season: "June through October (full Rim Drive)",
@@ -550,7 +550,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Explore a mile-long lava tube — bring flashlights and warm layers for this underground adventure. One of the longest lava tubes in Oregon.",
         image:
-          "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80",
+          "/images/photos/activities/DayTrips/LavaRiverCave.jpg",
         imageAlt: "Dark cave tunnel with light at the end",
         distance: "15 min drive",
         season: "May through September",
@@ -563,7 +563,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "World-class museum blending live wildlife, Oregon history, and art. Otters, raptors, a 1904 homestead, and immersive exhibits — great for rainy days or mid-day heat.",
         image:
-          "https://images.unsplash.com/photo-1518173946687-a12639d2ab8e?w=800&q=80",
+          "/images/photos/activities/DayTrips/HighDesertMusuem.jpg",
         imageAlt: "Natural history museum exhibit with wildlife",
         distance: "10 min drive",
         season: "Year-round",
@@ -576,7 +576,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A massive shield volcano with obsidian flows, Paulina Falls, hot springs, and two crater lakes. Central Oregon's volcanic heart.",
         image:
-          "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800&q=80",
+          "/images/photos/activities/DayTrips/NewberryNatMonument.jpg",
         imageAlt: "Volcanic landscape with lake and forest",
         distance: "45 min drive",
         season: "June through October",
@@ -589,7 +589,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Sunriver's dark skies are among the best in Oregon. Step onto the back deck after dark — the Milky Way on a clear moonless night will stop you in your tracks.",
         image:
-          "https://images.unsplash.com/photo-1419242902214-272b3b66fff7?w=800&q=80",
+          "/images/photos/activities/DayTrips/SunriverObservatory.webp",
         imageAlt: "Starry night sky over a dark landscape",
         distance: "Your back deck",
         season: "Clear nights, year-round",
@@ -609,7 +609,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Our home sits between the 1st and 10th holes — stroll to the clubhouse or driving range in minutes. A classic Central Oregon course through ponderosa pine.",
         image:
-          "https://images.unsplash.com/photo-1535131749006-b7f58c99034e?w=800&q=80",
+          "/images/photos/activities/Golf/Woodlands.webp",
         imageAlt: "Golf course fairway lined with pine trees",
         distance: "5 min walk",
         season: "April through October",
@@ -621,7 +621,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "A world-renowned golf course designed by Peter Jacobsen and Jim Hardy — two courses ranked among the best in the Pacific Northwest. Public tee times available.",
         image:
-          "https://images.unsplash.com/photo-1587174485713-feaaee1f8b76?w=800&q=80",
+          "/images/photos/activities/Golf/Crosswater.gif",
         imageAlt: "Scenic golf course with mountain backdrop",
         distance: "10 min drive",
         season: "April through October",
@@ -634,7 +634,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "Guided trail rides through the pines for all experience levels, plus pony rides for little ones. A memorable family outing in any season.",
         image:
-          "https://images.unsplash.com/photo-1553284965-83fd3e82fa5f?w=800&q=80",
+          "/images/photos/activities/Golf/SunriverStables.webp",
         imageAlt: "Horseback riding on a forest trail",
         distance: "8 min drive",
         season: "Year-round",
@@ -647,7 +647,7 @@ export const activitySections: ActivitySection[] = [
         description:
           "The heart of Sunriver — shops, restaurants, an ice rink in winter, live music in summer, and events year-round. A five-minute bike ride from the house.",
         image:
-          "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=800&q=80",
+          "/images/photos/activities/Golf/SunriverVillage.jpg",
         imageAlt: "Forest village with shops and pathways",
         distance: "5 min by bike",
         season: "Year-round",
