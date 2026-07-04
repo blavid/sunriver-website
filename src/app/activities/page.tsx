@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { ActivityCard } from "@/components/ActivityCard";
-import { PageBackground, PageHeader, Section, SectionTitle } from "@/components/ui";
+import { PageHeader, PageHero, Section, SectionTitle } from "@/components/ui";
 import { activitySections } from "@/lib/activities";
 import { pageBackgrounds } from "@/lib/content";
 
@@ -12,8 +12,10 @@ export const metadata: Metadata = {
 
 export default function ActivitiesPage() {
   return (
-    <PageBackground src={pageBackgrounds.activities} alt="Activities guide background image">
-      <PageHeader
+    <>
+      <PageHero
+        src={pageBackgrounds.activities}
+        alt="Activities guide background image"
         title="Central Oregon Activities Guide"
         subtitle="Our curated guide to the best dining, trails, water, snow, and adventures — all within reach of your Sunriver home base."
       />
@@ -61,6 +63,6 @@ export default function ActivitiesPage() {
           </p>
         </div>
       </Section>
-    </PageBackground>
+    </>
   );
 }

@@ -65,21 +65,37 @@ export function PageHeader({
   );
 }
 
-export function PageBackground({
+export function PageHero({
   src,
   alt = "",
+  title,
+  subtitle,
   children,
 }: {
   src: string;
   alt?: string;
-  children: React.ReactNode;
+  title: string;
+  subtitle?: string;
+  children?: React.ReactNode;
 }) {
   return (
-    <div className="relative overflow-hidden">
+    <section className="relative min-h-[55vh] overflow-hidden">
       <Image src={src} alt={alt} fill className="object-cover" sizes="100vw" />
       <div className="absolute inset-0 bg-gradient-to-t from-sage-950/90 via-sage-950/30 to-sage-950/10" />
-      <div className="relative">{children}</div>
-    </div>
+      <div className="relative mx-auto flex min-h-[55vh] max-w-6xl flex-col justify-end px-4 pb-16 pt-24 text-white sm:px-6 sm:pb-24 sm:pt-32">
+        <div className="max-w-3xl">
+          <h1 className="font-display text-4xl tracking-tight text-white sm:text-5xl lg:text-6xl">
+            {title}
+          </h1>
+          {subtitle && (
+            <p className="mt-4 text-lg leading-relaxed text-sage-200 sm:text-xl">
+              {subtitle}
+            </p>
+          )}
+          {children && <div className="mt-8">{children}</div>}
+        </div>
+      </div>
+    </section>
   );
 }
 

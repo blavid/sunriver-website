@@ -10,7 +10,7 @@ export const siteConfig = {
     email: "blake@sunrivertownhome.com",
   },
   stats: {
-    guests: 8,
+    guests: 9,
     bedrooms: 3,
     bathrooms: 3,
   },
@@ -22,10 +22,10 @@ export const heroImage = "/images/photos/house/exterior-front-1.jpg";
 
 export const pageBackgrounds = {
   home: heroImage,
-  theHome: "/images/photos/house/living-room-1.jpg",
-  guestGuide: "/images/photos/house/back-deck-1.jpg",
-  book: "/images/photos/house/exterior-back-1.jpg",
-  activities: "/images/photos/activities/Dining/RioSol.jpg",
+  theHome: "/images/photos/house/living-dining-kitchen.jpg",
+  guestGuide: "/images/photos/house/kitchen-3.jpg",
+  book: "/images/photos/house/back-bedroom-1.jpg",
+  activities: "/images/photos/activities/Golf/SunriverStables.webp",
 };
 
 export const photos = [

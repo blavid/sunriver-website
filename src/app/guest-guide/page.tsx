@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PageBackground, PageHeader, Section, SectionTitle } from "@/components/ui";
+import { PageHeader, PageHero, Section, SectionTitle } from "@/components/ui";
 import { guestGuideSections, pageBackgrounds, siteConfig, troubleshooting } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -10,8 +10,10 @@ export const metadata: Metadata = {
 
 export default function GuestGuidePage() {
   return (
-    <PageBackground src={pageBackgrounds.guestGuide} alt="Guest guide background image">
-      <PageHeader
+    <>
+      <PageHero
+        src={pageBackgrounds.guestGuide}
+        alt="Guest guide background image"
         title="Guest Guide"
         subtitle="Everything you need before, during, and after your stay. Save this page for quick reference."
       />
@@ -112,6 +114,6 @@ export default function GuestGuidePage() {
           </a>
         </div>
       </Section>
-    </PageBackground>
+    </>
   );
 }

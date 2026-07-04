@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { HighlightIcon } from "@/components/Icons";
 import { PhotoGallery } from "@/components/PhotoGallery";
-import { PageBackground, PageHeader, Section, SectionTitle } from "@/components/ui";
+import { PageHeader, PageHero, Section, SectionTitle } from "@/components/ui";
 import { amenities, highlights, houseRules, pageBackgrounds, rooms } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -12,8 +12,10 @@ export const metadata: Metadata = {
 
 export default function TheHomePage() {
   return (
-    <PageBackground src={pageBackgrounds.theHome} alt="The home background image">
-      <PageHeader
+    <>
+      <PageHero
+        src={pageBackgrounds.theHome}
+        alt="The home background image"
         title="The Home"
         subtitle="Updated 2 master suites, hot tub, SHARC passes, and bikes — everything you need for a luxury Sunriver stay."
       />
@@ -75,6 +77,11 @@ export default function TheHomePage() {
         </div>
       </Section>
 
+      <Section id="gallery" className="bg-white">
+        <SectionTitle title="Photo gallery" subtitle="Every corner of the home, inside and out." />
+        <PhotoGallery />
+      </Section>
+
       <Section className="bg-white">
         <SectionTitle title="Amenities" />
         <div className="flex flex-wrap gap-3">
@@ -102,11 +109,6 @@ export default function TheHomePage() {
           ))}
         </ul>
       </Section>
-
-      <Section id="gallery" className="bg-white">
-        <SectionTitle title="Photo gallery" subtitle="Every corner of the home, inside and out." />
-        <PhotoGallery />
-      </Section>
-    </PageBackground>
+    </>
   );
 }

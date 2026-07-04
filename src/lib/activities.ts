@@ -640,7 +640,7 @@ export const activitySections: ActivitySection[] = [
         distance: "8 min drive",
         season: "Year-round",
         tip: "Book the sunset ride for golden light through the trees.",
-        url: "hhttps://www.sunriverresort.com/play/stables",
+        url: "https://www.sunriverresort.com/play/stables",
       },
       {
         id: "village-sunriver",

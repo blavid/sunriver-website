@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Button, PageBackground, PageHeader, Section, SectionTitle } from "@/components/ui";
+import { Button, PageHeader, PageHero, Section, SectionTitle } from "@/components/ui";
 import { pageBackgrounds, siteConfig } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -10,11 +10,17 @@ export const metadata: Metadata = {
 
 export default function BookPage() {
   return (
-    <PageBackground src={pageBackgrounds.book} alt="Book your stay at Sunriver Townhome">
-      <PageHeader
+    <>
+      <PageHero
+        src={pageBackgrounds.book}
+        alt="Book your stay at Sunriver Townhome"
         title="Book Your Stay"
         subtitle="We offer direct booking with live availability and rates, plus listings on Airbnb and VRBO."
-      />
+      >
+        <Button href={siteConfig.bookUrl} variant="cedar" external>
+          Check Availability & Book
+        </Button>
+      </PageHero>
 
       <Section>
         <div className="mx-auto max-w-2xl">
@@ -104,6 +110,6 @@ export default function BookPage() {
           </a>
         </div>
       </Section>
-    </PageBackground>
+    </>
   );
 }
