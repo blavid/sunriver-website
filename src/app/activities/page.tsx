@@ -59,7 +59,7 @@ export default function ActivitiesPage() {
           </h2>
           <p className="mx-auto mt-3 max-w-lg text-sage-300">
             Your stay includes SHARC passes, bikes, and a hot tub waiting for you
-            after every adventure. We&apos;re happy to help plan your itinerary.
+            after every adventure. We&apos;re glad you&apos;re here.
           </p>
         </div>
       </Section>

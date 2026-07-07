@@ -16,46 +16,257 @@ export type Activity = {
 export type ActivitySection = {
   id: string;
   title: string;
-  subtitle: string;
+  subtitle?: string;
   activities: Activity[];
 };
 
 export const activitySections: ActivitySection[] = [
   {
-    id: "dining",
-    title: "Dining",
+    id: "guided-tours-and-activities",
+    title: "Guided tours and activities",
     subtitle:
-      "From grab-and-go bakery runs to date-night bistros — Sunriver and Bend deliver.",
+      "Guided experiences around Bend and the Cascade Lakes — e-bikes, kayaking, ATV and cave tours, wildlife encounters, and more.",
     activities: [
       {
-        id: "south-bend-bistro",
-        name: "South Bend Bistro",
+        id: "viator-ebike-tour",
+        name: "Electric Bike Tour of Bend & Deschutes River",
         description:
-          "Sunriver's go-to for a special night out. Pacific Northwest plates — scallops, king salmon, truffle ragù — in an intimate Village setting with a strong local wine list.",
-        image: "/images/photos/activities/Dining/SouthBendBistro.jpeg",
-        imageAlt: "Fine dining table setting with wine glasses",
-        distance: "5 min by bike to the Village",
+          "Explore Bend and the Deschutes River with ease on a guided e-bike tour. With an electric bike to assist, you can go farther and see more while learning local history and stopping for refreshments.",
+        image: "/images/photos/activities/Viator/E-bikeTour.jpg",
+        imageAlt: "Group on electric bikes along the Deschutes River",
+        distance: "25–30 min drive to Bend",
         season: "Year-round",
-        tip: "Reserve ahead in summer and holiday weeks.",
-        url: "https://www.southbendbistro.com/",
+        tip: "Includes e-bike and helmet; wear closed-toe shoes.",
+        url: "https://www.viator.com/tours/Bend/Electric-Bike-Tour-of-Bend-and-Deschutes-River/d22372-348862P1?pid=P00286716&mcid=42383&medium=link",
       },
-      { 
-        id: "sunriver-brewing",
-        name: "Sunriver Brewing Co.",
+      {
+        id: "ride-the-river-ebike",
+        name: "Ride the River Guided E-Bike Tour of Bend",
         description:
-          "Award-winning craft brewery with a family-friendly pub, patio, and menu built for après-adventure hunger. A Sunriver institution after biking, hiking, or skiing.",
-        image: "/images/photos/activities/Dining/SunriverBrewing.jpeg",
-        imageAlt: "Craft beer flight on a wooden table",
-        distance: "5 min by bike to the Village",
+          "A relaxed guided e-bike ride focusing on Bend's riverfront, Old Mill District, and neighborhood highlights — great for visitors who want a local introduction.",
+        image: "/images/photos/activities/Viator/RideTheRiverEbike.jpg",
+        imageAlt: "Riders on e-bikes following a river path",
+        distance: "25–30 min drive to Bend",
         season: "Year-round",
-        tip: "Fuzztail and Paddy's Irish Lager are guest favorites.",
-        url: "https://www.sunriverbrewingcompany.com/",
+        tip: "Smaller groups sell out on weekends; book ahead.",
+        url: "https://www.viator.com/tours/Bend/Guided-E-Bike-Tour-of-Bend/d22372-443338P3?pid=P00286716&mcid=42383&medium=link",
       },
+      {
+        id: "deschutes-ebike",
+        name: "Deschutes River E-Bike Tour",
+        description:
+          "A shorter e-bike experience focused on scenic stretches of the Deschutes River and nearby attractions — ideal for casual riders.",
+        image: "/images/photos/activities/Viator/DeschutesEbike.jpg",
+        imageAlt: "E-bike parked near a river bank",
+        distance: "25–30 min drive to Bend",
+        season: "Year-round",
+        tip: "Bring a water bottle and camera for river views.",
+        url: "https://www.viator.com/tours/Bend/Deschutes-River-E-bike-Tour/d22372-5593697P2?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "cascade-lakes-kayak",
+        name: "Cascade Lakes Kayak Tour",
+        description:
+          "Guided kayak tours among the Cascade Lakes — stunning alpine scenery and calm water paddling. Some itineraries include multiple lakes and shore snacks.",
+        image: "/images/photos/activities/Viator/CascadeLakesKayak.jpg",
+        imageAlt: "Kayaks on a calm mountain lake",
+        distance: "45–60 min drive",
+        season: "Summer",
+        tip: "Dress in layers; water can be chilly even on warm days.",
+        url: "https://www.viator.com/tours/Bend/Cascade-Lakes-Kayaking-Tour-Bend-Oregon/d22372-408340P3?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "high-cascades-atv",
+        name: "2-Hour High Cascades Scenic ATV Tour",
+        description:
+          "Off-road ATV rides through High Cascades terrain — fast-paced, scenic fun with guided instruction and safety gear provided.",
+        image: "/images/photos/activities/Viator/HighCascadesATV.jpg",
+        imageAlt: "ATV riding on volcanic terrain",
+        distance: "40–60 min drive",
+        season: "Late spring through fall",
+        tip: "Closed-toe shoes required; bring sun protection and gloves if you have them.",
+        url: "https://www.viator.com/tours/Bend/High-Cascades-Scenic-ATV-Tour/d22372-454771P3?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "deschutes-horse-ride",
+        name: "Deschutes River Horse Ride",
+        description:
+          "Guided horseback rides along the Deschutes River corridor — serene river views and a relaxed pace suitable for most riders.",
+        image: "/images/photos/activities/Viator/DeschutesHorseRide.jpg",
+        imageAlt: "Horseback rider trotting along a riverside trail",
+        distance: "25–40 min drive",
+        season: "Spring through fall",
+        tip: "Wear long pants and closed-toe shoes; bring a camera for riverside views.",
+        url: "https://www.viator.com/tours/Bend/Deschutes-River-Horse-Ride/d22372-158741P1?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "moonlight-canoe",
+        name: "Cascade Lakes Moonlight & Starlight Canoe Tour",
+        description:
+          "A guided evening canoe tour under the stars — magical moonlit paddling with storytelling and light refreshments.",
+        image: "/images/photos/activities/Viator/MoonlightCanoe.jpg",
+        imageAlt: "Canoes on a lake at night under a starry sky",
+        distance: "45–60 min drive",
+        season: "Summer (clear nights)",
+        tip: "Check moon phase and weather; tours run on calm nights.",
+        url: "https://www.viator.com/tours/Bend/Cascade-Lakes-Moonlight-and-Starlight-Canoe-Tour/d22372-408340P1",
+      },
+      {
+        id: "lava-tube-guided",
+        name: "Guided Lava Tube Cave Tour",
+        description:
+          "Naturalist-led exploration of local lava tubes — learn volcanic geology and see dramatic subterranean formations. Guides provide lights and helmets.",
+        image: "/images/photos/activities/Viator/LavaTubeTour.jpg",
+        imageAlt: "Inside a lava tube cave with a guided group",
+        distance: "15–30 min drive",
+        season: "Late spring through early fall",
+        tip: "Wear warm layers and sturdy shoes; tours often require bending and uneven footing.",
+        url: "https://www.viator.com/tours/Bend/Guided-Lava-Tube-Cave-Tour-Bend-Oregon/d22372-408340P2?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "limited-lava-tube",
+        name: "Limited-Entry Lava Tube Cave Tour",
+        description:
+          "Smaller-group or limited-access lava tube experiences — often include expert-led interpretation and quieter cave sections.",
+        image: "/images/photos/activities/Viator/LimitedLavaTube.jpg",
+        imageAlt: "Tour group inside a narrow lava tube",
+        distance: "15–30 min drive",
+        season: "Late spring through early fall",
+        tip: "Limited-entry tours may require advance booking and have minimum fitness levels.",
+        url: "https://www.viator.com/tours/Bend/Limited-Entry-Lava-Tube-Cave-Tour-in-Bend-Oregon/d22372-408340P7?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "alpaca-picnic",
+        name: "Alpaca Picnic Experience",
+        description:
+          "Meet alpacas and enjoy a guided outdoor picnic — a family-friendly experience combining animal encounter and local snacks.",
+        image: "/images/photos/activities/Viator/AlpacaPicnic.jpg",
+        imageAlt: "Picnic with alpacas in a meadow",
+        distance: "30–45 min drive",
+        season: "Spring through fall",
+        tip: "Perfect for kids and small groups — book for a private time slot.",
+        url: "https://www.viator.com/tours/Bend/The-Original-Alpaca-Picnic-Experience/d22372-405907P1?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "chocolate-tour",
+        name: "Chocolate Tour (Hot Chocolate & Samples)",
+        description:
+          "A tasty guided walk sampling chocolate, hot cocoa, and paired treats at local shops — a sweet local introduction.",
+        image: "/images/photos/activities/Viator/ChocolateTour.jpg",
+        imageAlt: "Assorted chocolates and hot chocolate cups",
+        distance: "Downtown Bend",
+        season: "Year-round",
+        tip: "Great as a half-day indulgence — bring comfortable shoes.",
+        url: "https://www.viator.com/tours/Bend/Chocolate-Tour-Including-Hot-Chocolate-and-Samples/d22372-348862P4?pid=P00286716&mcid=42383&medium=link ",
+      },
+      {
+        id: "food-truck-brewery-tour",
+        name: "Food Truck & Brewery Tour (Complimentary Tastings)",
+        description:
+          "A guided tasting tour pairing Bend's food-truck scene with local breweries — small-group format with curated tastings.",
+        image: "/images/photos/activities/Viator/FoodTruckBrewery.jpg",
+        imageAlt: "Assortment of food truck dishes and craft beer",
+        distance: "Downtown Bend",
+        season: "Year-round",
+        tip: "Designated driver or transportation recommended when sampling beers.",
+        url: "https://www.viator.com/tours/Bend/Food-Truck-and-Brewery-Tour-with-Complimentary-Tastings/d22372-348862P8?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "craft-brewery-tour",
+        name: "Craft Brewery Tour with Tastings",
+        description:
+          "A curated brewery crawl showcasing Bend's best craft beer scene with guided tastings and behind-the-scenes insights.",
+        image: "/images/photos/activities/Viator/CraftBreweryTour.jpg",
+        imageAlt: "Tasting flight of craft beers",
+        distance: "Downtown Bend",
+        season: "Year-round",
+        tip: "Bring ID; tours often include transportation between stops.",
+        url: "https://www.viator.com/tours/Bend/Craft-Brewery-Tour-and-Tastings-Everything-Included/d22372-348862P6?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "ultimate-scavenger-downtown",
+        name: "Ultimate Scavenger Bend (Downtown)",
+        description:
+          "A playful city-wide scavenger hunt exploring downtown Bend's history, public art, and hidden gems — great for groups.",
+        image: "/images/photos/activities/Viator/ScavengerHunt.jpg",
+        imageAlt: "Group solving clues in a downtown setting",
+        distance: "Downtown Bend",
+        season: "Year-round",
+        tip: "Works well for team outings or family groups; wear comfortable shoes.",
+        url: "https://www.viator.com/tours/Bend/Ultimate-Scavenger-Downtown-Bend/d22372-121288P3?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "night-sky-photo-tour",
+        name: "Central Oregon Night Sky Photo Tour",
+        description:
+          "A guided astrophotography outing to prime dark-sky locations with instruction on long-exposure techniques — capture the Milky Way over the Cascades.",
+        image: "/images/photos/activities/Viator/NightSkyPhotoTour.jpg",
+        imageAlt: "Starry Milky Way over a mountain silhouette",
+        distance: "30–60 min drive",
+        season: "Clear nights, year-round",
+        tip: "Bring a tripod and spare batteries; instructors often provide remote triggers.",
+        url: "https://www.viator.com/tours/Bend/Night-Sky-Private-Photo-Tour/d22372-16533P5?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "personal-photo-tutoring",
+        name: "Personal Photography Tutoring in Bend",
+        description:
+          "One-on-one or small-group photography tutoring focused on composition, camera settings, and local shooting locations.",
+        image: "/images/photos/activities/Viator/PhotoTutoring.jpg",
+        imageAlt: "Photographer leading a tutoring session outdoors",
+        distance: "Varies by meeting point",
+        season: "Year-round",
+        tip: "Share your gear and learning goals when booking for a tailored session.",
+        url: "https://www.viator.com/tours/Bend/Personal-Photography-Tutoring-in-Bend/d22372-16533P3?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "private-photo-tour",
+        name: "Private Bend Street Photo Tours",
+        description:
+          "Private guided street photography tours through Bend's most photogenic neighborhoods and the Old Mill District — great for aspiring photographers and visitors who want curated shots.",
+        image: "/images/photos/activities/Viator/StreetPhotoTour.jpg",
+        imageAlt: "Photographer shooting in an urban streetscape",
+        distance: "Downtown Bend",
+        season: "Year-round",
+        tip: "Book a morning slot for softer light and fewer people.",
+        url: "https://www.viator.com/tours/Bend/Bend-Street-Photography-Private-Tour/d22372-16533P6?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "paddleboard-happy-hour",
+        name: "Small-Group Paddle Board & Happy Hour — Cascade Lakes",
+        description:
+          "Paddle boarding on calm waters followed by a lakeside happy hour — a relaxed small-group outing on the Cascade Lakes.",
+        image: "/images/photos/activities/Viator/PaddleBoardHappyHour.jpg",
+        imageAlt: "Paddle boards lined up on a lake shore",
+        distance: "45–60 min drive",
+        season: "Summer",
+        tip: "Bring swimwear and a towel; tours often include light snacks.",
+        url: "https://www.viator.com/tours/Bend/Small-Group-Paddle-Board-and-Happy-Hour-in-Cascade-Lakes/d22372-348862P3?pid=P00286716&mcid=42383&medium=link",
+      },
+      {
+        id: "murder-mystery",
+        name: "Murder Mystery Detective Experience",
+        description:
+          "An interactive city-based murder-mystery experience — team up, solve clues, and explore Bend in a playful way.",
+        image: "/images/photos/activities/Viator/MurderMystery.jpg",
+        imageAlt: "Clues and map on a table for a detective game",
+        distance: "Downtown Bend",
+        season: "Year-round",
+        tip: "Fun for groups — good for rainy-day entertainment.",
+        url: "https://www.viator.com/tours/Bend/Murder-Mystery-Detective-Experience-in-Bend-OR/d22372-371631P106?pid=P00286716&mcid=42383&medium=link",
+      },
+    ],
+  },
+  {
+    id: "dining",
+    title: "Dining",
+    subtitle: "Village restaurants, bakeries, and casual spots.",
+    activities: [
       {
         id: "hot-lava-bakery",
         name: "Hot Lava Bakery",
         description:
-          "The only bakery in Sunriver — oversized glazed doughnuts, bagels, quiche, and breakfast burritos. Lines form on summer mornings for good reason.",
+          "Fresh pastries, croissants, and coffee in Sunriver Village — a local favorite for breakfast and take-away treats.",
         image: "/images/photos/activities/Dining/HotLavaBakery.jpeg",
         imageAlt: "Fresh pastries and croissants in a bakery display",
         distance: "5 min by bike to the Village",
@@ -655,6 +866,19 @@ export const activitySections: ActivitySection[] = [
         tip: "Check the events calendar for concerts and festivals.",
         url: "https://www.villageatsunriver.com/",
       },
+      {
+        id: "viator-ebike-tour",
+        name: "Electric Bike Tour of Bend & Deschutes River",
+        description:
+          "Explore Bend and the Deschutes River with ease with this guided e-bike tour. With an electric bike to assist, you can go farther and see more with less effort, and with a guide, there’s no risk of getting lost. Ride through Bend, including the Old Mill District and lesser-known areas, while learning about the city and the river, with a stop along the way for snacks and beverages.",
+        image:
+          "/images/photos/activities/Viator/E-bikeTour.jpg",
+        imageAlt: "Group of people on electric bikes along the Deschutes River",
+        distance: "",
+        season: "Year-round",
+        tip: "Includes use of premium e-bike and helmet",
+        url: "https://www.viator.com/tours/Bend/Electric-Bike-Tour-of-Bend-and-Deschutes-River/d22372-348862P1?pid=P00286716&mcid=42383&medium=link",
+      },
     ],
   },
 ];
@@ -662,3 +886,5 @@ export const activitySections: ActivitySection[] = [
 export function getActivityLink(activity: Activity): string | undefined {
   return activity.affiliateUrl ?? activity.url;
 }
+
+export default activitySections;
