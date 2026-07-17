@@ -18,7 +18,7 @@ export const siteConfig = {
   checkOut: "11:00 AM",
 };
 
-export const heroImage = "/images/photos/house/exterior-front-1.jpg";
+export const heroImage = "/images/photos/house/pool.jpg";
 
 export const pageBackgrounds = {
   home: heroImage,
