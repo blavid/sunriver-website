@@ -30,9 +30,7 @@ export default function BookPage() {
             </p>
             <h2 className="mt-2 font-display text-3xl text-sage-900">Book Direct</h2>
             <p className="mt-4 leading-relaxed text-sage-700">
-              Save a buck or two by booking directly with us. Our direct booking page has live availability, current rates, and instant
-              booking — powered by Hosttools with the same calendar synced to Airbnb
-              and VRBO. No platform service fees.
+              Book direct and pay up to about 5% less than Airbnb or Vrbo, plus no booking-site service fees.
             </p>
             <ul className="mt-6 space-y-2 text-sm text-sage-700">
               <li className="flex items-center gap-2">
