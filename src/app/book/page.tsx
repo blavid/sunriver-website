@@ -30,7 +30,7 @@ export default function BookPage() {
             </p>
             <h2 className="mt-2 font-display text-3xl text-sage-900">Book Direct</h2>
             <p className="mt-4 leading-relaxed text-sage-700">
-              Book direct and pay up to about 5% less than Airbnb or Vrbo, plus no booking-site service fees.
+              Book direct and pay up to about 10% less than Airbnb or Vrbo, plus no booking-site service fees.
             </p>
             <ul className="mt-6 space-y-2 text-sm text-sage-700">
               <li className="flex items-center gap-2">
