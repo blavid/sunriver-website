@@ -1,0 +1,12 @@
+name = "eaglewood-tv"
+main = "src/index.ts"
+compatibility_date = "2026-10-26"
+workers_dev = true
+
+# Zone route only. This does not add or change DNS records.
+routes = [{ pattern = "sunrivertownhome.com/tv/*", zone_name = "sunrivertownhome.com" }]
+
+# Replace id after: npx wrangler kv namespace create GUEST
+[[kv_namespaces]]
+binding = "GUEST"
+id = "placeholder"
