@@ -6,16 +6,12 @@ Run every command below from this `worker` directory. Deploy needs Blake's Cloud
 
 ## Deploy
 
+The KV namespace `GUEST` is already created. Its id, `c4631133b163480dbafb12601d16d658`, is already in `wrangler.toml`. That id is not a secret. Do not run `wrangler kv namespace create` again.
+
 ```bash
 cd worker
 npm install
 npx wrangler login
-npx wrangler kv namespace create GUEST
-```
-
-Copy the printed namespace id into `wrangler.toml`, replacing `id = "placeholder"`.
-
-```bash
 npx wrangler secret put EAGLEWOOD_TOKEN
 openssl rand -hex 16 | npx wrangler secret put GUEST_PATH_KEY
 npx wrangler deploy
