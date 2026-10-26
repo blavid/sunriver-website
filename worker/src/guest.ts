@@ -193,6 +193,15 @@ function asRecord(value: unknown): Record<string, unknown> | null {
   return value as Record<string, unknown>;
 }
 
+export const MANUAL_STAY_ID = "__manual";
+
+export interface StayRecord {
+  firstName: string;
+  lastName: string;
+  checkin: string;
+  checkout: string;
+}
+
 export function parseCheckin(value: unknown): { ok: true; guest: Guest } | { ok: false } {
   const record = asRecord(value);
   if (!record) return { ok: false };
@@ -220,32 +229,73 @@ export function checkoutDateFromEndDate(endDate: string): string | null {
   return isRealCheckoutDate(ymd) ? ymd : null;
 }
 
-export type CheckinDecision = { action: "store"; guest: Guest } | { action: "clear" } | { action: "reject" };
+export type CheckinDecision =
+  | { action: "upsert"; id: string; stay: StayRecord }
+  | { action: "delete"; id: string }
+  | { action: "reject" };
 
-function guestFromDocument(document: unknown): Guest | null {
-  const record = asRecord(document);
-  if (!record) return null;
-  if (typeof record.firstName !== "string" || typeof record.endDate !== "string") return null;
-  const checkout = checkoutDateFromEndDate(record.endDate);
-  if (!checkout) return null;
-  const firstName = sanitizeFirstName(record.firstName);
-  if (!firstName) return null;
-  const lastName = typeof record.lastName === "string" ? sanitizeLastName(record.lastName) : "";
-  return { firstName, lastName, checkout };
+/** Published reservation schema uses `_id`. `id` is only a fallback. */
+export function reservationId(document: Record<string, unknown>): string | null {
+  const raw = typeof document._id === "string" ? document._id : typeof document.id === "string" ? document.id : "";
+  if (raw === MANUAL_STAY_ID || !/^[A-Za-z0-9_-]{1,128}$/.test(raw)) return null;
+  return raw;
 }
 
-export function interpretCheckin(value: unknown): CheckinDecision {
+function stayFromDocument(document: Record<string, unknown>): StayRecord | null {
+  if (typeof document.firstName !== "string" || typeof document.startDate !== "string" || typeof document.endDate !== "string") {
+    return null;
+  }
+  const checkin = checkoutDateFromEndDate(document.startDate);
+  const checkout = checkoutDateFromEndDate(document.endDate);
+  if (!checkin || !checkout || checkin > checkout) return null;
+  const firstName = sanitizeFirstName(document.firstName);
+  if (!firstName) return null;
+  const lastName = typeof document.lastName === "string" ? sanitizeLastName(document.lastName) : "";
+  return { firstName, lastName, checkin, checkout };
+}
+
+export function interpretCheckin(value: unknown, today: string): CheckinDecision {
   const record = asRecord(value);
   if (record && record.type === "reservation" && typeof record.event === "string") {
-    if (record.event === "reservation.cancelled") return { action: "clear" };
+    const document = asRecord(record.document);
+    if (!document) return { action: "reject" };
+    const id = reservationId(document);
+    if (!id) return { action: "reject" };
+    if (record.event === "reservation.cancelled") return { action: "delete", id };
     if (record.event !== "reservation.created" && record.event !== "reservation.changed") {
       return { action: "reject" };
     }
-    const guest = guestFromDocument(record.document);
-    return guest ? { action: "store", guest } : { action: "reject" };
+    const stay = stayFromDocument(document);
+    return stay ? { action: "upsert", id, stay } : { action: "reject" };
   }
   const flat = parseCheckin(value);
-  return flat.ok ? { action: "store", guest: flat.guest } : { action: "reject" };
+  if (!flat.ok || flat.guest.checkout < today) return { action: "reject" };
+  return {
+    action: "upsert",
+    id: MANUAL_STAY_ID,
+    stay: {
+      firstName: flat.guest.firstName,
+      lastName: flat.guest.lastName,
+      checkin: today,
+      checkout: flat.guest.checkout,
+    },
+  };
+}
+
+export function selectDisplayedStay<T extends { id: string; checkin: string; checkout: string }>(
+  stays: readonly T[],
+  today: string,
+): T | null {
+  const eligible = stays.filter((stay) => stay.checkin <= today && today <= stay.checkout);
+  const arriving = eligible.filter((stay) => stay.checkin === today);
+  const pool = arriving.length > 0 ? arriving : eligible;
+  if (pool.length === 0) return null;
+  return [...pool].sort((a, b) => {
+    if (a.checkin !== b.checkin) return a.checkin < b.checkin ? 1 : -1;
+    if (a.id < b.id) return -1;
+    if (a.id > b.id) return 1;
+    return 0;
+  })[0];
 }
 
 export function htmlEscape(value: string): string {

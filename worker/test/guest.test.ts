@@ -5,6 +5,7 @@ import {
   htmlEscape,
   interpretCheckin,
   isRealCheckoutDate,
+  selectDisplayedStay,
   parseCheckin,
   sanitizeFirstName,
   sanitizeLastName,
@@ -111,37 +112,71 @@ describe("names", () => {
 
   it("reads a Host Tools reservation and clears on cancel", () => {
     expect(
-      interpretCheckin({
-        type: "reservation",
-        event: "reservation.created",
-        document: {
-          firstName: "Ada Lovelace",
-          lastName: "van Hopper",
-          endDate: "2026-07-05T00:00:00.000Z",
-          phone: "5035550100",
-          email: "ada@example.com",
+      interpretCheckin(
+        {
+          type: "reservation",
+          event: "reservation.created",
+          document: {
+            _id: "5e7a6c0b0f2c9c0017b0b0b0",
+            firstName: "Ada Lovelace",
+            lastName: "van Hopper",
+            startDate: "2026-07-01T00:00:00.000Z",
+            endDate: "2026-07-05T00:00:00.000Z",
+            phone: "5035550100",
+            email: "ada@example.com",
+            accessCode: "998877",
+          },
         },
-      }),
+        "2026-07-01",
+      ),
     ).toEqual({
-      action: "store",
-      guest: { firstName: "Ada", lastName: "van Hopper", checkout: "2026-07-04" },
+      action: "upsert",
+      id: "5e7a6c0b0f2c9c0017b0b0b0",
+      stay: { firstName: "Ada", lastName: "van Hopper", checkin: "2026-06-30", checkout: "2026-07-04" },
     });
     expect(
-      interpretCheckin({
-        type: "reservation",
-        event: "reservation.changed",
-        document: { firstName: "Ada", endDate: "2026-07-05T15:00:00.000Z" },
-      }),
+      interpretCheckin(
+        {
+          type: "reservation",
+          event: "reservation.changed",
+          document: {
+            id: "res-fallback",
+            firstName: "Ada",
+            startDate: "2026-07-01T07:00:00.000Z",
+            endDate: "2026-07-05T15:00:00.000Z",
+          },
+        },
+        "2026-07-01",
+      ),
     ).toEqual({
-      action: "store",
-      guest: { firstName: "Ada", lastName: "", checkout: "2026-07-05" },
+      action: "upsert",
+      id: "res-fallback",
+      stay: { firstName: "Ada", lastName: "", checkin: "2026-07-01", checkout: "2026-07-05" },
     });
     expect(
-      interpretCheckin({ type: "reservation", event: "reservation.cancelled", document: { status: "cancelled" } }),
-    ).toEqual({ action: "clear" });
-    expect(interpretCheckin({ type: "reservation", event: "reservation.checkout", document: {} })).toEqual({
-      action: "reject",
-    });
+      interpretCheckin(
+        { type: "reservation", event: "reservation.cancelled", document: { _id: "res-1", status: "cancelled" } },
+        "2026-07-01",
+      ),
+    ).toEqual({ action: "delete", id: "res-1" });
+    expect(
+      interpretCheckin({ type: "reservation", event: "reservation.cancelled", document: { status: "cancelled" } }, "2026-07-01"),
+    ).toEqual({ action: "reject" });
+    expect(
+      interpretCheckin({ type: "reservation", event: "reservation.checkout", document: { _id: "res-1" } }, "2026-07-01"),
+    ).toEqual({ action: "reject" });
+  });
+
+  it("hides upcoming stays and prefers the guest checking in on a turnover day", () => {
+    const stays = [
+      { id: "depart", checkin: "2026-11-01", checkout: "2026-11-03" },
+      { id: "arrive", checkin: "2026-11-03", checkout: "2026-11-06" },
+      { id: "later", checkin: "2026-11-10", checkout: "2026-11-12" },
+    ];
+    expect(selectDisplayedStay(stays, "2026-11-03")?.id).toBe("arrive");
+    expect(selectDisplayedStay(stays, "2026-11-02")?.id).toBe("depart");
+    expect(selectDisplayedStay([{ id: "later", checkin: "2026-11-10", checkout: "2026-11-12" }], "2026-11-03")).toBeNull();
+    expect(selectDisplayedStay(stays, "2026-11-07")).toBeNull();
   });
 });
 

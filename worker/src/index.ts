@@ -5,12 +5,13 @@ import {
   interpretCheckin,
   readLimitedBody,
   secondsUntilPastCheckout,
+  selectDisplayedStay,
   timingSafeEqual,
   ZONE,
-  type Guest,
+  type StayRecord,
 } from "./guest";
 
-const KV_KEY = "current";
+const INDEX_KEY = "idx";
 const MIN_PATH_KEY_LENGTH = 24;
 const MAX_PATH_SEGMENT = 256;
 
@@ -24,6 +25,16 @@ export interface Env {
   GUEST: GuestKv;
   EAGLEWOOD_TOKEN?: string;
   GUEST_PATH_KEY?: string;
+}
+
+interface IndexEntry {
+  id: string;
+  checkin: string;
+  checkout: string;
+}
+
+export function stayKey(id: string): string {
+  return `s:${id}`;
 }
 
 function json(body: unknown, status: number, extra?: Record<string, string>): Response {
@@ -66,19 +77,81 @@ function guestPathAllowed(segment: string, secret: string | undefined): boolean 
   return timingSafeEqual(decoded, secret);
 }
 
-function parseStored(raw: string | null): Guest | null {
+async function readIndex(kv: GuestKv): Promise<IndexEntry[]> {
+  const raw = await kv.get(INDEX_KEY, "text");
+  if (!raw) return [];
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (!Array.isArray(value)) return [];
+    const entries: IndexEntry[] = [];
+    for (const item of value) {
+      if (!item || typeof item !== "object" || Array.isArray(item)) continue;
+      const record = item as Record<string, unknown>;
+      if (typeof record.id !== "string" || typeof record.checkin !== "string" || typeof record.checkout !== "string") {
+        continue;
+      }
+      if (!isRealCheckoutDate(record.checkin) || !isRealCheckoutDate(record.checkout)) continue;
+      entries.push({ id: record.id, checkin: record.checkin, checkout: record.checkout });
+    }
+    return entries;
+  } catch {
+    return [];
+  }
+}
+
+async function writeIndex(kv: GuestKv, entries: IndexEntry[]): Promise<void> {
+  await kv.put(INDEX_KEY, JSON.stringify(entries));
+}
+
+function parseStay(raw: string | null): StayRecord | null {
   if (!raw) return null;
   try {
     const value: unknown = JSON.parse(raw);
     if (!value || typeof value !== "object" || Array.isArray(value)) return null;
     const record = value as Record<string, unknown>;
-    if (typeof record.firstName !== "string" || typeof record.checkout !== "string") return null;
-    if (!isRealCheckoutDate(record.checkout)) return null;
+    if (
+      typeof record.firstName !== "string" ||
+      typeof record.checkin !== "string" ||
+      typeof record.checkout !== "string" ||
+      !isRealCheckoutDate(record.checkin) ||
+      !isRealCheckoutDate(record.checkout)
+    ) {
+      return null;
+    }
     const lastName = typeof record.lastName === "string" ? record.lastName : "";
-    return { firstName: record.firstName, lastName, checkout: record.checkout };
+    return { firstName: record.firstName, lastName, checkin: record.checkin, checkout: record.checkout };
   } catch {
     return null;
   }
+}
+
+async function upsertStay(env: Env, id: string, stay: StayRecord, nowMs: number): Promise<void> {
+  const expirationTtl = secondsUntilPastCheckout(stay.checkout, nowMs);
+  await env.GUEST.put(stayKey(id), JSON.stringify(stay), { expirationTtl });
+  const index = (await readIndex(env.GUEST)).filter((entry) => entry.id !== id);
+  index.push({ id, checkin: stay.checkin, checkout: stay.checkout });
+  await writeIndex(env.GUEST, index);
+}
+
+async function deleteStay(env: Env, id: string): Promise<void> {
+  await env.GUEST.delete(stayKey(id));
+  const index = await readIndex(env.GUEST);
+  const next = index.filter((entry) => entry.id !== id);
+  if (next.length !== index.length) await writeIndex(env.GUEST, next);
+}
+
+export async function pruneExpired(env: Env, nowMs: number): Promise<void> {
+  const today = calendarDateInZone(nowMs, ZONE);
+  const index = await readIndex(env.GUEST);
+  const keep: IndexEntry[] = [];
+  for (const entry of index) {
+    if (entry.checkout < today) {
+      await env.GUEST.delete(stayKey(entry.id));
+    } else {
+      keep.push(entry);
+    }
+  }
+  if (keep.length !== index.length) await writeIndex(env.GUEST, keep);
 }
 
 async function checkin(request: Request, env: Env): Promise<Response> {
@@ -90,21 +163,23 @@ async function checkin(request: Request, env: Env): Promise<Response> {
   } catch {
     return json({ error: "invalid JSON" }, 400);
   }
-  const decision = interpretCheckin(parsed);
+  const nowMs = Date.now();
+  const decision = interpretCheckin(parsed, calendarDateInZone(nowMs, ZONE));
   if (decision.action === "reject") return json({ error: "invalid checkin" }, 400);
-  if (decision.action === "clear") {
-    await env.GUEST.delete(KV_KEY);
+  if (decision.action === "delete") {
+    await deleteStay(env, decision.id);
     return json({ ok: true }, 200);
   }
-  const expirationTtl = secondsUntilPastCheckout(decision.guest.checkout, Date.now());
-  await env.GUEST.put(KV_KEY, JSON.stringify(decision.guest), { expirationTtl });
+  await upsertStay(env, decision.id, decision.stay, nowMs);
   return json({ ok: true }, 200);
 }
 
 async function checkout(request: Request, env: Env): Promise<Response> {
   const body = await readLimitedBody(request);
   if (!body.ok) return json({ error: "payload too large" }, 413);
-  await env.GUEST.delete(KV_KEY);
+  const today = calendarDateInZone(Date.now(), ZONE);
+  const chosen = selectDisplayedStay(await readIndex(env.GUEST), today);
+  if (chosen) await deleteStay(env, chosen.id);
   return json({ ok: true }, 200);
 }
 
@@ -113,15 +188,16 @@ async function readGuest(env: Env): Promise<Response> {
     "cache-control": "no-store",
     "access-control-allow-origin": "*",
   };
-  const guest = parseStored(await env.GUEST.get(KV_KEY, "text"));
-  if (!guest || calendarDateInZone(Date.now(), ZONE) > guest.checkout) {
-    return json({}, 200, headers);
-  }
+  const today = calendarDateInZone(Date.now(), ZONE);
+  const chosen = selectDisplayedStay(await readIndex(env.GUEST), today);
+  if (!chosen) return json({}, 200, headers);
+  const stay = parseStay(await env.GUEST.get(stayKey(chosen.id), "text"));
+  if (!stay || stay.checkin > today || today > stay.checkout) return json({}, 200, headers);
   return json(
     {
-      firstName: htmlEscape(guest.firstName),
-      lastName: htmlEscape(guest.lastName),
-      checkout: guest.checkout,
+      firstName: htmlEscape(stay.firstName),
+      lastName: htmlEscape(stay.lastName),
+      checkout: stay.checkout,
     },
     200,
     headers,
@@ -147,6 +223,10 @@ const worker = {
     }
 
     return notFound();
+  },
+
+  async scheduled(_event: unknown, env: Env, ctx: { waitUntil(promise: Promise<unknown>): void }): Promise<void> {
+    ctx.waitUntil(pruneExpired(env, Date.now()));
   },
 };
 

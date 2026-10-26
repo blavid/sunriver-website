@@ -1,5 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import worker, { type Env, type GuestKv } from "../src/index";
+import worker, { stayKey, type Env, type GuestKv } from "../src/index";
 
 const TOKEN = "b".repeat(32);
 const PATH_KEY = "a".repeat(32);
@@ -69,12 +69,15 @@ describe("checkin and checkout", () => {
     );
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ ok: true });
-    expect(JSON.parse(kv.values.get("current") ?? "")).toEqual({
+    expect(JSON.parse(kv.values.get(stayKey("__manual")) ?? "")).toEqual({
       firstName: "Ada",
       lastName: "van Hopper",
+      checkin: "2026-11-01",
       checkout: "2026-11-02",
     });
-    expect(kv.ttls.get("current")).toBe(151200);
+    expect(kv.ttls.get(stayKey("__manual"))).toBe(151200);
+    expect(kv.values.get("idx")).not.toContain("503");
+    expect(kv.values.get(stayKey("__manual"))).not.toContain("503");
   });
 
   it("rejects a missing token, a wrong token, and a missing secret", async () => {
@@ -134,15 +137,22 @@ describe("checkin and checkout", () => {
     expect(headerOnly.status).toBe(413);
   });
 
-  it("deletes the current guest on checkout", async () => {
+  it("deletes the stay currently on screen", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-02T18:00:00.000Z"));
     const { env: bindings, kv } = env();
-    kv.values.set("current", "{\"firstName\":\"Ada\"}");
+    await worker.fetch(
+      post("/tv/checkin", JSON.stringify({ firstName: "Ada", lastName: "Lovelace", checkout: "2026-11-04" }), TOKEN),
+      bindings,
+    );
     const response = await worker.fetch(post("/tv/checkout", null, TOKEN), bindings);
     expect(response.status).toBe(200);
-    expect(kv.values.has("current")).toBe(false);
+    expect(kv.values.has(stayKey("__manual"))).toBe(false);
   });
 
   it("accepts the token in the query string without logging the URL", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-01T20:00:00.000Z"));
     const calls: unknown[][] = [];
     for (const method of ["log", "info", "warn", "error", "debug"] as const) {
       vi.spyOn(console, method).mockImplementation((...args: unknown[]) => {
@@ -160,7 +170,7 @@ describe("checkin and checkout", () => {
     );
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({ ok: true });
-    expect(kv.values.get("current")).toContain("Ada");
+    expect(JSON.stringify([...kv.values.values()])).toContain("Ada");
     const dumped = JSON.stringify(calls);
     expect(dumped).not.toContain(TOKEN);
     expect(dumped).not.toContain("sunrivertownhome.com");
@@ -186,11 +196,14 @@ describe("checkin and checkout", () => {
           type: "reservation",
           event: "reservation.created",
           document: {
+            _id: "res-ada",
             firstName: "Ada Lovelace",
             lastName: "van Hopper",
+            startDate: "2026-07-01T00:00:00.000Z",
             endDate: "2026-07-05T00:00:00.000Z",
             phone: "5035550100",
-            status: "accepted",
+            email: "ada@example.com",
+            accessCode: "998877",
           },
         }),
         TOKEN,
@@ -198,11 +211,17 @@ describe("checkin and checkout", () => {
       bindings,
     );
     expect(created.status).toBe(200);
-    expect(JSON.parse(kv.values.get("current") ?? "")).toEqual({
+    const stored = kv.values.get(stayKey("res-ada")) ?? "";
+    expect(JSON.parse(stored)).toEqual({
       firstName: "Ada",
       lastName: "van Hopper",
+      checkin: "2026-06-30",
       checkout: "2026-07-04",
     });
+    expect(stored).not.toContain("5035550100");
+    expect(stored).not.toContain("ada@example.com");
+    expect(stored).not.toContain("998877");
+    expect(Object.keys(JSON.parse(stored)).sort()).toEqual(["checkin", "checkout", "firstName", "lastName"]);
 
     const changed = await worker.fetch(
       post(
@@ -210,25 +229,99 @@ describe("checkin and checkout", () => {
         JSON.stringify({
           type: "reservation",
           event: "reservation.changed",
-          document: { firstName: "Bea", lastName: "Ng", endDate: "2026-01-15T00:00:00.000Z" },
+          document: {
+            _id: "res-ada",
+            firstName: "Bea",
+            lastName: "Ng",
+            startDate: "2026-01-10T00:00:00.000Z",
+            endDate: "2026-01-15T00:00:00.000Z",
+          },
         }),
         TOKEN,
       ),
       bindings,
     );
     expect(changed.status).toBe(200);
-    expect(JSON.parse(kv.values.get("current") ?? "").checkout).toBe("2026-01-14");
+    expect(JSON.parse(kv.values.get(stayKey("res-ada")) ?? "").checkout).toBe("2026-01-14");
+    expect(JSON.parse(kv.values.get("idx") ?? "")).toHaveLength(1);
 
     const cancelled = await worker.fetch(
       post(
         "/tv/checkin",
-        JSON.stringify({ type: "reservation", event: "reservation.cancelled", document: { firstName: "Bea" } }),
+        JSON.stringify({ type: "reservation", event: "reservation.cancelled", document: { _id: "res-ada" } }),
         TOKEN,
       ),
       bindings,
     );
     expect(cancelled.status).toBe(200);
-    expect(kv.values.has("current")).toBe(false);
+    expect(kv.values.has(stayKey("res-ada"))).toBe(false);
+  });
+
+  it("shows the arriving guest on a turnover day and hides an upcoming stay", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-03T18:00:00.000Z"));
+    const { env: bindings, kv } = env();
+    for (const document of [
+      { _id: "depart", firstName: "Ann", lastName: "Old", startDate: "2026-11-01", endDate: "2026-11-03" },
+      { _id: "arrive", firstName: "Bea", lastName: "New", startDate: "2026-11-03", endDate: "2026-11-06" },
+      { _id: "later", firstName: "Cy", lastName: "Soon", startDate: "2026-11-10", endDate: "2026-11-12", phone: "5551234" },
+    ]) {
+      const response = await worker.fetch(
+        post("/tv/checkin", JSON.stringify({ type: "reservation", event: "reservation.created", document }), TOKEN),
+        bindings,
+      );
+      expect(response.status).toBe(200);
+    }
+    const shown = await worker.fetch(new Request(`https://sunrivertownhome.com/tv/${PATH_KEY}/guest.json`), bindings);
+    expect(await shown.json()).toEqual({ firstName: "Bea", lastName: "New", checkout: "2026-11-06" });
+    expect(kv.values.get(stayKey("later"))).not.toContain("5551234");
+
+    vi.setSystemTime(new Date("2026-11-02T18:00:00.000Z"));
+    const beforeArrival = await worker.fetch(new Request(`https://sunrivertownhome.com/tv/${PATH_KEY}/guest.json`), bindings);
+    expect(await beforeArrival.json()).toEqual({ firstName: "Ann", lastName: "Old", checkout: "2026-11-03" });
+  });
+
+  it("prunes stays whose checkout date has passed and keeps current ones", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-01T18:00:00.000Z"));
+    const { env: bindings, kv } = env();
+    await worker.fetch(
+      post(
+        "/tv/checkin",
+        JSON.stringify({
+          type: "reservation",
+          event: "reservation.created",
+          document: { _id: "past", firstName: "Ann", startDate: "2026-10-28", endDate: "2026-10-30" },
+        }),
+        TOKEN,
+      ),
+      bindings,
+    );
+    await worker.fetch(
+      post(
+        "/tv/checkin",
+        JSON.stringify({
+          type: "reservation",
+          event: "reservation.created",
+          document: { _id: "current", firstName: "Bea", startDate: "2026-11-01", endDate: "2026-11-04" },
+        }),
+        TOKEN,
+      ),
+      bindings,
+    );
+    vi.setSystemTime(new Date("2026-11-03T08:15:00.000Z"));
+    const pending: Promise<unknown>[] = [];
+    await worker.scheduled(null, bindings, {
+      waitUntil(promise) {
+        pending.push(promise);
+      },
+    });
+    await Promise.all(pending);
+    expect(kv.values.has(stayKey("past"))).toBe(false);
+    expect(JSON.parse(kv.values.get(stayKey("current")) ?? "").firstName).toBe("Bea");
+    expect(JSON.parse(kv.values.get("idx") ?? "")).toEqual([
+      { id: "current", checkin: "2026-11-01", checkout: "2026-11-04" },
+    ]);
   });
 });
 
@@ -237,9 +330,10 @@ describe("guest json", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-02T18:00:00.000Z"));
     const { env: bindings, kv } = env();
+    kv.values.set("idx", JSON.stringify([{ id: "raw", checkin: "2026-11-01", checkout: "2026-11-02" }]));
     kv.values.set(
-      "current",
-      JSON.stringify({ firstName: "O'Brien", lastName: "A<b>", checkout: "2026-11-02" }),
+      stayKey("raw"),
+      JSON.stringify({ firstName: "O'Brien", lastName: "A<b>", checkin: "2026-11-01", checkout: "2026-11-02" }),
     );
 
     const ok = await worker.fetch(new Request(`https://eaglewood-tv.example.workers.dev/tv/${PATH_KEY}/guest.json`), bindings);
@@ -265,7 +359,11 @@ describe("guest json", () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-03T08:00:00.000Z"));
     const { env: bindings, kv } = env();
-    kv.values.set("current", JSON.stringify({ firstName: "Ada", lastName: "Lovelace", checkout: "2026-11-02" }));
+    kv.values.set("idx", JSON.stringify([{ id: "ada", checkin: "2026-11-01", checkout: "2026-11-02" }]));
+    kv.values.set(
+      stayKey("ada"),
+      JSON.stringify({ firstName: "Ada", lastName: "Lovelace", checkin: "2026-11-01", checkout: "2026-11-02" }),
+    );
     const response = await worker.fetch(new Request(`https://sunrivertownhome.com/tv/${PATH_KEY}/guest.json`), bindings);
     expect(await response.json()).toEqual({});
   });

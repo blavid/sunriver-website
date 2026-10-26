@@ -23,7 +23,7 @@ npx wrangler deploy
 
 `openssl rand -hex 16` prints 32 hex characters. `GUEST_PATH_KEY` must be at least 24 characters. The worker reads it only from that secret. Do not hard-code it, commit it, or paste the guest URL into a public log. The URL path is the secret.
 
-`wrangler deploy` publishes the worker and attaches the route `sunrivertownhome.com/tv/*` on the existing zone. It does not create DNS records. `workers_dev` stays on, so the same paths also work on the `*.workers.dev` hostname printed after deploy.
+`wrangler deploy` publishes the worker, attaches the route `sunrivertownhome.com/tv/*` on the existing zone, and registers the cron in `wrangler.toml`: `15 8 * * *` (08:15 UTC, which is 00:15 PST or 01:15 PDT). There is no separate cron command. The Workers Free plan allows 5 cron triggers per account ([Workers limits](https://developers.cloudflare.com/workers/platform/limits/)). Deploy does not create DNS records. `workers_dev` stays on, so the same paths also work on the `*.workers.dev` hostname printed after deploy.
 
 Generate `EAGLEWOOD_TOKEN` the same way (`openssl rand -hex 16`) and pass it only to `wrangler secret put`. Do not commit either secret.
 
@@ -31,14 +31,20 @@ Generate `EAGLEWOOD_TOKEN` the same way (`openssl rand -hex 16`) and pass it onl
 
 | Request | Auth | Result |
 | --- | --- | --- |
-| `POST /tv/checkin` | Header `X-Eaglewood-Token` or `?token=` | Store the current guest, or clear it on `reservation.cancelled` |
-| `POST /tv/checkout` | Header `X-Eaglewood-Token` or `?token=` | Delete `current` |
-| `GET /tv/<GUEST_PATH_KEY>/guest.json` | Path secret | Current guest, or `{}` |
+| `POST /tv/checkin` | Header `X-Eaglewood-Token` or `?token=` | Upsert one stay, or delete that reservation on `reservation.cancelled` |
+| `POST /tv/checkout` | Header `X-Eaglewood-Token` or `?token=` | Delete the stay currently on screen |
+| `GET /tv/<GUEST_PATH_KEY>/guest.json` | Path secret | The in-progress stay as `{firstName, lastName, checkout}`, or `{}` |
 | Anything else | | `404`, or `405` when the path is known and the method is wrong |
 
-Check-in accepts either `{ "firstName", "lastName", "checkout" }` or a Host Tools reservation webhook `{ "type": "reservation", "event", "document" }`. Flat `checkout` is `YYYY-MM-DD` and must be a real calendar date. On the native payload, `document.endDate` is a UTC timestamp and is stored as the `America/Los_Angeles` calendar date. Midnight UTC is the previous evening in Los Angeles for most of the year, so `2026-07-05T00:00:00.000Z` is checkout `2026-07-04`. A bare `YYYY-MM-DD` `endDate` is kept as that date. Every other field is ignored. `lastName` is optional and is stored as `""` when it is missing.
+Each stay is its own KV key, `s:<reservation id>`. The value is only `{firstName, lastName, checkin, checkout}`. A small `idx` key lists ids and dates so `guest.json` does not call KV `list`. Host Tools reservation ids are `document._id` in the [reservation webhook schema](https://docs.hosttools.com/reference/post_webhooks-reservation) (required; example `5e7a6c0b0f2c9c0017b0b0b0`). That schema has no `id` field. If `_id` is missing and `id` is present, that value is used instead.
 
-`reservation.created` and `reservation.changed` replace the stored guest. `reservation.cancelled` deletes it. There is no native checkout event. After a stay, `GET` still returns `{}` once the Los Angeles date is past `checkout`, and the KV key expires at 06:00 that next morning. `POST /tv/checkout` also clears the guest immediately.
+`startDate` and `endDate` are both converted to America/Los_Angeles calendar dates. Midnight UTC is the previous evening in Los Angeles for most of the year, so `2026-07-05T00:00:00.000Z` is `2026-07-04`. A bare `YYYY-MM-DD` is kept. Phone, email, door codes, and every other document field are dropped.
+
+`reservation.created` and `reservation.changed` upsert that id. A later `reservation.changed` replaces the dates. `reservation.cancelled` deletes that id only. There is no native checkout event.
+
+`GET` returns `{firstName, lastName, checkout}` for the stay where `checkin <= today <= checkout` in America/Los_Angeles. An upcoming stay stays hidden. On a turnover day, the stay whose `checkin` is today wins over the one checking out today. Each record's `expirationTtl` runs until 06:00 Los Angeles on the day after `checkout` (at least 60 seconds). The daily cron deletes index entries whose `checkout` is already before today. It reads `idx` once and does not list the namespace.
+
+The flat `POST /tv/checkin` body `{firstName, lastName, checkout}` still works. It has no reservation id and no start date, so it is stored as id `__manual` with `checkin` set to today in Los Angeles and the checkout you sent. `POST /tv/checkout` deletes whichever stay `GET` would show right now, including a native reservation, so the screen clears. It does not delete every stored stay.
 
 `firstName` keeps only the first whitespace-separated token. Both names keep Unicode letters, apostrophes, and hyphens. `lastName` may also keep internal spaces. Digits, email addresses, phone numbers, and PINs are stripped. Caps are 30 characters (`firstName`) and 40 (`lastName`). An empty `firstName` is a 400.
 
@@ -46,7 +52,9 @@ The body limit is 2048 bytes. A larger body is 413. A form body or other non-JSO
 
 The header and the `token` query parameter are each compared to `EAGLEWOOD_TOKEN` in constant time. Either match is enough. A missing or wrong token is 401. If `EAGLEWOOD_TOKEN` is unset, POSTs return 500. The worker does not log the request URL or the token. If `GUEST_PATH_KEY` is unset, shorter than 24 characters, or not an exact match, the guest URL is 404.
 
-KV `expirationTtl` is the number of seconds until 06:00 `America/Los_Angeles` on the day after `checkout` (at least 60 seconds). `GET` returns `{}` when nothing is stored or when today's date in `America/Los_Angeles` is after `checkout`. The checkout date itself still returns the guest. Names are HTML-escaped in the JSON response. Response headers are `Content-Type: application/json`, `Cache-Control: no-store`, and `Access-Control-Allow-Origin: *`.
+Names are HTML-escaped in the JSON response. Response headers are `Content-Type: application/json`, `Cache-Control: no-store`, and `Access-Control-Allow-Origin: *`.
+
+`guest.json` costs two KV reads (the index, then one stay). The Workers Free KV allowance is 100,000 reads, 1,000 writes, 1,000 deletes, and 1,000 list requests per day ([KV pricing](https://developers.cloudflare.com/kv/platform/pricing/)). One poll a minute is about 2,880 reads a day. This worker never calls KV list. Writes happen on check-in, cancel, and the daily prune. The same index key can be written once a second ([KV limits](https://developers.cloudflare.com/kv/platform/limits/)).
 
 ## curl
 
@@ -72,11 +80,11 @@ curl -sS -o - -w "\n%{http_code}\n" -X POST "$BASE/tv/checkin" \
 
 curl -sS -D - -o - -X POST "$BASE/tv/checkin?token=$EAGLEWOOD_TOKEN" \
   -H "content-type: application/json" \
-  --data '{"type":"reservation","event":"reservation.created","document":{"firstName":"Ada Lovelace","lastName":"van Hopper","endDate":"2026-07-05T00:00:00.000Z","phone":"555-0100"}}'
+  --data '{"type":"reservation","event":"reservation.created","document":{"_id":"5e7a6c0b0f2c9c0017b0b0b0","firstName":"Ada Lovelace","lastName":"van Hopper","startDate":"2026-07-01T00:00:00.000Z","endDate":"2026-07-05T00:00:00.000Z","phone":"555-0100"}}'
 
 curl -sS -D - -o - -X POST "$BASE/tv/checkin?token=$EAGLEWOOD_TOKEN" \
   -H "content-type: application/json" \
-  --data '{"type":"reservation","event":"reservation.cancelled","document":{}}'
+  --data '{"type":"reservation","event":"reservation.cancelled","document":{"_id":"5e7a6c0b0f2c9c0017b0b0b0"}}'
 ```
 
 A successful check-in returns `{"ok":true}`. The flat example's guest request then returns:
@@ -85,7 +93,7 @@ A successful check-in returns `{"ok":true}`. The flat example's guest request th
 {"firstName":"Ada","lastName":"van Hopper","checkout":"2026-11-02"}
 ```
 
-The native `endDate` example is midnight UTC on 5 July 2026, so the stored checkout is `2026-07-04`. `reservation.cancelled` clears the guest. An apostrophe is escaped, so `O'Brien` is returned as `O&#39;Brien`. The wrong-token curl returns 401. After checkout, `guest.json` returns `{}`. Do not commit a URL that contains `token` or the guest path key. The worker does not log that URL. A platform access log still might.
+The native example stores check-in `2026-06-30` and checkout `2026-07-04` (both midnight-UTC timestamps, previous evening in Los Angeles). `reservation.cancelled` deletes that `_id` only. An apostrophe is escaped, so `O'Brien` is returned as `O&#39;Brien`. The wrong-token curl returns 401. After checkout, `guest.json` returns `{}`. Do not commit a URL that contains `token` or the guest path key. The worker does not log that URL. A platform access log still might.
 
 Use the `*.workers.dev` host from `wrangler deploy` the same way if the zone route is not attached yet.
 
@@ -118,15 +126,15 @@ This worker accepts `?token=` anyway. If Host Tools drops the query, that call r
 
 There is no `reservation.checkout` event. A cancel is not folded into `reservation.changed`. The [changelog](https://docs.hosttools.com/reference/changelog) describes the same three values.
 
-`document.endDate` is the check-out date in UTC (example `2022-05-20T00:00:00.000Z`). `document.firstName` and `document.lastName` are the guest name. The worker converts `endDate` to the America/Los_Angeles calendar date. It does not keep the UTC date at midnight.
+`document._id` is the reservation id. `document.startDate` and `document.endDate` are UTC timestamps (example `2022-05-20T00:00:00.000Z`). `document.firstName` and `document.lastName` are the guest name. Both dates are converted to the America/Los_Angeles calendar date. Midnight UTC is not kept as that UTC day.
 
 What this worker does with that payload on `POST /tv/checkin`:
 
-- `reservation.created` and `reservation.changed` replace KV key `current`.
-- `reservation.cancelled` deletes `current`.
-- Any other `event` is 400 and does not delete the guest.
+- `reservation.created` and `reservation.changed` upsert `document._id`.
+- `reservation.cancelled` deletes that id only.
+- Any other `event` is 400 and does not delete stays.
 
-There is no native checkout event, so the stay also ends on its own: `GET` returns `{}` when the Los Angeles date is after `checkout`, and the KV TTL runs out at 06:00 Los Angeles the next morning. A message-rule checkout webhook can still call `POST /tv/checkout` to clear the guest immediately.
+There is no native checkout event. `GET` returns `{}` when no stay covers today. Each key's TTL runs out at 06:00 Los Angeles the morning after `checkout`, and the cron `15 8 * * *` deletes stays whose checkout date is already past. A message-rule checkout webhook can still `POST /tv/checkout` to clear the stay on screen.
 
 Message-rule checkout is a separate feature. The help article says a webhook can fire when the guest checks out, but it does not list the Event dropdown labels. Those labels are unverified. Do not send the rendered tag `{{Check-Out Date}}` (`Tue, March 11th` in [Host Tools Tags Explained](https://help.hosttools.com/en/articles/10536075-host-tools-tags-explained)). That string is not `YYYY-MM-DD`.
 
