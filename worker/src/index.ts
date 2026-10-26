@@ -2,7 +2,7 @@ import {
   calendarDateInZone,
   htmlEscape,
   isRealCheckoutDate,
-  parseCheckin,
+  interpretCheckin,
   readLimitedBody,
   secondsUntilPastCheckout,
   timingSafeEqual,
@@ -44,8 +44,11 @@ function authorize(request: Request, secret: string | undefined): Response | nul
   if (typeof secret !== "string" || secret.length === 0) {
     return json({ error: "misconfigured" }, 500);
   }
-  const provided = request.headers.get("X-Eaglewood-Token") ?? "";
-  if (!timingSafeEqual(provided, secret)) {
+  const header = request.headers.get("X-Eaglewood-Token") ?? "";
+  const query = new URL(request.url).searchParams.get("token") ?? "";
+  const headerOk = timingSafeEqual(header, secret);
+  const queryOk = timingSafeEqual(query, secret);
+  if (!headerOk && !queryOk) {
     return json({ error: "unauthorized" }, 401);
   }
   return null;
@@ -87,10 +90,14 @@ async function checkin(request: Request, env: Env): Promise<Response> {
   } catch {
     return json({ error: "invalid JSON" }, 400);
   }
-  const result = parseCheckin(parsed);
-  if (!result.ok) return json({ error: "invalid checkin" }, 400);
-  const expirationTtl = secondsUntilPastCheckout(result.guest.checkout, Date.now());
-  await env.GUEST.put(KV_KEY, JSON.stringify(result.guest), { expirationTtl });
+  const decision = interpretCheckin(parsed);
+  if (decision.action === "reject") return json({ error: "invalid checkin" }, 400);
+  if (decision.action === "clear") {
+    await env.GUEST.delete(KV_KEY);
+    return json({ ok: true }, 200);
+  }
+  const expirationTtl = secondsUntilPastCheckout(decision.guest.checkout, Date.now());
+  await env.GUEST.put(KV_KEY, JSON.stringify(decision.guest), { expirationTtl });
   return json({ ok: true }, 200);
 }
 

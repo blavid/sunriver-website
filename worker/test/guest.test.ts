@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   calendarDateInZone,
+  checkoutDateFromEndDate,
   htmlEscape,
+  interpretCheckin,
   isRealCheckoutDate,
   parseCheckin,
   sanitizeFirstName,
@@ -44,6 +46,16 @@ describe("checkout dates", () => {
     const now = Date.parse("2026-11-01T20:00:00.000Z");
     expect(secondsUntilPastCheckout("2026-11-02", now)).toBe(151200);
     expect(secondsUntilPastCheckout("2026-11-02", Date.parse("2026-11-04T00:00:00.000Z"))).toBe(60);
+  });
+
+  it("maps a UTC endDate onto the Los Angeles checkout day, including midnight UTC", () => {
+    expect(checkoutDateFromEndDate("2026-07-05T00:00:00.000Z")).toBe("2026-07-04");
+    expect(checkoutDateFromEndDate("2026-01-15T00:00:00.000Z")).toBe("2026-01-14");
+    expect(checkoutDateFromEndDate("2026-07-05T07:00:00.000Z")).toBe("2026-07-05");
+    expect(checkoutDateFromEndDate("2026-11-01T06:30:00.000Z")).toBe("2026-10-31");
+    expect(checkoutDateFromEndDate("2026-11-01T07:30:00.000Z")).toBe("2026-11-01");
+    expect(checkoutDateFromEndDate("2026-11-02")).toBe("2026-11-02");
+    expect(checkoutDateFromEndDate("2026-02-31T00:00:00.000Z")).toBeNull();
   });
 });
 
@@ -95,6 +107,41 @@ describe("names", () => {
     expect(parseCheckin({ firstName: "Ada", checkout: "2026-02-31" })).toEqual({ ok: false });
     expect(parseCheckin({ checkout: "2026-11-02" })).toEqual({ ok: false });
     expect(parseCheckin(["Ada"])).toEqual({ ok: false });
+  });
+
+  it("reads a Host Tools reservation and clears on cancel", () => {
+    expect(
+      interpretCheckin({
+        type: "reservation",
+        event: "reservation.created",
+        document: {
+          firstName: "Ada Lovelace",
+          lastName: "van Hopper",
+          endDate: "2026-07-05T00:00:00.000Z",
+          phone: "5035550100",
+          email: "ada@example.com",
+        },
+      }),
+    ).toEqual({
+      action: "store",
+      guest: { firstName: "Ada", lastName: "van Hopper", checkout: "2026-07-04" },
+    });
+    expect(
+      interpretCheckin({
+        type: "reservation",
+        event: "reservation.changed",
+        document: { firstName: "Ada", endDate: "2026-07-05T15:00:00.000Z" },
+      }),
+    ).toEqual({
+      action: "store",
+      guest: { firstName: "Ada", lastName: "", checkout: "2026-07-05" },
+    });
+    expect(
+      interpretCheckin({ type: "reservation", event: "reservation.cancelled", document: { status: "cancelled" } }),
+    ).toEqual({ action: "clear" });
+    expect(interpretCheckin({ type: "reservation", event: "reservation.checkout", document: {} })).toEqual({
+      action: "reject",
+    });
   });
 });
 

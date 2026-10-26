@@ -141,6 +141,95 @@ describe("checkin and checkout", () => {
     expect(response.status).toBe(200);
     expect(kv.values.has("current")).toBe(false);
   });
+
+  it("accepts the token in the query string without logging the URL", async () => {
+    const calls: unknown[][] = [];
+    for (const method of ["log", "info", "warn", "error", "debug"] as const) {
+      vi.spyOn(console, method).mockImplementation((...args: unknown[]) => {
+        calls.push(args);
+      });
+    }
+    const { env: bindings, kv } = env();
+    const response = await worker.fetch(
+      new Request(`https://sunrivertownhome.com/tv/checkin?token=${TOKEN}`, {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ firstName: "Ada", checkout: "2026-11-02" }),
+      }),
+      bindings,
+    );
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({ ok: true });
+    expect(kv.values.get("current")).toContain("Ada");
+    const dumped = JSON.stringify(calls);
+    expect(dumped).not.toContain(TOKEN);
+    expect(dumped).not.toContain("sunrivertownhome.com");
+
+    const wrong = await worker.fetch(
+      new Request("https://sunrivertownhome.com/tv/checkin?token=nope", {
+        method: "POST",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ firstName: "Ada", checkout: "2026-11-02" }),
+      }),
+      bindings,
+    );
+    expect(wrong.status).toBe(401);
+    expect(await wrong.json()).toEqual({ error: "unauthorized" });
+  });
+
+  it("stores a Host Tools reservation using the Los Angeles checkout day and clears on cancel", async () => {
+    const { env: bindings, kv } = env();
+    const created = await worker.fetch(
+      post(
+        "/tv/checkin",
+        JSON.stringify({
+          type: "reservation",
+          event: "reservation.created",
+          document: {
+            firstName: "Ada Lovelace",
+            lastName: "van Hopper",
+            endDate: "2026-07-05T00:00:00.000Z",
+            phone: "5035550100",
+            status: "accepted",
+          },
+        }),
+        TOKEN,
+      ),
+      bindings,
+    );
+    expect(created.status).toBe(200);
+    expect(JSON.parse(kv.values.get("current") ?? "")).toEqual({
+      firstName: "Ada",
+      lastName: "van Hopper",
+      checkout: "2026-07-04",
+    });
+
+    const changed = await worker.fetch(
+      post(
+        "/tv/checkin",
+        JSON.stringify({
+          type: "reservation",
+          event: "reservation.changed",
+          document: { firstName: "Bea", lastName: "Ng", endDate: "2026-01-15T00:00:00.000Z" },
+        }),
+        TOKEN,
+      ),
+      bindings,
+    );
+    expect(changed.status).toBe(200);
+    expect(JSON.parse(kv.values.get("current") ?? "").checkout).toBe("2026-01-14");
+
+    const cancelled = await worker.fetch(
+      post(
+        "/tv/checkin",
+        JSON.stringify({ type: "reservation", event: "reservation.cancelled", document: { firstName: "Bea" } }),
+        TOKEN,
+      ),
+      bindings,
+    );
+    expect(cancelled.status).toBe(200);
+    expect(kv.values.has("current")).toBe(false);
+  });
 });
 
 describe("guest json", () => {

@@ -188,15 +188,64 @@ export function sanitizeLastName(raw: string): string {
   return limit(cleanName(raw, true), LAST_NAME_MAX);
 }
 
+function asRecord(value: unknown): Record<string, unknown> | null {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return null;
+  return value as Record<string, unknown>;
+}
+
 export function parseCheckin(value: unknown): { ok: true; guest: Guest } | { ok: false } {
-  if (!value || typeof value !== "object" || Array.isArray(value)) return { ok: false };
-  const record = value as Record<string, unknown>;
+  const record = asRecord(value);
+  if (!record) return { ok: false };
   if (typeof record.firstName !== "string" || typeof record.checkout !== "string") return { ok: false };
   if (!isRealCheckoutDate(record.checkout)) return { ok: false };
   const firstName = sanitizeFirstName(record.firstName);
   if (!firstName) return { ok: false };
   const lastName = typeof record.lastName === "string" ? sanitizeLastName(record.lastName) : "";
   return { ok: true, guest: { firstName, lastName, checkout: record.checkout } };
+}
+
+/** UTC timestamp → checkout calendar date in America/Los_Angeles. A bare YYYY-MM-DD is kept. */
+export function checkoutDateFromEndDate(endDate: string): string | null {
+  if (isRealCheckoutDate(endDate)) return endDate;
+  const match = /^(\d{4}-\d{2}-\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(?:Z|[+-]\d{2}:\d{2})$/.exec(endDate);
+  if (!match) return null;
+  if (!isRealCheckoutDate(match[1])) return null;
+  const hour = Number(match[2]);
+  const minute = Number(match[3]);
+  const second = Number(match[4]);
+  if (hour > 23 || minute > 59 || second > 59) return null;
+  const ms = Date.parse(endDate);
+  if (Number.isNaN(ms)) return null;
+  const ymd = calendarDateInZone(ms, ZONE);
+  return isRealCheckoutDate(ymd) ? ymd : null;
+}
+
+export type CheckinDecision = { action: "store"; guest: Guest } | { action: "clear" } | { action: "reject" };
+
+function guestFromDocument(document: unknown): Guest | null {
+  const record = asRecord(document);
+  if (!record) return null;
+  if (typeof record.firstName !== "string" || typeof record.endDate !== "string") return null;
+  const checkout = checkoutDateFromEndDate(record.endDate);
+  if (!checkout) return null;
+  const firstName = sanitizeFirstName(record.firstName);
+  if (!firstName) return null;
+  const lastName = typeof record.lastName === "string" ? sanitizeLastName(record.lastName) : "";
+  return { firstName, lastName, checkout };
+}
+
+export function interpretCheckin(value: unknown): CheckinDecision {
+  const record = asRecord(value);
+  if (record && record.type === "reservation" && typeof record.event === "string") {
+    if (record.event === "reservation.cancelled") return { action: "clear" };
+    if (record.event !== "reservation.created" && record.event !== "reservation.changed") {
+      return { action: "reject" };
+    }
+    const guest = guestFromDocument(record.document);
+    return guest ? { action: "store", guest } : { action: "reject" };
+  }
+  const flat = parseCheckin(value);
+  return flat.ok ? { action: "store", guest: flat.guest } : { action: "reject" };
 }
 
 export function htmlEscape(value: string): string {
