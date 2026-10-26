@@ -688,4 +688,54 @@ describe("message-rule bodies and the redacted diagnostic", () => {
     });
     expect(JSON.parse(kv.values.get(stayKey("__manual")) ?? "null")).toBeNull();
   });
+
+  it("unwraps Host Tools message-rule data on check-in and checkout", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-01T20:00:00.000Z"));
+    const lines = "first=Ada\nlast=Lovelace\ncheckout=Tue, March 11th";
+    const cases = [
+      { data: lines },
+      { data: lines.replaceAll("\n", "\r\n") },
+      { data: "first=Ada<br>last=Lovelace<br>checkout=Tue, March 11th" },
+      { data: JSON.stringify({ firstName: "Ada", lastName: "Lovelace", checkout: "2026-11-02", phone: "5035550100" }) },
+    ];
+    for (const body of cases) {
+      const { env: bindings, kv } = env();
+      const response = await worker.fetch(post("/tv/checkin", JSON.stringify(body), TOKEN), bindings);
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ ok: true });
+      const stay = JSON.parse(kv.values.get(stayKey("__manual")) ?? "");
+      expect(stay.firstName).toBe("Ada");
+      expect(stay.lastName).toBe("Lovelace");
+      expect(stay.checkin).toBe("2026-11-01");
+      expect(stay.checkout === "2027-03-11" || stay.checkout === "2026-11-02").toBe(true);
+      expect(kv.values.get(stayKey("__manual"))).not.toContain("5035550100");
+      const diag = JSON.parse(kv.values.get("diag:last") ?? "");
+      expect(diag.keys).toEqual([{ name: "data", type: "string", length: body.data.length }]);
+      expect(JSON.stringify(diag)).not.toContain("Lovelace");
+    }
+
+    const { env: bindings, kv } = env();
+    const empty = await worker.fetch(post("/tv/checkin", JSON.stringify({ data: "" }), TOKEN), bindings);
+    expect(empty.status).toBe(200);
+    expect(await empty.json()).toEqual({ ok: true, stored: false });
+    expect(kv.values.has(stayKey("__manual"))).toBe(false);
+
+    const placeholder = "This is a test message from the Host Tools webhooks!!";
+    expect(placeholder.length).toBe(53);
+    const testButton = await worker.fetch(post("/tv/checkin", JSON.stringify({ data: placeholder }), TOKEN), bindings);
+    expect(testButton.status).toBe(200);
+    expect(await testButton.json()).toEqual({ ok: true, stored: false });
+    expect(kv.values.has("idx")).toBe(false);
+
+    const checkin = await worker.fetch(post("/tv/checkin", JSON.stringify({ data: lines }), TOKEN), bindings);
+    expect(checkin.status).toBe(200);
+    const checkout = await worker.fetch(
+      post("/tv/checkout", JSON.stringify({ data: "checkout=Tue, March 11th" }), TOKEN),
+      bindings,
+    );
+    expect(checkout.status).toBe(200);
+    expect(await checkout.json()).toEqual({ ok: true });
+    expect(kv.values.has(stayKey("__manual"))).toBe(false);
+  });
 });

@@ -15,6 +15,7 @@ import {
   secondsUntilPastCheckout,
   summarizeBody,
   timingSafeEqual,
+  unwrapHostToolsData,
   zonedDateTimeToUtcMs,
   ZONE,
 } from "../src/guest";
@@ -302,6 +303,36 @@ describe("names", () => {
     });
     expect(interpretCheckout({}, "2026-10-26")).toEqual({ kind: "none" });
     expect(interpretCheckout({ phone: "5035550100" }, "2026-10-26")).toEqual({ kind: "none" });
+  });
+
+  it("unwraps a Host Tools data string, HTML breaks, and an object", () => {
+    expect(unwrapHostToolsData({ data: "first=Ada\nlast=Lovelace\ncheckout=Tue, March 11th" })).toEqual({
+      first: "Ada",
+      last: "Lovelace",
+      checkout: "Tue, March 11th",
+    });
+    expect(unwrapHostToolsData({ data: "first=Ada\\nlast=Lovelace\\ncheckout=Tue, March 11th" })).toEqual({
+      first: "Ada",
+      last: "Lovelace",
+      checkout: "Tue, March 11th",
+    });
+    expect(unwrapHostToolsData({ data: "<p>first=Ada</p><p>last=Lovelace</p><p>checkout=2026-11-02</p>" })).toEqual({
+      first: "Ada",
+      last: "Lovelace",
+      checkout: "2026-11-02",
+    });
+    expect(
+      unwrapHostToolsData({
+        data: { firstName: "Ada", lastName: "{{Guest Last Name}}", checkout: "2026-11-02" },
+      }),
+    ).toEqual({ firstName: "Ada", lastName: "", checkout: "2026-11-02" });
+    expect(unwrapHostToolsData({ data: "" })).toEqual({});
+    expect(unwrapHostToolsData({ data: "This is a test message from the Host Tools webhooks!!" })).toEqual({});
+    expect(
+      unwrapHostToolsData({
+        data: "first={{Guest First Name}}\nlast={{Guest Last Name}}\ncheckout={{Check-Out Date}}",
+      }),
+    ).toEqual({ first: "", last: "", checkout: "" });
   });
 
   it("hides upcoming stays and prefers the guest checking in on a turnover day", () => {

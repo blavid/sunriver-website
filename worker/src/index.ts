@@ -8,6 +8,7 @@ import {
   interpretCheckout,
   isRealCheckoutDate,
   isTestPayload,
+  unwrapHostToolsData,
   parseInboundBody,
   readLimitedBody,
   secondsUntilPastCheckout,
@@ -247,9 +248,10 @@ async function readAuthorizedBody(
 async function checkin(request: Request, env: Env): Promise<Response> {
   const read = await readAuthorizedBody(request, env);
   if (!read.ok) return read.response;
-  if (isTestPayload(read.parsed.value, read.text)) return notStored();
+  const payload = unwrapHostToolsData(read.parsed.value);
+  if (isTestPayload(payload, read.text) || isTestPayload(read.parsed.value, read.text)) return notStored();
   const nowMs = Date.now();
-  const decision = interpretCheckin(read.parsed.value, calendarDateInZone(nowMs, ZONE));
+  const decision = interpretCheckin(payload, calendarDateInZone(nowMs, ZONE));
   if (decision.action === "reject") return notStored();
   if (decision.action === "delete") {
     await deleteStay(env, decision.id);
@@ -262,9 +264,10 @@ async function checkin(request: Request, env: Env): Promise<Response> {
 async function checkout(request: Request, env: Env): Promise<Response> {
   const read = await readAuthorizedBody(request, env);
   if (!read.ok) return read.response;
-  if (isTestPayload(read.parsed.value, read.text)) return notStored();
+  const payload = unwrapHostToolsData(read.parsed.value);
+  if (isTestPayload(payload, read.text) || isTestPayload(read.parsed.value, read.text)) return notStored();
   const today = calendarDateInZone(Date.now(), ZONE);
-  const target = interpretCheckout(read.parsed.value, today);
+  const target = interpretCheckout(payload, today);
   if (target.kind === "id") {
     await deleteStay(env, target.id);
     return json({ ok: true }, 200);

@@ -435,6 +435,82 @@ export function interpretCheckout(value: unknown, today: string): CheckoutTarget
   return checkout ? { kind: "date", checkout } : { kind: "none" };
 }
 
+function stripTemplateTags(text: string): string {
+  return text.replace(/\{\{[^{}]*\}\}/g, "");
+}
+
+/** Message-rule bodies may use real newlines, the two characters `\n`, or HTML breaks. */
+function normalizeMessageText(text: string): string {
+  return text
+    .replace(/^\uFEFF/, "")
+    .replace(/\\r\\n/g, "\n")
+    .replace(/\\n/g, "\n")
+    .replace(/\\r/g, "\n")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n")
+    .replace(/<br\b[^>]*>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<p\b[^>]*>/gi, "\n");
+}
+
+function stripTagsDeep(value: unknown): unknown {
+  if (typeof value === "string") return stripTemplateTags(value).trim();
+  if (Array.isArray(value)) return value.map(stripTagsDeep);
+  const record = asRecord(value);
+  if (!record) return value;
+  const out: Record<string, unknown> = {};
+  for (const [key, entry] of Object.entries(record)) out[key] = stripTagsDeep(entry);
+  return out;
+}
+
+/**
+ * Host Tools message-rule webhooks POST `{data: "<rendered message>"}`.
+ * `data` may be the line template, a JSON string, an object, or the Test button's placeholder.
+ */
+export function unwrapHostToolsData(value: unknown, depth = 0): unknown {
+  if (depth > 3) return value;
+  const record = asRecord(value);
+  if (!record || !("data" in record)) return value;
+  const data = record.data;
+  if (data === null || data === undefined) return {};
+  if (asRecord(data)) return unwrapHostToolsData(stripTagsDeep(data), depth + 1);
+  if (typeof data !== "string") return value;
+  const parsed = messageDataValue(data);
+  const parsedRecord = asRecord(parsed);
+  if (parsedRecord && "data" in parsedRecord) return unwrapHostToolsData(parsedRecord, depth + 1);
+  return parsed;
+}
+
+function messageDataValue(data: string): unknown {
+  const trimmed = data.replace(/^\uFEFF/, "").trim();
+  if (trimmed === "") return {};
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    try {
+      const parsed: unknown = JSON.parse(trimmed);
+      if (parsed && typeof parsed === "object") return stripTagsDeep(parsed);
+      if (typeof parsed === "string") return messageDataValue(parsed);
+    } catch {
+      // The string is not JSON. Fall through to the line template.
+    }
+  }
+  const text = stripTemplateTags(normalizeMessageText(data));
+  if (text.trim() === "" || isHostToolsTestPlaceholder(text)) return {};
+  const lines = assignmentLines(text);
+  if (lines) return linesToObject(lines);
+  const single = text.trim();
+  if (/^[^=\s][^=]*=/.test(single) && !single.includes("\n")) return linesToObject([single]);
+  return {};
+}
+
+/** The Test button sends placeholder prose, not reservation fields. Unrendered `{{tags}}` are not a guest. */
+function isHostToolsTestPlaceholder(text: string): boolean {
+  const trimmed = text.trim();
+  if (trimmed === "") return true;
+  if (/^[^=\n]*=/m.test(trimmed)) return false;
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) return false;
+  return /\btest\b/i.test(trimmed);
+}
+
 function assignmentLines(text: string): string[] | null {
   const lines = text.split(/\r?\n/);
   if (lines.length < 2) return null;
