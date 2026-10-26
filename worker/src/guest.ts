@@ -1,5 +1,7 @@
 export const MAX_BODY_BYTES = 2048;
 export const ZONE = "America/Los_Angeles";
+export const DIAG_KEY = "diag:last";
+export const DIAG_TTL_SECONDS = 7 * 24 * 60 * 60;
 const FIRST_NAME_MAX = 30;
 const LAST_NAME_MAX = 40;
 
@@ -213,6 +215,76 @@ export function parseCheckin(value: unknown): { ok: true; guest: Guest } | { ok:
   return { ok: true, guest: { firstName, lastName, checkout: record.checkout } };
 }
 
+const MONTHS: Record<string, number> = {
+  jan: 1,
+  january: 1,
+  feb: 2,
+  february: 2,
+  mar: 3,
+  march: 3,
+  apr: 4,
+  april: 4,
+  may: 5,
+  jun: 6,
+  june: 6,
+  jul: 7,
+  july: 7,
+  aug: 8,
+  august: 8,
+  sep: 9,
+  sept: 9,
+  september: 9,
+  oct: 10,
+  october: 10,
+  nov: 11,
+  november: 11,
+  dec: 12,
+  december: 12,
+};
+
+const HUMAN_DATE =
+  /^(?:(?:mon|monday|tue|tues|tuesday|wed|wednesday|thu|thur|thurs|thursday|fri|friday|sat|saturday|sun|sunday)\.?,?\s+)?([a-z]+)\.?\s+(\d{1,2})(?:st|nd|rd|th)?(?:,?\s+(\d{4}))?$/i;
+
+function formatYmd(year: number, month: number, day: number): string {
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+/** Next calendar occurrence of a month and day on or after `today`. */
+function inferHumanYear(month: number, day: number, today: string): string | null {
+  const startYear = Number(today.slice(0, 4));
+  for (let year = startYear; year <= startYear + 4; year++) {
+    const ymd = formatYmd(year, month, day);
+    if (isRealCheckoutDate(ymd) && ymd >= today) return ymd;
+  }
+  return null;
+}
+
+function parseHumanDate(value: string, today: string): string | null {
+  const match = HUMAN_DATE.exec(value.trim().replace(/\s+/g, " "));
+  if (!match) return null;
+  const month = MONTHS[match[1].toLowerCase()];
+  const day = Number(match[2]);
+  if (!month || day < 1 || day > 31) return null;
+  if (match[3]) {
+    const year = Number(match[3]);
+    const ymd = formatYmd(year, month, day);
+    return isRealCheckoutDate(ymd) ? ymd : null;
+  }
+  return inferHumanYear(month, day, today);
+}
+
+/**
+ * YYYY-MM-DD, an ISO timestamp (Los Angeles calendar day), or a human date
+ * such as "Tue, March 11th". A human date with no year is the next occurrence
+ * on or after `today`. The weekday is not used to choose the year.
+ */
+export function parseFlexibleDate(value: string, today: string): string | null {
+  const trimmed = value.trim();
+  const structured = checkoutDateFromEndDate(trimmed);
+  if (structured) return structured;
+  return parseHumanDate(trimmed, today);
+}
+
 /** UTC timestamp → checkout calendar date in America/Los_Angeles. A bare YYYY-MM-DD is kept. */
 export function checkoutDateFromEndDate(endDate: string): string | null {
   if (isRealCheckoutDate(endDate)) return endDate;
@@ -241,22 +313,75 @@ export function reservationId(document: Record<string, unknown>): string | null 
   return raw;
 }
 
-function stayFromDocument(document: Record<string, unknown>): StayRecord | null {
-  if (typeof document.firstName !== "string" || typeof document.startDate !== "string" || typeof document.endDate !== "string") {
-    return null;
+const FIRST_KEYS = ["firstname", "guestfirstname", "first"] as const;
+const LAST_KEYS = ["lastname", "guestlastname", "last"] as const;
+const START_KEYS = ["startdate", "checkindate", "checkin", "arrivaldate"] as const;
+const END_KEYS = ["enddate", "checkoutdate", "checkout", "departuredate"] as const;
+
+function normKey(key: string): string {
+  return key.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function lookupString(sources: readonly Record<string, unknown>[], names: readonly string[]): string | undefined {
+  for (const name of names) {
+    for (const source of sources) {
+      for (const [key, value] of Object.entries(source)) {
+        if (normKey(key) !== name) continue;
+        if (typeof value === "string" && value.trim() !== "") return value;
+      }
+    }
   }
-  const checkin = checkoutDateFromEndDate(document.startDate);
-  const checkout = checkoutDateFromEndDate(document.endDate);
-  if (!checkin || !checkout || checkin > checkout) return null;
-  const firstName = sanitizeFirstName(document.firstName);
+  return undefined;
+}
+
+function lookupId(sources: readonly Record<string, unknown>[]): string | null {
+  for (const source of sources) {
+    const direct = reservationId(source);
+    if (direct) return direct;
+    const named = lookupString([source], ["reservationid"]);
+    if (named && named !== MANUAL_STAY_ID && /^[A-Za-z0-9_-]{1,128}$/.test(named)) return named;
+  }
+  return null;
+}
+
+function withGuest(record: Record<string, unknown> | null): Record<string, unknown>[] {
+  if (!record) return [];
+  const sources = [record];
+  const guest = asRecord(record.guest);
+  if (guest) sources.push(guest);
+  return sources;
+}
+
+function fieldSources(record: Record<string, unknown>): Record<string, unknown>[] {
+  const document = asRecord(record.document);
+  return [...withGuest(document), ...withGuest(record)];
+}
+
+function stayFromSources(sources: readonly Record<string, unknown>[], today: string): StayRecord | null {
+  const firstRaw = lookupString(sources, FIRST_KEYS);
+  const endRaw = lookupString(sources, END_KEYS);
+  if (!firstRaw || !endRaw) return null;
+  const checkout = parseFlexibleDate(endRaw, today);
+  if (!checkout) return null;
+  const startRaw = lookupString(sources, START_KEYS);
+  let checkin = today;
+  if (startRaw) {
+    const parsed = parseFlexibleDate(startRaw, today);
+    if (!parsed) return null;
+    checkin = parsed;
+  }
+  if (checkin > checkout) return null;
+  const firstName = sanitizeFirstName(firstRaw);
   if (!firstName) return null;
-  const lastName = typeof document.lastName === "string" ? sanitizeLastName(document.lastName) : "";
+  const lastRaw = lookupString(sources, LAST_KEYS);
+  const lastName = lastRaw ? sanitizeLastName(lastRaw) : "";
   return { firstName, lastName, checkin, checkout };
 }
 
 export function interpretCheckin(value: unknown, today: string): CheckinDecision {
   const record = asRecord(value);
-  if (record && record.type === "reservation" && typeof record.event === "string") {
+  if (!record) return { action: "reject" };
+  if (record.type === "reservation" && typeof record.event === "string") {
     const document = asRecord(record.document);
     if (!document) return { action: "reject" };
     const id = reservationId(document);
@@ -265,21 +390,137 @@ export function interpretCheckin(value: unknown, today: string): CheckinDecision
     if (record.event !== "reservation.created" && record.event !== "reservation.changed") {
       return { action: "reject" };
     }
-    const stay = stayFromDocument(document);
+    const stay = stayFromSources(withGuest(document), today);
     return stay ? { action: "upsert", id, stay } : { action: "reject" };
   }
-  const flat = parseCheckin(value);
-  if (!flat.ok || flat.guest.checkout < today) return { action: "reject" };
-  return {
-    action: "upsert",
-    id: MANUAL_STAY_ID,
-    stay: {
-      firstName: flat.guest.firstName,
-      lastName: flat.guest.lastName,
-      checkin: today,
-      checkout: flat.guest.checkout,
-    },
+  const sources = fieldSources(record);
+  const stay = stayFromSources(sources, today);
+  if (!stay) return { action: "reject" };
+  const id = lookupId(sources);
+  if (!id && stay.checkout < today) return { action: "reject" };
+  return { action: "upsert", id: id ?? MANUAL_STAY_ID, stay };
+}
+
+export type CheckoutTarget =
+  | { kind: "id"; id: string }
+  | { kind: "date"; checkout: string }
+  | { kind: "displayed" }
+  | { kind: "none" };
+
+/** How an authorized checkout body chooses which stay to clear. An empty object clears the stay on screen. */
+export function interpretCheckout(value: unknown, today: string): CheckoutTarget {
+  const record = asRecord(value);
+  if (!record) return { kind: "none" };
+  if (record.type === "reservation" && record.event === "reservation.cancelled") {
+    const document = asRecord(record.document);
+    const id = document ? reservationId(document) : null;
+    return id ? { kind: "id", id } : { kind: "none" };
+  }
+  if (Object.keys(record).length === 0) return { kind: "displayed" };
+  const sources = fieldSources(record);
+  const id = lookupId(sources);
+  if (id) return { kind: "id", id };
+  const endRaw = lookupString(sources, END_KEYS);
+  if (!endRaw) return { kind: "none" };
+  const checkout = parseFlexibleDate(endRaw, today);
+  return checkout ? { kind: "date", checkout } : { kind: "none" };
+}
+
+function assignmentLines(text: string): string[] | null {
+  const lines = text.split(/\r?\n/);
+  if (lines.length < 2) return null;
+  const useful = lines.map((line) => line.trim()).filter((line) => line !== "" && !line.startsWith("#"));
+  if (!useful.some((line) => /^[^=\s][^=]*=/.test(line))) return null;
+  return useful;
+}
+
+function linesToObject(lines: readonly string[]): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const line of lines) {
+    const eq = line.indexOf("=");
+    if (eq <= 0) continue;
+    const key = line.slice(0, eq).trim();
+    if (!key) continue;
+    out[key] = line.slice(eq + 1).trim();
+  }
+  return out;
+}
+
+function formToObject(text: string): Record<string, string> {
+  const out: Record<string, string> = {};
+  for (const [key, value] of new URLSearchParams(text)) {
+    if (key) out[key] = value;
+  }
+  return out;
+}
+
+/** JSON, form fields, or `key=value` lines. A JSON object or array is always tried first. */
+export function parseInboundBody(
+  contentType: string | null,
+  text: string,
+): { ok: true; value: unknown } | { ok: false } {
+  const trimmed = text.trim();
+  if (trimmed === "") return { ok: true, value: {} };
+  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+    try {
+      return { ok: true, value: JSON.parse(trimmed) };
+    } catch {
+      return { ok: false };
+    }
+  }
+  const lines = assignmentLines(trimmed);
+  if (lines) return { ok: true, value: linesToObject(lines) };
+  const ctype = (contentType ?? "").toLowerCase();
+  if (ctype.includes("application/x-www-form-urlencoded") || /^[^=\s]+=/.test(trimmed)) {
+    return { ok: true, value: formToObject(trimmed) };
+  }
+  return { ok: false };
+}
+
+export interface DiagSummary {
+  contentType: string;
+  bodyType: string;
+  keys: { name: string; type: string; length: number }[];
+}
+
+function diagValueType(value: unknown): string {
+  if (value === null) return "null";
+  if (Array.isArray(value)) return "array";
+  return typeof value;
+}
+
+function diagValueLength(value: unknown): number {
+  if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
+    return String(value).length;
+  }
+  if (value === null) return 0;
+  if (Array.isArray(value)) return value.length;
+  if (typeof value === "object") return Object.keys(value).length;
+  return 0;
+}
+
+/** Top-level key names plus value types and lengths. Values themselves are omitted. */
+export function summarizeBody(
+  contentType: string | null,
+  parsed: { ok: true; value: unknown } | { ok: false } | null,
+  tooLarge: boolean,
+): DiagSummary {
+  const cleaned = (contentType ?? "").replace(/[\u0000-\u001f\u007f]/g, "").trim();
+  const summary: DiagSummary = {
+    contentType: Array.from(cleaned).slice(0, 120).join(""),
+    bodyType: tooLarge ? "too_large" : "unparsed",
+    keys: [],
   };
+  if (tooLarge || !parsed || !parsed.ok) return summary;
+  summary.bodyType = diagValueType(parsed.value);
+  const record = asRecord(parsed.value);
+  if (!record) return summary;
+  summary.keys = Object.entries(record).map(([name, entry]) => ({
+    name: Array.from(name).slice(0, 80).join(""),
+    type: diagValueType(entry),
+    length: diagValueLength(entry),
+  }));
+  return summary;
 }
 
 export function selectDisplayedStay<T extends { id: string; checkin: string; checkout: string }>(

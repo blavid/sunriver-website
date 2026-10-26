@@ -1,11 +1,16 @@
 import {
   calendarDateInZone,
+  DIAG_KEY,
+  DIAG_TTL_SECONDS,
   htmlEscape,
-  isRealCheckoutDate,
   interpretCheckin,
+  interpretCheckout,
+  isRealCheckoutDate,
+  parseInboundBody,
   readLimitedBody,
   secondsUntilPastCheckout,
   selectDisplayedStay,
+  summarizeBody,
   timingSafeEqual,
   ZONE,
   type StayRecord,
@@ -154,17 +159,45 @@ export async function pruneExpired(env: Env, nowMs: number): Promise<void> {
   if (keep.length !== index.length) await writeIndex(env.GUEST, keep);
 }
 
-async function checkin(request: Request, env: Env): Promise<Response> {
+async function rememberDiag(
+  env: Env,
+  contentType: string | null,
+  parsed: { ok: true; value: unknown } | { ok: false } | null,
+  tooLarge: boolean,
+): Promise<void> {
+  await env.GUEST.put(DIAG_KEY, JSON.stringify(summarizeBody(contentType, parsed, tooLarge)), {
+    expirationTtl: DIAG_TTL_SECONDS,
+  });
+}
+
+async function readAuthorizedBody(
+  request: Request,
+  env: Env,
+): Promise<{ ok: false; response: Response } | { ok: true; text: string; parsed: { ok: true; value: unknown } | { ok: false } }> {
+  const contentType = request.headers.get("content-type");
   const body = await readLimitedBody(request);
-  if (!body.ok) return json({ error: "payload too large" }, 413);
-  let parsed: unknown;
-  try {
-    parsed = JSON.parse(body.text);
-  } catch {
-    return json({ error: "invalid JSON" }, 400);
+  if (!body.ok) {
+    await rememberDiag(env, contentType, null, true);
+    return { ok: false, response: json({ error: "payload too large" }, 413) };
   }
+  const parsed = parseInboundBody(contentType, body.text);
+  await rememberDiag(env, contentType, parsed, false);
+  return { ok: true, text: body.text, parsed };
+}
+
+function unparsedError(text: string, contentType: string | null): string {
+  const trimmed = text.trim();
+  const ctype = (contentType ?? "").toLowerCase();
+  if (trimmed.startsWith("{") || trimmed.startsWith("[") || ctype.includes("json")) return "invalid JSON";
+  return "invalid checkin";
+}
+
+async function checkin(request: Request, env: Env): Promise<Response> {
+  const read = await readAuthorizedBody(request, env);
+  if (!read.ok) return read.response;
+  if (!read.parsed.ok) return json({ error: unparsedError(read.text, request.headers.get("content-type")) }, 400);
   const nowMs = Date.now();
-  const decision = interpretCheckin(parsed, calendarDateInZone(nowMs, ZONE));
+  const decision = interpretCheckin(read.parsed.value, calendarDateInZone(nowMs, ZONE));
   if (decision.action === "reject") return json({ error: "invalid checkin" }, 400);
   if (decision.action === "delete") {
     await deleteStay(env, decision.id);
@@ -175,12 +208,34 @@ async function checkin(request: Request, env: Env): Promise<Response> {
 }
 
 async function checkout(request: Request, env: Env): Promise<Response> {
-  const body = await readLimitedBody(request);
-  if (!body.ok) return json({ error: "payload too large" }, 413);
+  const read = await readAuthorizedBody(request, env);
+  if (!read.ok) return read.response;
+  if (!read.parsed.ok) return json({ ok: true }, 200);
   const today = calendarDateInZone(Date.now(), ZONE);
-  const chosen = selectDisplayedStay(await readIndex(env.GUEST), today);
-  if (chosen) await deleteStay(env, chosen.id);
+  const target = interpretCheckout(read.parsed.value, today);
+  if (target.kind === "id") {
+    await deleteStay(env, target.id);
+  } else if (target.kind === "date") {
+    const ids = (await readIndex(env.GUEST)).filter((entry) => entry.checkout === target.checkout).map((entry) => entry.id);
+    for (const id of ids) await deleteStay(env, id);
+  } else if (target.kind === "displayed") {
+    const chosen = selectDisplayedStay(await readIndex(env.GUEST), today);
+    if (chosen) await deleteStay(env, chosen.id);
+  }
   return json({ ok: true }, 200);
+}
+
+async function readDiag(env: Env): Promise<Response> {
+  const headers = { "cache-control": "no-store" };
+  const raw = await env.GUEST.get(DIAG_KEY, "text");
+  if (!raw) return json({}, 200, headers);
+  try {
+    const value: unknown = JSON.parse(raw);
+    if (!value || typeof value !== "object" || Array.isArray(value)) return json({}, 200, headers);
+    return json(value, 200, headers);
+  } catch {
+    return json({}, 200, headers);
+  }
 }
 
 async function readGuest(env: Env): Promise<Response> {
@@ -215,11 +270,11 @@ const worker = {
       return path === "/tv/checkin" ? checkin(request, env) : checkout(request, env);
     }
 
-    const guest = /^\/tv\/([^/]+)\/guest\.json$/.exec(path);
-    if (guest) {
-      if (!guestPathAllowed(guest[1], env.GUEST_PATH_KEY)) return notFound();
+    const keyed = /^\/tv\/([^/]+)\/(guest|diag)\.json$/.exec(path);
+    if (keyed) {
+      if (!guestPathAllowed(keyed[1], env.GUEST_PATH_KEY)) return notFound();
       if (request.method !== "GET") return methodNotAllowed("GET");
-      return readGuest(env);
+      return keyed[2] === "diag" ? readDiag(env) : readGuest(env);
     }
 
     return notFound();

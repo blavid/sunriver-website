@@ -4,12 +4,16 @@ import {
   checkoutDateFromEndDate,
   htmlEscape,
   interpretCheckin,
+  interpretCheckout,
   isRealCheckoutDate,
+  parseFlexibleDate,
+  parseInboundBody,
   selectDisplayedStay,
   parseCheckin,
   sanitizeFirstName,
   sanitizeLastName,
   secondsUntilPastCheckout,
+  summarizeBody,
   timingSafeEqual,
   zonedDateTimeToUtcMs,
   ZONE,
@@ -57,6 +61,19 @@ describe("checkout dates", () => {
     expect(checkoutDateFromEndDate("2026-11-01T07:30:00.000Z")).toBe("2026-11-01");
     expect(checkoutDateFromEndDate("2026-11-02")).toBe("2026-11-02");
     expect(checkoutDateFromEndDate("2026-02-31T00:00:00.000Z")).toBeNull();
+  });
+
+  it("infers the next human checkout date on or after today in Los Angeles", () => {
+    expect(parseFlexibleDate("2026-11-02", "2026-10-26")).toBe("2026-11-02");
+    expect(parseFlexibleDate("2026-07-05T00:00:00.000Z", "2026-07-01")).toBe("2026-07-04");
+    expect(parseFlexibleDate("Tue, March 11th", "2026-10-26")).toBe("2027-03-11");
+    expect(parseFlexibleDate("March 11th", "2026-03-11")).toBe("2026-03-11");
+    expect(parseFlexibleDate("March 11th", "2026-03-12")).toBe("2027-03-11");
+    expect(parseFlexibleDate("March 11th, 2024", "2026-10-26")).toBe("2024-03-11");
+    expect(parseFlexibleDate("February 29th", "2027-01-01")).toBe("2028-02-29");
+    expect(parseFlexibleDate("February 29th", "2028-03-01")).toBe("2032-02-29");
+    expect(parseFlexibleDate("February 29th, 2027", "2026-01-01")).toBeNull();
+    expect(parseFlexibleDate("Notamonth 11th", "2026-10-26")).toBeNull();
   });
 });
 
@@ -165,6 +182,114 @@ describe("names", () => {
     expect(
       interpretCheckin({ type: "reservation", event: "reservation.checkout", document: { _id: "res-1" } }, "2026-07-01"),
     ).toEqual({ action: "reject" });
+    expect(
+      interpretCheckin(
+        {
+          type: "reservation",
+          event: "reservation.created",
+          document: { _id: "no-start", firstName: "Ada", endDate: "2026-11-04" },
+        },
+        "2026-11-01",
+      ),
+    ).toEqual({
+      action: "upsert",
+      id: "no-start",
+      stay: { firstName: "Ada", lastName: "", checkin: "2026-11-01", checkout: "2026-11-04" },
+    });
+  });
+
+  it("reads a flat reservation, a guest object, and a human checkout date", () => {
+    expect(
+      interpretCheckin(
+        {
+          _id: "res-flat",
+          firstName: "Ada Lovelace",
+          lastName: "Ng",
+          startDate: "2026-07-01T00:00:00.000Z",
+          endDate: "2026-07-05T00:00:00.000Z",
+          phone: "5035550100",
+        },
+        "2026-07-01",
+      ),
+    ).toEqual({
+      action: "upsert",
+      id: "res-flat",
+      stay: { firstName: "Ada", lastName: "Ng", checkin: "2026-06-30", checkout: "2026-07-04" },
+    });
+    expect(
+      interpretCheckin(
+        {
+          _id: "res-9",
+          guest: { firstName: "Ada Lovelace", lastName: "Hopper" },
+          endDate: "2026-11-04",
+        },
+        "2026-11-01",
+      ),
+    ).toEqual({
+      action: "upsert",
+      id: "res-9",
+      stay: { firstName: "Ada", lastName: "Hopper", checkin: "2026-11-01", checkout: "2026-11-04" },
+    });
+    expect(
+      interpretCheckin(
+        { document: { _id: "wrapped", firstName: "Bea", startDate: "2026-11-02", endDate: "2026-11-05" } },
+        "2026-11-01",
+      ),
+    ).toEqual({
+      action: "upsert",
+      id: "wrapped",
+      stay: { firstName: "Bea", lastName: "", checkin: "2026-11-02", checkout: "2026-11-05" },
+    });
+    expect(interpretCheckin({ first: "Ada", last: "Ng", checkout: "Tue, March 11th" }, "2026-10-26")).toEqual({
+      action: "upsert",
+      id: "__manual",
+      stay: { firstName: "Ada", lastName: "Ng", checkin: "2026-10-26", checkout: "2027-03-11" },
+    });
+    expect(interpretCheckin({ firstName: "Ada", checkout: "2026-01-01" }, "2026-11-01")).toEqual({ action: "reject" });
+  });
+
+  it("parses form and line bodies and summarizes them without values", () => {
+    expect(parseInboundBody("text/plain", "first=Ada\nlast=Ng\ncheckout=Tue, March 11th")).toEqual({
+      ok: true,
+      value: { first: "Ada", last: "Ng", checkout: "Tue, March 11th" },
+    });
+    expect(parseInboundBody("application/x-www-form-urlencoded", "first=Ada+Lovelace&checkout=2026-11-02")).toEqual({
+      ok: true,
+      value: { first: "Ada Lovelace", checkout: "2026-11-02" },
+    });
+    expect(parseInboundBody("application/json", "not-json")).toEqual({ ok: false });
+
+    const token = "b".repeat(32);
+    const parsed = parseInboundBody(
+      "application/json",
+      JSON.stringify({ firstName: "Ada", phone: "5035550100", document: { accessCode: "998877" }, token }),
+    );
+    const summary = summarizeBody("application/json", parsed, false);
+    const dumped = JSON.stringify(summary);
+    expect(dumped).not.toContain("Ada");
+    expect(dumped).not.toContain("5035550100");
+    expect(dumped).not.toContain("998877");
+    expect(dumped).not.toContain(token);
+    expect(summary).toEqual({
+      contentType: "application/json",
+      bodyType: "object",
+      keys: [
+        { name: "firstName", type: "string", length: 3 },
+        { name: "phone", type: "string", length: 10 },
+        { name: "document", type: "object", length: 1 },
+        { name: "token", type: "string", length: 32 },
+      ],
+    });
+    expect(interpretCheckout({ _id: "res-1", endDate: "2026-11-03", firstName: "Ann" }, "2026-11-03")).toEqual({
+      kind: "id",
+      id: "res-1",
+    });
+    expect(interpretCheckout({ checkout: "Tue, March 11th" }, "2026-10-26")).toEqual({
+      kind: "date",
+      checkout: "2027-03-11",
+    });
+    expect(interpretCheckout({}, "2026-10-26")).toEqual({ kind: "displayed" });
+    expect(interpretCheckout({ phone: "5035550100" }, "2026-10-26")).toEqual({ kind: "none" });
   });
 
   it("hides upcoming stays and prefers the guest checking in on a turnover day", () => {

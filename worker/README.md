@@ -28,8 +28,9 @@ Generate `EAGLEWOOD_TOKEN` the same way (`openssl rand -hex 16`) and pass it onl
 | Request | Auth | Result |
 | --- | --- | --- |
 | `POST /tv/checkin` | Header `X-Eaglewood-Token` or `?token=` | Upsert one stay, or delete that reservation on `reservation.cancelled` |
-| `POST /tv/checkout` | Header `X-Eaglewood-Token` or `?token=` | Delete the stay currently on screen |
+| `POST /tv/checkout` | Header `X-Eaglewood-Token` or `?token=` | Delete the stay with that reservation id or checkout date. An empty body deletes the stay on screen |
 | `GET /tv/<GUEST_PATH_KEY>/guest.json` | Path secret | The in-progress stay as `{firstName, lastName, checkout}`, or `{}` |
+| `GET /tv/<GUEST_PATH_KEY>/diag.json` | Path secret | The last authorized POST, redacted: content-type, top-level key names, value types and lengths |
 | Anything else | | `404`, or `405` when the path is known and the method is wrong |
 
 Each stay is its own KV key, `s:<reservation id>`. The value is only `{firstName, lastName, checkin, checkout}`. A small `idx` key lists ids and dates so `guest.json` does not call KV `list`. Host Tools reservation ids are `document._id` in the [reservation webhook schema](https://docs.hosttools.com/reference/post_webhooks-reservation) (required; example `5e7a6c0b0f2c9c0017b0b0b0`). That schema has no `id` field. If `_id` is missing and `id` is present, that value is used instead.
@@ -40,15 +41,19 @@ Each stay is its own KV key, `s:<reservation id>`. The value is only `{firstName
 
 `GET` returns `{firstName, lastName, checkout}` for the stay where `checkin <= today <= checkout` in America/Los_Angeles. An upcoming stay stays hidden. On a turnover day, the stay whose `checkin` is today wins over the one checking out today. Each record's `expirationTtl` runs until 06:00 Los Angeles on the day after `checkout` (at least 60 seconds). The daily cron deletes index entries whose `checkout` is already before today. It reads `idx` once and does not list the namespace.
 
-The flat `POST /tv/checkin` body `{firstName, lastName, checkout}` still works. It has no reservation id and no start date, so it is stored as id `__manual` with `checkin` set to today in Los Angeles and the checkout you sent. `POST /tv/checkout` deletes whichever stay `GET` would show right now, including a native reservation, so the screen clears. It does not delete every stored stay.
+The flat `POST /tv/checkin` body `{firstName, lastName, checkout}` still works. It has no reservation id and no start date, so it is stored as id `__manual` with `checkin` set to today in Los Angeles and the checkout you sent. A flat reservation that includes `_id` (or `id`) and `startDate` / `endDate` is stored under that id. `guest.firstName` is used when the top-level name is missing. `POST /tv/checkout` deletes the reservation id in the body, or every stay with that checkout date. An empty body still deletes only the stay `GET` would show. A checkout body that names a date does not clear a different guest who is checking in the same day.
 
 `firstName` keeps only the first whitespace-separated token. Both names keep Unicode letters, apostrophes, and hyphens. `lastName` may also keep internal spaces. Digits, email addresses, phone numbers, and PINs are stripped. Caps are 30 characters (`firstName`) and 40 (`lastName`). An empty `firstName` is a 400.
 
-The body limit is 2048 bytes. A larger body is 413. A form body or other non-JSON body is 400.
+The body limit is 2048 bytes. A larger body is 413. `POST` accepts a JSON object, `application/x-www-form-urlencoded`, or `text/plain` lines such as `first=Ada`. A body that is none of those is 400 on check-in. Checkout still returns 200 so a message-rule caller is not retried, and it does not delete a stay when the body cannot be read.
+
+Check-in and checkout dates may be `YYYY-MM-DD`, an ISO timestamp, or a human date such as `Tue, March 11th`. A human date with no year is the next occurrence of that month and day on or after today in America/Los_Angeles. The weekday is ignored. When no start date is present, check-in is today.
+
+Every authorized `POST` writes KV key `diag:last` for 7 days. The value is the content-type, the body's top-level key names, and each value's type and length. It does not contain field values, the query string, or the token. `GET /tv/<GUEST_PATH_KEY>/diag.json` returns that object with `Cache-Control: no-store`. A wrong or missing token does not write it.
 
 The header and the `token` query parameter are each compared to `EAGLEWOOD_TOKEN` in constant time. Either match is enough. A missing or wrong token is 401. If `EAGLEWOOD_TOKEN` is unset, POSTs return 500. The worker does not log the request URL or the token. If `GUEST_PATH_KEY` is unset, shorter than 24 characters, or not an exact match, the guest URL is 404.
 
-Names are HTML-escaped in the JSON response. Response headers are `Content-Type: application/json`, `Cache-Control: no-store`, and `Access-Control-Allow-Origin: *`.
+Names are HTML-escaped in `guest.json`. That response also sends `Cache-Control: no-store` and `Access-Control-Allow-Origin: *`.
 
 `guest.json` costs two KV reads (the index, then one stay). The Workers Free KV allowance is 100,000 reads, 1,000 writes, 1,000 deletes, and 1,000 list requests per day ([KV pricing](https://developers.cloudflare.com/kv/platform/pricing/)). One poll a minute is about 2,880 reads a day. This worker never calls KV list. Writes happen on check-in, cancel, and the daily prune. The same index key can be written once a second ([KV limits](https://developers.cloudflare.com/kv/platform/limits/)).
 
@@ -130,31 +135,34 @@ What this worker does with that payload on `POST /tv/checkin`:
 - `reservation.cancelled` deletes that id only.
 - Any other `event` is 400 and does not delete stays.
 
-There is no native checkout event. `GET` returns `{}` when no stay covers today. Each key's TTL runs out at 06:00 Los Angeles the morning after `checkout`, and the cron `15 8 * * *` deletes stays whose checkout date is already past. A message-rule checkout webhook can still `POST /tv/checkout` to clear the stay on screen.
+There is no native checkout event. `GET` returns `{}` when no stay covers today. Each key's TTL runs out at 06:00 Los Angeles the morning after `checkout`, and the cron `15 8 * * *` deletes stays whose checkout date is already past.
 
-Message-rule checkout is a separate feature. The help article says a webhook can fire when the guest checks out, but it does not list the Event dropdown labels. Those labels are unverified. Do not send the rendered tag `{{Check-Out Date}}` (`Tue, March 11th` in [Host Tools Tags Explained](https://help.hosttools.com/en/articles/10536075-host-tools-tags-explained)). That string is not `YYYY-MM-DD`.
+`POST /api/setWebhook` is not the setup to use. That route is unauthorized for this account. Message-rule webhooks are the path that works. The [help article](https://help.hosttools.com/en/articles/6236532-how-do-i-use-webhooks-on-host-tools) says these POST reservation data to the recipient URL. It does not document the body format or content-type. This worker therefore accepts the native `{document:{...}}` object, a flat reservation (`firstName` / `lastName` / `startDate` / `endDate` / `_id`, or `guest.firstName`), form fields, and `first=` / `last=` / `checkout=` lines.
+
+`{{Check-Out Date}}` renders as `Tue, March 11th` in [Host Tools Tags Explained](https://help.hosttools.com/en/articles/10536075-host-tools-tags-explained). That string is accepted. The year is the next occurrence of that month and day on or after today in Los Angeles.
 
 ### Settings to use
 
-API reservation webhook. This is the one that sends `{type, event, document}`.
+Create two message rules. Where: Messaging, Add Message Rule, Send To `webhook` ([help article](https://help.hosttools.com/en/articles/6236532-how-do-i-use-webhooks-on-host-tools)). Method: `POST`. The article does not name the Event dropdown labels. Pick the entry that fires on the check-in day, and a second entry that fires when the guest checks out.
 
-- Where: `POST https://app.hosttools.com/api/setWebhook` ([Set Webhook URL](https://docs.hosttools.com/reference/post_api-setwebhook)). No help-center screen for this URL was found.
-- Method Host Tools uses when it calls us: `POST`
+Check-in-day rule:
+
 - URL: `https://sunrivertownhome.com/tv/checkin?token=<EAGLEWOOD_TOKEN>`
-- Events it will deliver: `reservation.created`, `reservation.changed`, `reservation.cancelled`
-- Body: the native reservation webhook. No transform step.
+- Message body:
 
-Message-rule webhook, only if you also want an explicit checkout clear from the Host Tools UI.
+```
+first={{Guest First Name}}
+last={{Guest Last Name}}
+checkout={{Check-Out Date}}
+```
 
-- Where: Messaging, Add Message Rule, Send To `webhook` ([help article](https://help.hosttools.com/en/articles/6236532-how-do-i-use-webhooks-on-host-tools))
-- Method: `POST`
-- Check-in or new-reservation rule URL: `https://sunrivertownhome.com/tv/checkin?token=<EAGLEWOOD_TOKEN>`
-- Checkout rule URL: `https://sunrivertownhome.com/tv/checkout?token=<EAGLEWOOD_TOKEN>`
-- Event: pick the dropdown value for a new reservation or a time before check-in, and a second rule for checkout. The exact labels are unverified. The article says those triggers exist.
+Checkout rule:
 
-Template tags, if you are editing a message rather than the webhook body:
+- URL: `https://sunrivertownhome.com/tv/checkout?token=<EAGLEWOOD_TOKEN>`
+- The same message body.
 
-- `{{Guest First Name}}` and `{{Check-Out Date}}` from [Host Tools Tags Explained](https://help.hosttools.com/en/articles/10536075-host-tools-tags-explained)
-- `{{Guest Last Name}}` from [Update Reservation](https://docs.hosttools.com/reference/post_api-setreservation-reservationid)
+`{{Guest First Name}}` and `{{Check-Out Date}}` are from [Host Tools Tags Explained](https://help.hosttools.com/en/articles/10536075-host-tools-tags-explained). `{{Guest Last Name}}` is named on [Update Reservation](https://docs.hosttools.com/reference/post_api-setreservation-reservationid). No reservation-id tag is documented there, so this template stores a manual stay and the checkout rule clears by the checkout date. If Host Tools also posts a reservation object with `_id`, that id is used instead.
+
+After the first real POST, `GET /tv/<GUEST_PATH_KEY>/diag.json` shows the content-type and top-level key names only. Use that to see which undocumented shape arrived.
 
 `X-HostTools-Signature` is Host Tools' own signing header. This worker does not use it. Auth is `EAGLEWOOD_TOKEN` only.
