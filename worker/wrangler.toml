@@ -1,0 +1,17 @@
+name = "eaglewood-tv"
+main = "src/index.ts"
+compatibility_date = "2026-10-26"
+workers_dev = true
+
+# Zone route only. This does not add or change DNS records.
+routes = [{ pattern = "sunrivertownhome.com/tv/*", zone_name = "sunrivertownhome.com" }]
+
+# 08:15 UTC daily: 00:15 PST or 01:15 PDT, after the Pacific date has rolled.
+# One cron, inside the Workers Free allowance of 5 cron triggers per account.
+[triggers]
+crons = ["15 8 * * *"]
+
+# KV namespace GUEST already created. Id is not a secret.
+[[kv_namespaces]]
+binding = "GUEST"
+id = "c4631133b163480dbafb12601d16d658"
