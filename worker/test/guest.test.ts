@@ -257,7 +257,19 @@ describe("names", () => {
       ok: true,
       value: { first: "Ada Lovelace", checkout: "2026-11-02" },
     });
-    expect(parseInboundBody("application/json", "not-json")).toEqual({ ok: false });
+    expect(parseInboundBody("application/json", "not-json")).toEqual({ ok: true, value: "not-json" });
+    expect(
+      parseInboundBody(
+        "application/json; charset=utf-8",
+        JSON.stringify({ firstName: "Ada", checkout: "2026-11-02" }),
+      ).value,
+    ).toEqual({ firstName: "Ada", checkout: "2026-11-02" });
+    expect(
+      parseInboundBody(
+        'multipart/form-data; boundary=bound',
+        '--bound\r\nContent-Disposition: form-data; name="first"\r\n\r\nAda Lovelace\r\n--bound\r\nContent-Disposition: form-data; name="checkout"\r\n\r\n2026-11-02\r\n--bound--\r\n',
+      ).value,
+    ).toEqual({ first: "Ada Lovelace", checkout: "2026-11-02" });
 
     const token = "b".repeat(32);
     const parsed = parseInboundBody(
@@ -288,7 +300,7 @@ describe("names", () => {
       kind: "date",
       checkout: "2027-03-11",
     });
-    expect(interpretCheckout({}, "2026-10-26")).toEqual({ kind: "displayed" });
+    expect(interpretCheckout({}, "2026-10-26")).toEqual({ kind: "none" });
     expect(interpretCheckout({ phone: "5035550100" }, "2026-10-26")).toEqual({ kind: "none" });
   });
 

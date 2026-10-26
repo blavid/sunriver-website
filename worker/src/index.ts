@@ -2,10 +2,12 @@ import {
   calendarDateInZone,
   DIAG_KEY,
   DIAG_TTL_SECONDS,
+  DIAG_UNAUTH_KEY,
   htmlEscape,
   interpretCheckin,
   interpretCheckout,
   isRealCheckoutDate,
+  isTestPayload,
   parseInboundBody,
   readLimitedBody,
   secondsUntilPastCheckout,
@@ -68,6 +70,63 @@ function authorize(request: Request, secret: string | undefined): Response | nul
     return json({ error: "unauthorized" }, 401);
   }
   return null;
+}
+
+function contentTypeLabel(value: string | null): string {
+  const cleaned = (value ?? "").replace(/[\u0000-\u001f\u007f]/g, "").trim();
+  return Array.from(cleaned).slice(0, 120).join("");
+}
+
+async function rememberUnauthorized(env: Env, request: Request): Promise<void> {
+  const url = new URL(request.url);
+  const summary = {
+    method: request.method.slice(0, 16),
+    contentType: contentTypeLabel(request.headers.get("content-type")),
+    tokenQuery: url.searchParams.has("token"),
+    tokenHeader: request.headers.has("X-Eaglewood-Token"),
+  };
+  await env.GUEST.put(DIAG_UNAUTH_KEY, JSON.stringify(summary), { expirationTtl: DIAG_TTL_SECONDS });
+}
+
+function withCors(response: Response): Response {
+  const headers = new Headers(response.headers);
+  headers.set("access-control-allow-origin", "*");
+  headers.set("access-control-allow-methods", "GET, HEAD, POST, OPTIONS");
+  if (!headers.has("access-control-allow-headers")) {
+    headers.set("access-control-allow-headers", "Content-Type, X-Eaglewood-Token");
+  }
+  return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+}
+
+function corsPreflight(request: Request): Response {
+  const requested = request.headers.get("access-control-request-headers");
+  const cleaned = (requested ?? "").replace(/[\r\n\0]/g, "").trim();
+  const allowHeaders =
+    cleaned !== "" && cleaned.length <= 300 ? cleaned : "Content-Type, X-Eaglewood-Token";
+  return new Response(null, {
+    status: 204,
+    headers: {
+      "access-control-allow-origin": "*",
+      "access-control-allow-methods": "GET, HEAD, POST, OPTIONS",
+      "access-control-allow-headers": allowHeaders,
+      "access-control-max-age": "86400",
+      "cache-control": "no-store",
+    },
+  });
+}
+
+function probe(method: string): Response {
+  if (method === "HEAD") {
+    return new Response(null, {
+      status: 200,
+      headers: { "content-type": "application/json", "cache-control": "no-store" },
+    });
+  }
+  return json({ ok: true, stored: false }, 200, { "cache-control": "no-store" });
+}
+
+function notStored(): Response {
+  return json({ ok: true, stored: false }, 200);
 }
 
 function guestPathAllowed(segment: string, secret: string | undefined): boolean {
@@ -173,7 +232,7 @@ async function rememberDiag(
 async function readAuthorizedBody(
   request: Request,
   env: Env,
-): Promise<{ ok: false; response: Response } | { ok: true; text: string; parsed: { ok: true; value: unknown } | { ok: false } }> {
+): Promise<{ ok: false; response: Response } | { ok: true; text: string; parsed: { ok: true; value: unknown } }> {
   const contentType = request.headers.get("content-type");
   const body = await readLimitedBody(request);
   if (!body.ok) {
@@ -185,20 +244,13 @@ async function readAuthorizedBody(
   return { ok: true, text: body.text, parsed };
 }
 
-function unparsedError(text: string, contentType: string | null): string {
-  const trimmed = text.trim();
-  const ctype = (contentType ?? "").toLowerCase();
-  if (trimmed.startsWith("{") || trimmed.startsWith("[") || ctype.includes("json")) return "invalid JSON";
-  return "invalid checkin";
-}
-
 async function checkin(request: Request, env: Env): Promise<Response> {
   const read = await readAuthorizedBody(request, env);
   if (!read.ok) return read.response;
-  if (!read.parsed.ok) return json({ error: unparsedError(read.text, request.headers.get("content-type")) }, 400);
+  if (isTestPayload(read.parsed.value, read.text)) return notStored();
   const nowMs = Date.now();
   const decision = interpretCheckin(read.parsed.value, calendarDateInZone(nowMs, ZONE));
-  if (decision.action === "reject") return json({ error: "invalid checkin" }, 400);
+  if (decision.action === "reject") return notStored();
   if (decision.action === "delete") {
     await deleteStay(env, decision.id);
     return json({ ok: true }, 200);
@@ -210,19 +262,19 @@ async function checkin(request: Request, env: Env): Promise<Response> {
 async function checkout(request: Request, env: Env): Promise<Response> {
   const read = await readAuthorizedBody(request, env);
   if (!read.ok) return read.response;
-  if (!read.parsed.ok) return json({ ok: true }, 200);
+  if (isTestPayload(read.parsed.value, read.text)) return notStored();
   const today = calendarDateInZone(Date.now(), ZONE);
   const target = interpretCheckout(read.parsed.value, today);
   if (target.kind === "id") {
     await deleteStay(env, target.id);
-  } else if (target.kind === "date") {
+    return json({ ok: true }, 200);
+  }
+  if (target.kind === "date") {
     const ids = (await readIndex(env.GUEST)).filter((entry) => entry.checkout === target.checkout).map((entry) => entry.id);
     for (const id of ids) await deleteStay(env, id);
-  } else if (target.kind === "displayed") {
-    const chosen = selectDisplayedStay(await readIndex(env.GUEST), today);
-    if (chosen) await deleteStay(env, chosen.id);
+    return json({ ok: true }, 200);
   }
-  return json({ ok: true }, 200);
+  return notStored();
 }
 
 async function readDiag(env: Env): Promise<Response> {
@@ -261,13 +313,20 @@ async function readGuest(env: Env): Promise<Response> {
 
 const worker = {
   async fetch(request: Request, env: Env): Promise<Response> {
-    const path = new URL(request.url).pathname;
+    const path = new URL(request.url).pathname.replace(/\/+$/, "") || "/";
 
     if (path === "/tv/checkin" || path === "/tv/checkout") {
-      if (request.method !== "POST") return methodNotAllowed("POST");
+      if (request.method === "OPTIONS") return corsPreflight(request);
+      if (request.method !== "GET" && request.method !== "HEAD" && request.method !== "POST") {
+        return withCors(methodNotAllowed("GET, HEAD, POST, OPTIONS"));
+      }
       const denied = authorize(request, env.EAGLEWOOD_TOKEN);
-      if (denied) return denied;
-      return path === "/tv/checkin" ? checkin(request, env) : checkout(request, env);
+      if (denied) {
+        if (denied.status === 401) await rememberUnauthorized(env, request);
+        return withCors(denied);
+      }
+      if (request.method === "GET" || request.method === "HEAD") return withCors(probe(request.method));
+      return withCors(path === "/tv/checkin" ? await checkin(request, env) : await checkout(request, env));
     }
 
     const keyed = /^\/tv\/([^/]+)\/(guest|diag)\.json$/.exec(path);

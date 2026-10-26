@@ -93,35 +93,27 @@ describe("checkin and checkout", () => {
     expect(await unset.json()).toEqual({ error: "misconfigured" });
   });
 
-  it("returns 400 for unusable bodies and impossible dates", async () => {
-    const { env: bindings } = env();
-    const form = await worker.fetch(
-      post("/tv/checkin", "checkout=2026-11-02", TOKEN, {
-        "content-type": "application/x-www-form-urlencoded",
-      }),
-      bindings,
-    );
-    expect(form.status).toBe(400);
-    expect(await form.json()).toEqual({ error: "invalid checkin" });
-
-    const odd = await worker.fetch(post("/tv/checkin", "not-json", TOKEN), bindings);
-    expect(odd.status).toBe(400);
-
-    const arrayBody = await worker.fetch(post("/tv/checkin", "[]", TOKEN), bindings);
-    expect(arrayBody.status).toBe(400);
-    expect(await arrayBody.json()).toEqual({ error: "invalid checkin" });
-
-    const badDate = await worker.fetch(
+  it("returns stored false for a test, an empty body, and a body with no usable name or date", async () => {
+    const { env: bindings, kv } = env();
+    const cases = [
+      post("/tv/checkin", "", TOKEN),
+      post("/tv/checkin", "test", TOKEN, { "content-type": "text/plain" }),
+      post("/tv/checkin", JSON.stringify({ test: true, firstName: "Ada", checkout: "2026-11-02" }), TOKEN),
+      post("/tv/checkin", "checkout=2026-11-02", TOKEN, { "content-type": "application/x-www-form-urlencoded" }),
+      post("/tv/checkin", "not-json", TOKEN),
+      post("/tv/checkin", "[]", TOKEN),
       post("/tv/checkin", JSON.stringify({ firstName: "Ada", checkout: "2026-02-31" }), TOKEN),
-      bindings,
-    );
-    expect(badDate.status).toBe(400);
-
-    const emptyName = await worker.fetch(
       post("/tv/checkin", JSON.stringify({ firstName: "555-1212", checkout: "2026-11-02" }), TOKEN),
-      bindings,
-    );
-    expect(emptyName.status).toBe(400);
+    ];
+    for (const request of cases) {
+      const response = await worker.fetch(request, bindings);
+      expect(response.status).toBe(200);
+      expect(await response.json()).toEqual({ ok: true, stored: false });
+    }
+    expect(kv.values.has("idx")).toBe(false);
+    expect(kv.values.has(stayKey("__manual"))).toBe(false);
+    expect(JSON.stringify(kv.values.get("diag:last"))).not.toContain("555-1212");
+    expect(JSON.stringify(kv.values.get("diag:last"))).not.toContain("Ada");
   });
 
   it("caps the body at 2KB", async () => {
@@ -141,7 +133,7 @@ describe("checkin and checkout", () => {
     expect(JSON.stringify([...kv.values.values()])).not.toContain("small");
   });
 
-  it("deletes the stay currently on screen", async () => {
+  it("does not clear the screen when checkout is empty", async () => {
     vi.useFakeTimers();
     vi.setSystemTime(new Date("2026-11-02T18:00:00.000Z"));
     const { env: bindings, kv } = env();
@@ -151,7 +143,8 @@ describe("checkin and checkout", () => {
     );
     const response = await worker.fetch(post("/tv/checkout", null, TOKEN), bindings);
     expect(response.status).toBe(200);
-    expect(kv.values.has(stayKey("__manual"))).toBe(false);
+    expect(await response.json()).toEqual({ ok: true, stored: false });
+    expect(JSON.parse(kv.values.get(stayKey("__manual")) ?? "").firstName).toBe("Ada");
   });
 
   it("accepts the token in the query string without logging the URL", async () => {
@@ -413,10 +406,11 @@ describe("guest json", () => {
 });
 
 describe("other routes", () => {
-  it("rejects the wrong method and unknown paths", async () => {
-    const getCheckin = await worker.fetch(new Request("https://sunrivertownhome.com/tv/checkin"), env().env);
-    expect(getCheckin.status).toBe(405);
-    expect(getCheckin.headers.get("allow")).toBe("POST");
+  it("rejects an unknown path and a method other than GET, HEAD, or POST", async () => {
+    const put = await worker.fetch(new Request("https://sunrivertownhome.com/tv/checkin", { method: "PUT" }), env().env);
+    expect(put.status).toBe(405);
+    expect(put.headers.get("allow")).toBe("GET, HEAD, POST, OPTIONS");
+    expect(put.headers.get("access-control-allow-origin")).toBe("*");
 
     const missing = await worker.fetch(new Request("https://sunrivertownhome.com/tv/nope"), env().env);
     expect(missing.status).toBe(404);
@@ -509,7 +503,20 @@ describe("message-rule bodies and the redacted diagnostic", () => {
       bindings,
     );
     expect(denied.status).toBe(401);
-    expect(kv.values.size).toBe(0);
+    expect(denied.headers.get("access-control-allow-origin")).toBe("*");
+    expect(kv.values.has("diag:last")).toBe(false);
+    expect(kv.values.has("idx")).toBe(false);
+    const unauth = JSON.parse(kv.values.get("diag:lastUnauthorized") ?? "");
+    expect(unauth).toEqual({
+      method: "POST",
+      contentType: "application/json",
+      tokenQuery: true,
+      tokenHeader: false,
+    });
+    expect(JSON.stringify(unauth)).not.toContain("nope");
+    expect(JSON.stringify(unauth)).not.toContain(TOKEN);
+    expect(JSON.stringify(unauth)).not.toContain("Ada");
+    expect(kv.ttls.get("diag:lastUnauthorized")).toBe(7 * 24 * 60 * 60);
 
     const accepted = await worker.fetch(
       new Request(`https://sunrivertownhome.com/tv/checkin?token=${TOKEN}`, {
@@ -600,5 +607,85 @@ describe("message-rule bodies and the redacted diagnostic", () => {
     );
     expect(byId.status).toBe(200);
     expect(kv.values.has(stayKey("arrive"))).toBe(false);
+  });
+
+  it("accepts GET, HEAD, OPTIONS, a trailing slash, and any content type", async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-11-01T20:00:00.000Z"));
+    const { env: bindings, kv } = env();
+
+    const preflight = await worker.fetch(
+      new Request("https://sunrivertownhome.com/tv/checkin/", {
+        method: "OPTIONS",
+        headers: { "access-control-request-method": "POST", "access-control-request-headers": "content-type, x-eaglewood-token" },
+      }),
+      bindings,
+    );
+    expect(preflight.status).toBe(204);
+    expect(preflight.headers.get("access-control-allow-origin")).toBe("*");
+    expect(preflight.headers.get("access-control-allow-methods")).toContain("POST");
+    expect(preflight.headers.get("access-control-allow-headers")?.toLowerCase()).toContain("x-eaglewood-token");
+    expect(await preflight.text()).toBe("");
+    expect(kv.values.size).toBe(0);
+
+    const getProbe = await worker.fetch(new Request(`https://sunrivertownhome.com/tv/checkin/?token=${TOKEN}`), bindings);
+    expect(getProbe.status).toBe(200);
+    expect(getProbe.headers.get("access-control-allow-origin")).toBe("*");
+    expect(await getProbe.json()).toEqual({ ok: true, stored: false });
+    expect(kv.values.size).toBe(0);
+
+    const headProbe = await worker.fetch(
+      new Request("https://sunrivertownhome.com/tv/checkout", { method: "HEAD", headers: { "X-Eaglewood-Token": TOKEN } }),
+      bindings,
+    );
+    expect(headProbe.status).toBe(200);
+    expect(await headProbe.text()).toBe("");
+    expect(kv.values.size).toBe(0);
+
+    const missingType = await worker.fetch(
+      new Request(`https://sunrivertownhome.com/tv/checkin?token=${TOKEN}`, {
+        method: "POST",
+        body: JSON.stringify({ firstName: "Ada", lastName: "Lovelace", checkout: "2026-11-02" }),
+      }),
+      bindings,
+    );
+    expect(missingType.status).toBe(200);
+    expect(await missingType.json()).toEqual({ ok: true });
+    expect(JSON.parse(kv.values.get(stayKey("__manual")) ?? "").firstName).toBe("Ada");
+
+    const charset = await worker.fetch(
+      post(
+        "/tv/checkin/",
+        JSON.stringify({ firstName: "Bea", checkout: "2026-11-04" }),
+        TOKEN,
+        { "content-type": "application/json; charset=utf-8" },
+      ),
+      bindings,
+    );
+    expect(charset.status).toBe(200);
+    expect(JSON.parse(kv.values.get(stayKey("__manual")) ?? "").firstName).toBe("Bea");
+
+    const multipart = await worker.fetch(
+      post(
+        "/tv/checkout/",
+        '--bound\r\nContent-Disposition: form-data; name="checkout"\r\n\r\n2026-11-04\r\n--bound--\r\n',
+        TOKEN,
+        { "content-type": "multipart/form-data; boundary=bound" },
+      ),
+      bindings,
+    );
+    expect(multipart.status).toBe(200);
+    expect(await multipart.json()).toEqual({ ok: true });
+    expect(kv.values.has(stayKey("__manual"))).toBe(false);
+
+    const noHeader = await worker.fetch(new Request("https://sunrivertownhome.com/tv/checkin/", { method: "GET" }), bindings);
+    expect(noHeader.status).toBe(401);
+    expect(JSON.parse(kv.values.get("diag:lastUnauthorized") ?? "")).toEqual({
+      method: "GET",
+      contentType: "",
+      tokenQuery: false,
+      tokenHeader: false,
+    });
+    expect(JSON.parse(kv.values.get(stayKey("__manual")) ?? "null")).toBeNull();
   });
 });

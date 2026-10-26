@@ -1,6 +1,7 @@
 export const MAX_BODY_BYTES = 2048;
 export const ZONE = "America/Los_Angeles";
 export const DIAG_KEY = "diag:last";
+export const DIAG_UNAUTH_KEY = "diag:lastUnauthorized";
 export const DIAG_TTL_SECONDS = 7 * 24 * 60 * 60;
 const FIRST_NAME_MAX = 30;
 const LAST_NAME_MAX = 40;
@@ -401,13 +402,21 @@ export function interpretCheckin(value: unknown, today: string): CheckinDecision
   return { action: "upsert", id: id ?? MANUAL_STAY_ID, stay };
 }
 
-export type CheckoutTarget =
-  | { kind: "id"; id: string }
-  | { kind: "date"; checkout: string }
-  | { kind: "displayed" }
-  | { kind: "none" };
+export type CheckoutTarget = { kind: "id"; id: string } | { kind: "date"; checkout: string } | { kind: "none" };
 
-/** How an authorized checkout body chooses which stay to clear. An empty object clears the stay on screen. */
+/** A webhook Test button, or a body that is only the word test, must not change stored stays. */
+export function isTestPayload(value: unknown, rawText: string): boolean {
+  if (/^test$/i.test(rawText.trim())) return true;
+  if (typeof value === "string" && /^test$/i.test(value.trim())) return true;
+  const record = asRecord(value);
+  if (!record) return false;
+  if (record.test === true || record.test === "true") return true;
+  const type = typeof record.type === "string" ? record.type.trim().toLowerCase() : "";
+  const event = typeof record.event === "string" ? record.event.trim().toLowerCase() : "";
+  return type === "test" || event === "test" || type === "webhook.test" || event === "webhook.test";
+}
+
+/** How an authorized checkout body chooses which stay to clear. An empty or test body clears nothing. */
 export function interpretCheckout(value: unknown, today: string): CheckoutTarget {
   const record = asRecord(value);
   if (!record) return { kind: "none" };
@@ -416,7 +425,7 @@ export function interpretCheckout(value: unknown, today: string): CheckoutTarget
     const id = document ? reservationId(document) : null;
     return id ? { kind: "id", id } : { kind: "none" };
   }
-  if (Object.keys(record).length === 0) return { kind: "displayed" };
+  if (Object.keys(record).length === 0) return { kind: "none" };
   const sources = fieldSources(record);
   const id = lookupId(sources);
   if (id) return { kind: "id", id };
@@ -454,27 +463,56 @@ function formToObject(text: string): Record<string, string> {
   return out;
 }
 
-/** JSON, form fields, or `key=value` lines. A JSON object or array is always tried first. */
-export function parseInboundBody(
-  contentType: string | null,
-  text: string,
-): { ok: true; value: unknown } | { ok: false } {
+function parseMultipart(contentType: string, text: string): Record<string, string> | null {
+  const boundaryMatch = /boundary=(?:"([^"]+)"|([^;\s]+))/i.exec(contentType);
+  const boundary = (boundaryMatch?.[1] ?? boundaryMatch?.[2] ?? "").trim();
+  if (!boundary) return null;
+  const out: Record<string, string> = {};
+  let found = false;
+  for (const part of text.split(`--${boundary}`)) {
+    const trimmed = part.trim();
+    if (trimmed === "" || trimmed === "--") continue;
+    const separator = part.includes("\r\n\r\n") ? "\r\n\r\n" : "\n\n";
+    const splitAt = part.indexOf(separator);
+    if (splitAt < 0) continue;
+    const header = part.slice(0, splitAt);
+    let body = part.slice(splitAt + separator.length).replace(/\r?\n$/, "");
+    const nameMatch = /(?:^|;)\s*name="([^"]*)"|name=([^;\s]+)/i.exec(header);
+    const name = (nameMatch?.[1] ?? nameMatch?.[2] ?? "").trim();
+    if (!name) continue;
+    out[name] = body.trim();
+    found = true;
+  }
+  return found ? out : null;
+}
+
+/**
+ * JSON (including `application/json` with a charset), multipart, form fields,
+ * `key=value` lines, or the raw text. A missing content-type is sniffed.
+ * This does not fail closed: an unreadable body comes back as text.
+ */
+export function parseInboundBody(contentType: string | null, text: string): { ok: true; value: unknown } {
   const trimmed = text.trim();
   if (trimmed === "") return { ok: true, value: {} };
-  if (trimmed.startsWith("{") || trimmed.startsWith("[")) {
+  const ctype = (contentType ?? "").toLowerCase();
+  if (ctype.includes("multipart/form-data")) {
+    const multipart = parseMultipart(contentType ?? "", text);
+    if (multipart) return { ok: true, value: multipart };
+  }
+  const looksJson = trimmed.startsWith("{") || trimmed.startsWith("[");
+  if (looksJson || ctype.includes("json")) {
     try {
       return { ok: true, value: JSON.parse(trimmed) };
     } catch {
-      return { ok: false };
+      // A declared JSON type with a form or text body is still accepted below.
     }
   }
   const lines = assignmentLines(trimmed);
   if (lines) return { ok: true, value: linesToObject(lines) };
-  const ctype = (contentType ?? "").toLowerCase();
-  if (ctype.includes("application/x-www-form-urlencoded") || /^[^=\s]+=/.test(trimmed)) {
+  if (ctype.includes("application/x-www-form-urlencoded") || (!looksJson && trimmed.includes("="))) {
     return { ok: true, value: formToObject(trimmed) };
   }
-  return { ok: false };
+  return { ok: true, value: trimmed };
 }
 
 export interface DiagSummary {

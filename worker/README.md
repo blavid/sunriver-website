@@ -27,8 +27,10 @@ Generate `EAGLEWOOD_TOKEN` the same way (`openssl rand -hex 16`) and pass it onl
 
 | Request | Auth | Result |
 | --- | --- | --- |
-| `POST /tv/checkin` | Header `X-Eaglewood-Token` or `?token=` | Upsert one stay, or delete that reservation on `reservation.cancelled` |
-| `POST /tv/checkout` | Header `X-Eaglewood-Token` or `?token=` | Delete the stay with that reservation id or checkout date. An empty body deletes the stay on screen |
+| `POST /tv/checkin` | Header `X-Eaglewood-Token` or `?token=` | Upsert one stay, or delete that reservation on `reservation.cancelled`. A test, empty, or unusable body is `{"ok":true,"stored":false}` |
+| `POST /tv/checkout` | Header `X-Eaglewood-Token` or `?token=` | Delete the stay with that reservation id or checkout date. An empty or test body does not delete anything |
+| `GET` or `HEAD` on those paths | Same token | `200` and no KV write. A trailing slash is the same path |
+| `OPTIONS` on those paths | None | `204` CORS preflight. No token and no KV write |
 | `GET /tv/<GUEST_PATH_KEY>/guest.json` | Path secret | The in-progress stay as `{firstName, lastName, checkout}`, or `{}` |
 | `GET /tv/<GUEST_PATH_KEY>/diag.json` | Path secret | The last authorized POST, redacted: content-type, top-level key names, value types and lengths |
 | Anything else | | `404`, or `405` when the path is known and the method is wrong |
@@ -41,17 +43,17 @@ Each stay is its own KV key, `s:<reservation id>`. The value is only `{firstName
 
 `GET` returns `{firstName, lastName, checkout}` for the stay where `checkin <= today <= checkout` in America/Los_Angeles. An upcoming stay stays hidden. On a turnover day, the stay whose `checkin` is today wins over the one checking out today. Each record's `expirationTtl` runs until 06:00 Los Angeles on the day after `checkout` (at least 60 seconds). The daily cron deletes index entries whose `checkout` is already before today. It reads `idx` once and does not list the namespace.
 
-The flat `POST /tv/checkin` body `{firstName, lastName, checkout}` still works. It has no reservation id and no start date, so it is stored as id `__manual` with `checkin` set to today in Los Angeles and the checkout you sent. A flat reservation that includes `_id` (or `id`) and `startDate` / `endDate` is stored under that id. `guest.firstName` is used when the top-level name is missing. `POST /tv/checkout` deletes the reservation id in the body, or every stay with that checkout date. An empty body still deletes only the stay `GET` would show. A checkout body that names a date does not clear a different guest who is checking in the same day.
+The flat `POST /tv/checkin` body `{firstName, lastName, checkout}` still works. It has no reservation id and no start date, so it is stored as id `__manual` with `checkin` set to today in Los Angeles and the checkout you sent. A flat reservation that includes `_id` (or `id`) and `startDate` / `endDate` is stored under that id. `guest.firstName` is used when the top-level name is missing. `POST /tv/checkout` deletes the reservation id in the body, or every stay with that checkout date. An empty checkout body does not delete a stay. A checkout body that names a date does not clear a different guest who is checking in the same day.
 
 `firstName` keeps only the first whitespace-separated token. Both names keep Unicode letters, apostrophes, and hyphens. `lastName` may also keep internal spaces. Digits, email addresses, phone numbers, and PINs are stripped. Caps are 30 characters (`firstName`) and 40 (`lastName`). An empty `firstName` is a 400.
 
-The body limit is 2048 bytes. A larger body is 413. `POST` accepts a JSON object, `application/x-www-form-urlencoded`, or `text/plain` lines such as `first=Ada`. A body that is none of those is 400 on check-in. Checkout still returns 200 so a message-rule caller is not retried, and it does not delete a stay when the body cannot be read.
+The body limit is 2048 bytes. A larger body is 413. With a valid token, a body that cannot be parsed is not a 4xx or 5xx. The worker accepts a missing content-type, `application/json` with a charset, `multipart/form-data`, form fields, and text. A test payload, an empty body, or a body with no usable name and date returns `{"ok":true,"stored":false}` and does not change stored stays. `/tv/checkin` and `/tv/checkout` are the same with or without a trailing slash. `OPTIONS` returns 204 with `Access-Control-Allow-Origin: *` and does not require a token.
 
 Check-in and checkout dates may be `YYYY-MM-DD`, an ISO timestamp, or a human date such as `Tue, March 11th`. A human date with no year is the next occurrence of that month and day on or after today in America/Los_Angeles. The weekday is ignored. When no start date is present, check-in is today.
 
-Every authorized `POST` writes KV key `diag:last` for 7 days. The value is the content-type, the body's top-level key names, and each value's type and length. It does not contain field values, the query string, or the token. `GET /tv/<GUEST_PATH_KEY>/diag.json` returns that object with `Cache-Control: no-store`. A wrong or missing token does not write it.
+Every authorized `POST` writes KV key `diag:last` for 7 days. The value is the content-type, the body's top-level key names, and each value's type and length. It does not contain field values, the query string, or the token. `GET /tv/<GUEST_PATH_KEY>/diag.json` returns that object with `Cache-Control: no-store`. A missing or wrong token writes a separate key, `diag:lastUnauthorized`, for 7 days: the method, the content-type, and two booleans for whether a `token` query parameter and the `X-Eaglewood-Token` header were present. That record does not contain the token or the body. `GET` and `HEAD` with a valid token write nothing.
 
-The header and the `token` query parameter are each compared to `EAGLEWOOD_TOKEN` in constant time. Either match is enough. A missing or wrong token is 401. If `EAGLEWOOD_TOKEN` is unset, POSTs return 500. The worker does not log the request URL or the token. If `GUEST_PATH_KEY` is unset, shorter than 24 characters, or not an exact match, the guest URL is 404.
+The header and the `token` query parameter are each compared to `EAGLEWOOD_TOKEN` in constant time. Either match is enough. A missing or wrong token is 401. If `EAGLEWOOD_TOKEN` is unset, check-in and checkout return 500. The worker does not log the request URL or the token. If `GUEST_PATH_KEY` is unset, shorter than 24 characters, or not an exact match, the guest URL is 404.
 
 Names are HTML-escaped in `guest.json`. That response also sends `Cache-Control: no-store` and `Access-Control-Allow-Origin: *`.
 
