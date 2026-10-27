@@ -25,8 +25,17 @@ function loadActivities(file: typeof activitiesJson): ActivitiesFile {
           }
         }
       }
-      if (activity.image && !activity.imageUrl) {
-        throw new Error(`Missing imageUrl on ${activity.id}`);
+      if (!activity.image || !activity.imageUrl || !activity.imageAlt) {
+        throw new Error(`Missing image on ${activity.id}`);
+      }
+      if ("imageCredit" in activity && activity.imageCredit) {
+        const { author, license, licenseUrl, source } = activity.imageCredit;
+        if (!author || !license || !licenseUrl || !source) {
+          throw new Error(`Incomplete imageCredit on ${activity.id}`);
+        }
+        if (/\bNC\b|\bND\b/.test(license)) {
+          throw new Error(`Disallowed license "${license}" on ${activity.id}`);
+        }
       }
     }
   }
@@ -42,8 +51,9 @@ function toActivity(activity: ActivityJson): Activity {
     id: activity.id,
     name: activity.name,
     description: activity.description,
-    ...(activity.image !== undefined ? { image: activity.image } : {}),
-    ...(activity.imageAlt !== undefined ? { imageAlt: activity.imageAlt } : {}),
+    image: activity.image,
+    imageAlt: activity.imageAlt,
+    ...(activity.imageCredit !== undefined ? { imageCredit: activity.imageCredit } : {}),
     ...(activity.distance !== undefined ? { distance: activity.distance } : {}),
     season: activity.seasonLabel,
     ...(activity.difficulty !== undefined ? { difficulty: activity.difficulty } : {}),

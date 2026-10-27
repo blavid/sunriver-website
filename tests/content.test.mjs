@@ -160,16 +160,16 @@ test("activities.json seasons, labels, and TV sort hints", () => {
       }
       assert.equal(typeof activity.seasonLabel, "string");
       assert.ok(activity.seasonLabel.length > 0, activity.id);
-      if (activity.image) {
-        assert.ok(activity.image.startsWith("/"), activity.id);
-        assert.equal(
-          activity.imageUrl,
-          absoluteUrl(activity.image, guide.siteConfig.domain),
-          activity.id,
-        );
-      } else {
-        assert.equal(activity.imageUrl, undefined, activity.id);
-      }
+      assert.equal(typeof activity.image, "string", activity.id);
+      assert.ok(activity.image.startsWith("/"), activity.id);
+      assert.equal(typeof activity.imageAlt, "string");
+      assert.ok(activity.imageAlt.length > 0, activity.id);
+      assert.equal(
+        activity.imageUrl,
+        absoluteUrl(activity.image, guide.siteConfig.domain),
+        activity.id,
+      );
+      assert.equal(fs.existsSync(path.join(root, "public", activity.image)), true, activity.image);
       assert.equal(Object.keys(activity.seasonRank).length, 4, activity.id);
       for (const season of CALENDAR) {
         const rank = activity.seasonRank[season];
@@ -198,8 +198,7 @@ test("activities.json seasons, labels, and TV sort hints", () => {
       "lava-butte",
     ],
   );
-  assert.equal(hiking.activities.find((activity) => activity.id === "deschutes-river-trail").image, undefined);
-  assert.equal(hiking.activities.find((activity) => activity.id === "todd-lake-loop").image, undefined);
+  assert.equal(hiking.activities.find((activity) => activity.id === "lava-butte").distance, "10 min drive");
 
   const flat = activities.activitySections.flatMap((section) =>
     section.activities.map((activity) => ({ activity, sectionId: section.id })),
@@ -229,6 +228,101 @@ test("activities.json seasons, labels, and TV sort hints", () => {
     .filter((activity) => activity.seasonSpecified === false)
     .map((activity) => activity.id);
   assert.deepEqual(unspecified, ["rio-sol", "century-common-taps-and-trucks"]);
+});
+
+const LEGACY_ACTIVITY_IMAGES = new Set([
+  "/images/photos/activities/Viator/RideTheRiverEbike.jpg",
+  "/images/photos/activities/Viator/DeschutesEbike.jpg",
+  "/images/photos/activities/Viator/CascadeLakesKayak.jpg",
+  "/images/photos/activities/Viator/HighCascadesATV.jpg",
+  "/images/photos/activities/Viator/DeschutesHorseRide.jpg",
+  "/images/photos/activities/Viator/MoonlightCanoe.jpg",
+  "/images/photos/activities/Viator/LavaTubeTour.jpg",
+  "/images/photos/activities/Viator/LimitedLavaTube.jpg",
+  "/images/photos/activities/Viator/AlpacaPicnic.jpg",
+  "/images/photos/activities/Viator/ChocolateTour.jpg",
+  "/images/photos/activities/Viator/FoodTruckBrewery.jpg",
+  "/images/photos/activities/Viator/CraftBreweryTour.jpg",
+  "/images/photos/activities/Viator/ScavengerHunt.jpg",
+  "/images/photos/activities/Viator/NightSkyPhotoTour.jpg",
+  "/images/photos/activities/Viator/PhotoTutoring.jpg",
+  "/images/photos/activities/Viator/StreetPhotoTour.jpg",
+  "/images/photos/activities/Viator/PaddleBoardHappyHour.jpg",
+  "/images/photos/activities/Viator/MurderMystery.jpg",
+  "/images/photos/activities/Dining/HotLavaBakery.jpeg",
+  "/images/photos/activities/Dining/SparrowBakery.jpg",
+  "/images/photos/activities/Dining/RioSol.jpg",
+  "/images/photos/activities/Dining/ElCaporal.jpg",
+  "/images/photos/activities/Dining/BlondiesPizza.jpeg",
+  "/images/photos/activities/Dining/VillageBar&Grill.avif",
+  "/images/photos/activities/Dining/TheWallow.jpg",
+  "/images/photos/activities/Dining/CampfireCucina.jpg",
+  "/images/photos/activities/Dining/CenturyCommonsTapsTrucks.webp",
+  "/images/photos/activities/Dining/JosieKsDeli.jpg",
+  "/images/photos/activities/Hiking/BenhamFalls.jpeg",
+  "/images/photos/activities/Hiking/smith-rock-vert.jpg",
+  "/images/photos/activities/Hiking/Green-Lakes-Trail.webp",
+  "/images/photos/activities/Hiking/TamMcArthurRimTrail.jpg",
+  "/images/photos/activities/Hiking/TumaloFalls.jpeg",
+  "/images/photos/activities/Hiking/LavaButte.jpg",
+  "/images/photos/activities/Swimming/SunriverSHARC.avif",
+  "/images/photos/activities/Swimming/ElkLakeResort.jpeg",
+  "/images/photos/activities/Swimming/SparksLake.jpg",
+  "/images/photos/activities/Swimming/PaulinaLake.jpg",
+  "/images/photos/activities/Swimming/DevilsLake.jpg",
+  "/images/photos/activities/Swimming/EaglewoodPool.jpg",
+  "/images/photos/activities/Rafting/FloatDeschutes.jpg",
+  "/images/photos/activities/Rafting/SunCountryTours.webp",
+  "/images/photos/activities/Rafting/BigEddy.jpeg",
+  "/images/photos/activities/Rafting/SUP.webp",
+  "/images/photos/activities/Skiing/MtBachelor.jpeg",
+  "/images/photos/activities/Skiing/NordicCenter.jpeg",
+  "/images/photos/activities/Skiing/HoodooSkiArea.jpeg",
+  "/images/photos/activities/Skiing/SummerChairLift.webp",
+  "/images/photos/activities/Biking/PhilsTrailComplex.jpg",
+  "/images/photos/activities/Biking/WanogaBikeTrails.jpeg",
+  "/images/photos/activities/Biking/MtBachelorBikePark.jpg",
+  "/images/photos/activities/Biking/SunriverBike.webp",
+  "/images/photos/activities/Biking/tiddlywinks.jpg",
+  "/images/photos/activities/DayTrips/CraterLake.jpg",
+  "/images/photos/activities/DayTrips/LavaRiverCave.jpg",
+  "/images/photos/activities/DayTrips/HighDesertMusuem.jpg",
+  "/images/photos/activities/DayTrips/NewberryNatMonument.jpg",
+  "/images/photos/activities/DayTrips/SunriverObservatory.webp",
+  "/images/photos/activities/Golf/Woodlands.webp",
+  "/images/photos/activities/Golf/Crosswater.gif",
+  "/images/photos/activities/Golf/SunriverStables.webp",
+  "/images/photos/activities/Golf/SunriverVillage.jpg",
+]);
+
+const ALLOWED_LICENSE = /^(Public domain|CC0|CC BY-SA|CC BY)( \d+\.\d+)?$/;
+
+test("every activity card has a photo, and new photos have a free license credit", () => {
+  const seen = new Set();
+  for (const section of activities.activitySections) {
+    for (const activity of section.activities) {
+      assert.ok(activity.image, activity.id);
+      assert.equal(fs.existsSync(path.join(root, "public", activity.image)), true, activity.id);
+      const needsCredit = !LEGACY_ACTIVITY_IMAGES.has(activity.image);
+      if (!needsCredit && !activity.imageCredit) continue;
+      const credit = activity.imageCredit;
+      assert.ok(credit, `${activity.id} is a new photo and needs imageCredit`);
+      assert.equal(typeof credit.author, "string");
+      assert.ok(credit.author.trim().length > 0, activity.id);
+      assert.equal(typeof credit.license, "string");
+      assert.match(credit.license, ALLOWED_LICENSE, activity.id);
+      assert.equal(/\bNC\b|\bND\b/.test(credit.license), false, activity.id);
+      assert.equal(credit.licenseUrl.startsWith("https://"), true, activity.id);
+      assert.equal(credit.source.startsWith("https://commons.wikimedia.org/wiki/File:"), true, activity.id);
+      if (credit.changes !== undefined) {
+        assert.ok(credit.changes.length > 0, activity.id);
+      }
+      seen.add(activity.id);
+    }
+  }
+  assert.ok(seen.has("deschutes-river-trail"));
+  assert.ok(seen.has("todd-lake-loop"));
+  assert.ok(seen.has("viator-ebike-tour"));
 });
 
 test("checkout.json is only the steps already in the guest guide", () => {

@@ -78,7 +78,7 @@ The site imports these files and shows the same strings as before.
 
 Ignored by the website, present for the TV: `season`, `seasonSpecified`, `seasonRank`, `imageUrl`, `url` on images, `host.phone`, and `checkout.steps` as a separate list.
 
-`src/lib/activities.ts` copies `seasonLabel` onto the card's `season` prop. It also copies `difficulty`, `trailDistance`, and `gettingThere` when those fields are set, and it omits `image` when a hike has no photo. Section order in the JSON is the website order. The site does not sort by `seasonRank`.
+`src/lib/activities.ts` copies `seasonLabel` onto the card's `season` prop. It also copies `difficulty`, `trailDistance`, `gettingThere`, and `imageCredit` when those fields are set. Section order in the JSON is the website order. The site does not sort by `seasonRank`.
 
 The home-page gallery subtitle is `"{count} photos of the home, deck, and surroundings."` The page replaces `{count}` with `site.json` `photos.length` (21 today).
 
@@ -171,9 +171,16 @@ Activity = {
   id: string
   name: string
   description: string
-  image?: string         // site path, "/images/..."; omitted when there is no photo
-  imageUrl?: string      // https://sunrivertownhome.com/images/...
-  imageAlt?: string
+  image: string          // site path, "/images/..."
+  imageUrl: string       // https://sunrivertownhome.com/images/...
+  imageAlt: string
+  imageCredit?: {
+    author: string
+    license: string      // "Public domain", "CC0", "CC BY", or "CC BY-SA", optional version
+    licenseUrl: string
+    source: string       // Commons file page
+    changes?: string     // set when the file is not the original, for example "Resized"
+  }
   distance?: string      // drive time or, for some hikes, the trail length
   trailDistance?: string // trail length when `distance` is a drive time
   difficulty?: string
@@ -192,9 +199,11 @@ Season = "winter" | "spring" | "summer" | "fall" | "year-round"
 
 Nine sections, in website order: Guided tours and activities, Dining, Hiking, Swimming, River Floats & Rafting, Skiing & Snowboarding, Mountain Biking, Scenic & Day Trips, Golf & Family Fun. 66 activities. The website must keep this array order. `seasonRank` is not a website sort.
 
-Hiking is this section only. `guide.json` used to have a separate write-up list; those facts now live on the hiking cards. Lava Butte and the Lava Lands Trail are one card, `lava-butte`. Deschutes River Trail and Todd Lake Loop are cards without photos. Their `season` values were read from the write-ups: the river trail names no season, so it is `year-round`; Todd Lake names summer wildflowers, so it is `["summer"]` with the badge "Wildflowers in summer". Smith Rock, Tam McArthur Rim, and Tumalo Falls were already cards and did not gain hike fields.
+Hiking is this section only. `guide.json` used to have a separate write-up list; those facts now live on the hiking cards. Lava Butte and the Lava Lands Trail are one card, `lava-butte`. Its drive badge is "10 min drive". Deschutes River Trail and Todd Lake Loop are cards in this section. Their `season` values were read from the write-ups: the river trail names no season, so it is `year-round`; Todd Lake names summer wildflowers, so it is `["summer"]` with the badge "Wildflowers in summer". Smith Rock, Tam McArthur Rim, and Tumalo Falls were already cards and did not gain hike fields.
 
-`image` is what the website passes to `next/image`. `imageUrl` is the absolute URL for the TV. Path segments are percent-encoded (`&` in `VillageBar&Grill.avif` is `%26`). Deschutes River Trail and Todd Lake Loop have no photo, so `image`, `imageUrl`, and `imageAlt` are omitted. The card keeps the empty sage-colored frame.
+`image` is what the website passes to `next/image`. `imageUrl` is the absolute URL for the TV. Path segments are percent-encoded (`&` in `VillageBar&Grill.avif` is `%26`). Every activity has a photo.
+
+`imageCredit` is only on photos added from Wikimedia Commons. Older photo files were not replaced. The Electric Bike Tour cards already named `Viator/E-bikeTour.jpg`, but that file was not in the repo, so that photo is new and credited too. When `imageCredit` is set, the card shows one line under the tip: the author, the license name linked to `licenseUrl`, `changes` in parentheses when the file was resized, and a "Wikimedia Commons" link to `source`. That line is the attribution. `changes` is `"Resized"` on the Deschutes River Trail photo because the Commons original was scaled down. The Todd Lake photo is the original 1600px file and is public domain (`PD-USGov-USDA`), so `changes` is omitted. Licenses are public domain, CC0, CC BY, or CC BY-SA only. The TV should show the same credit wherever it shows the photo.
 
 `url` is copied exactly, with no trailing space. `chocolate-tour` previously ended with a space; that space is gone.
 

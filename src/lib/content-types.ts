@@ -93,13 +93,25 @@ export type SiteFile = {
 
 export type SeasonRank = Partial<Record<CalendarSeason, number>>;
 
+/** Credit for a photo added from Wikimedia Commons. Omitted on photos that were already on the site. */
+export type ImageCredit = {
+  author: string;
+  license: string;
+  licenseUrl: string;
+  /** Commons file page. */
+  source: string;
+  /** Set when this file is not the original, for example "Resized". */
+  changes?: string;
+};
+
 export type ActivityJson = {
   id: string;
   name: string;
   description: string;
-  image?: string;
-  imageUrl?: string;
-  imageAlt?: string;
+  image: string;
+  imageUrl: string;
+  imageAlt: string;
+  imageCredit?: ImageCredit;
   distance?: string;
   /** Trail length when it is not already the `distance` badge. */
   trailDistance?: string;
@@ -136,8 +148,9 @@ export type Activity = {
   id: string;
   name: string;
   description: string;
-  image?: string;
-  imageAlt?: string;
+  image: string;
+  imageAlt: string;
+  imageCredit?: ImageCredit;
   distance?: string;
   season?: string;
   difficulty?: string;

@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "activitySections": [
     {
       "id": "guided-tours-and-activities",
@@ -12,7 +12,7 @@
           "description": "Explore Bend and the Deschutes River with ease on a guided e-bike tour. With an electric bike to assist, you can go farther and see more while learning local history and stopping for refreshments.",
           "image": "/images/photos/activities/Viator/E-bikeTour.jpg",
           "imageUrl": "https://sunrivertownhome.com/images/photos/activities/Viator/E-bikeTour.jpg",
-          "imageAlt": "Group on electric bikes along the Deschutes River",
+          "imageAlt": "An electric bicycle and another rider in a bike lane in Bend",
           "distance": "25–30 min drive to Bend",
           "season": [
             "year-round"
@@ -25,6 +25,13 @@
             "spring": 380,
             "summer": 510,
             "fall": 450
+          },
+          "imageCredit": {
+            "author": "Oregon Department of Transportation",
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+            "source": "https://commons.wikimedia.org/wiki/File:Riding_in_the_bike_lane_in_Bend,_OR._(52389757790).jpg",
+            "changes": "Resized"
           }
         },
         {
@@ -674,6 +681,16 @@
           "id": "deschutes-river-trail",
           "name": "Deschutes River Trail",
           "description": "Paved and dirt paths following the Deschutes River through pine forest. Walk or bike from Sunriver toward Benham Falls.",
+          "image": "/images/photos/activities/Hiking/deschutes-river-trail.jpg",
+          "imageUrl": "https://sunrivertownhome.com/images/photos/activities/Hiking/deschutes-river-trail.jpg",
+          "imageAlt": "Dirt trail beside the Deschutes River on the way to Benham Falls",
+          "imageCredit": {
+            "author": "Another Believer",
+            "license": "CC BY-SA 4.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by-sa/4.0",
+            "source": "https://commons.wikimedia.org/wiki/File:Deschutes_River_Trail_to_Benham_Falls,_Oregon_(2014)_-_06.JPG",
+            "changes": "Resized"
+          },
           "distance": "Varies — up to 18 miles",
           "difficulty": "Easy",
           "gettingThere": "Access from multiple points in Sunriver — ask us for the closest trailhead.",
@@ -739,6 +756,15 @@
           "id": "todd-lake-loop",
           "name": "Todd Lake Loop",
           "description": "Alpine lake loop at 6,500 ft with wildflowers in summer and Mt. Bachelor views. Cool escape on hot days.",
+          "image": "/images/photos/activities/Hiking/todd-lake.jpg",
+          "imageUrl": "https://sunrivertownhome.com/images/photos/activities/Hiking/todd-lake.jpg",
+          "imageAlt": "Todd Lake with Mount Bachelor behind it in the Deschutes National Forest",
+          "imageCredit": {
+            "author": "U.S. Forest Service, Pacific Northwest Region",
+            "license": "Public domain",
+            "licenseUrl": "https://commons.wikimedia.org/wiki/Template:PD-USGov-USDA",
+            "source": "https://commons.wikimedia.org/wiki/File:MT_BACHELOR_AND_TODD_LAKE-DESCHUTES_(23870530396).jpg"
+          },
           "distance": "1.1 miles",
           "difficulty": "Easy",
           "gettingThere": "25 min drive up Cascade Lakes Highway from Mt. Bachelor turnoff.",
@@ -1471,7 +1497,7 @@
           "description": "Explore Bend and the Deschutes River with ease with this guided e-bike tour. With an electric bike to assist, you can go farther and see more with less effort, and with a guide, there’s no risk of getting lost. Ride through Bend, including the Old Mill District and lesser-known areas, while learning about the city and the river, with a stop along the way for snacks and beverages.",
           "image": "/images/photos/activities/Viator/E-bikeTour.jpg",
           "imageUrl": "https://sunrivertownhome.com/images/photos/activities/Viator/E-bikeTour.jpg",
-          "imageAlt": "Group of people on electric bikes along the Deschutes River",
+          "imageAlt": "An electric bicycle and another rider in a bike lane in Bend",
           "distance": "",
           "season": [
             "year-round"
@@ -1484,6 +1510,13 @@
             "spring": 250,
             "summer": 380,
             "fall": 320
+          },
+          "imageCredit": {
+            "author": "Oregon Department of Transportation",
+            "license": "CC BY 2.0",
+            "licenseUrl": "https://creativecommons.org/licenses/by/2.0",
+            "source": "https://commons.wikimedia.org/wiki/File:Riding_in_the_bike_lane_in_Bend,_OR._(52389757790).jpg",
+            "changes": "Resized"
           }
         }
       ]

@@ -7,15 +7,13 @@ export function ActivityCard({ activity }: { activity: Activity }) {
   return (
     <article className="group overflow-hidden rounded-2xl border border-sage-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="relative aspect-[16/10] overflow-hidden bg-sage-100">
-        {activity.image && (
-          <Image
-            src={activity.image}
-            alt={activity.imageAlt ?? activity.name}
-            fill
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-          />
-        )}
+        <Image
+          src={activity.image}
+          alt={activity.imageAlt}
+          fill
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+        />
         {activity.season && (
           <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-sage-800 backdrop-blur-sm">
             {activity.season}
@@ -61,6 +59,29 @@ export function ActivityCard({ activity }: { activity: Activity }) {
         {activity.tip && (
           <p className="mt-3 text-sm text-sage-500">
             <span className="font-semibold text-sage-700">Tip:</span> {activity.tip}
+          </p>
+        )}
+
+        {activity.imageCredit && (
+          <p className="mt-3 text-xs leading-relaxed text-sage-500">
+            Photo: {activity.imageCredit.author},{" "}
+            <a
+              href={activity.imageCredit.licenseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-sage-300 underline-offset-2 hover:text-sage-700"
+            >
+              {activity.imageCredit.license}
+            </a>
+            {activity.imageCredit.changes ? ` (${activity.imageCredit.changes})` : ""}.{" "}
+            <a
+              href={activity.imageCredit.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-sage-300 underline-offset-2 hover:text-sage-700"
+            >
+              Wikimedia Commons
+            </a>
           </p>
         )}
 
