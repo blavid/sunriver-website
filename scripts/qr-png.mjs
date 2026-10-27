@@ -26,16 +26,25 @@ function chunk(type, data) {
   return Buffer.concat([length, typeBytes, data, crc]);
 }
 
-function encodeGrayPng(width, height, pixels) {
-  const stride = width + 1;
+function encodeRgbPng(width, height, pixels) {
+  const stride = width * 3 + 1;
   const raw = Buffer.alloc(stride * height);
   for (let y = 0; y < height; y++) {
-    pixels.copy(raw, y * stride + 1, y * width, (y + 1) * width);
+    const row = y * stride;
+    raw[row] = 0;
+    for (let x = 0; x < width; x++) {
+      const value = pixels[y * width + x];
+      const dest = row + 1 + x * 3;
+      raw[dest] = value;
+      raw[dest + 1] = value;
+      raw[dest + 2] = value;
+    }
   }
   const ihdr = Buffer.alloc(13);
   ihdr.writeUInt32BE(width, 0);
   ihdr.writeUInt32BE(height, 4);
   ihdr[8] = 8;
+  ihdr[9] = 2;
   const signature = Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]);
   return Buffer.concat([
     signature,
@@ -61,7 +70,7 @@ function layout(modules) {
   return candidates[0];
 }
 
-/** PNG QR of `text`, about 320–400 px, quiet zone of 4 modules when it fits. */
+/** 8-bit RGB PNG QR of `text`, about 320–400 px, quiet zone of 4 modules when it fits. */
 export function qrPng(text) {
   const qr = encode(text, { ecc: "M", border: 0 });
   const { quiet, scale, size } = layout(qr.size);
@@ -77,5 +86,5 @@ export function qrPng(text) {
       }
     }
   }
-  return { png: encodeGrayPng(size, size, pixels), width: size, quiet, scale };
+  return { png: encodeRgbPng(size, size, pixels), width: size, quiet, scale };
 }

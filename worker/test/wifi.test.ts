@@ -43,7 +43,7 @@ function wifiUrl(kind: "json" | "png", key = PATH_KEY): string {
   return `https://sunrivertownhome.com/tv/${key}/wifi.${kind}`;
 }
 
-function readGrayPng(png: Uint8Array): { width: number; height: number; pixels: Uint8Array } {
+function readRgbPng(png: Uint8Array): { width: number; height: number; pixels: Uint8Array } {
   const signature = [137, 80, 78, 71, 13, 10, 26, 10];
   for (let i = 0; i < signature.length; i++) {
     if (png[i] !== signature[i]) throw new Error("not a png");
@@ -52,7 +52,8 @@ function readGrayPng(png: Uint8Array): { width: number; height: number; pixels: 
   let width = 0;
   let height = 0;
   let bitDepth = 0;
-  let colorType = 0;
+  let colorType = -1;
+  let interlace = -1;
   const idat: Uint8Array[] = [];
   while (offset + 8 <= png.length) {
     const view = new DataView(png.buffer, png.byteOffset + offset, 8);
@@ -65,6 +66,7 @@ function readGrayPng(png: Uint8Array): { width: number; height: number; pixels: 
       height = ihdr.getUint32(4);
       bitDepth = data[8];
       colorType = data[9];
+      interlace = data[12];
     } else if (type === "IDAT") {
       idat.push(data);
     } else if (type === "IEND") {
@@ -73,7 +75,9 @@ function readGrayPng(png: Uint8Array): { width: number; height: number; pixels: 
     offset += 12 + length;
   }
   expect(bitDepth).toBe(8);
-  expect(colorType).toBe(0);
+  expect(colorType).not.toBe(0);
+  expect(colorType).toBe(2);
+  expect(interlace).toBe(0);
   const compressed = new Uint8Array(idat.reduce((total, part) => total + part.length, 0));
   let cursor = 0;
   for (const part of idat) {
@@ -82,10 +86,15 @@ function readGrayPng(png: Uint8Array): { width: number; height: number; pixels: 
   }
   const raw = inflateSync(compressed);
   const pixels = new Uint8Array(width * height);
-  const stride = width + 1;
+  const stride = width * 3 + 1;
   for (let y = 0; y < height; y++) {
-    expect(raw[y * stride]).toBe(0);
-    pixels.set(raw.subarray(y * stride + 1, y * stride + 1 + width), y * width);
+    if (raw[y * stride] !== 0) throw new Error("png row filter is not none");
+    for (let x = 0; x < width; x++) {
+      const dest = y * stride + 1 + x * 3;
+      const red = raw[dest];
+      if (red !== raw[dest + 1] || red !== raw[dest + 2]) throw new Error("wifi png pixel is not gray RGB");
+      pixels[y * width + x] = red;
+    }
   }
   return { width, height, pixels };
 }
@@ -134,7 +143,7 @@ describe("wifi routes", () => {
     expect(pngResponse.headers.get("content-type")).toBe("image/png");
     expect(pngResponse.headers.get("cache-control")).toBe(WIFI_CACHE_CONTROL);
     const png = new Uint8Array(await pngResponse.arrayBuffer());
-    const image = readGrayPng(png);
+    const image = readRgbPng(png);
     expect(image.width).toBe(image.height);
     expect(Math.abs(image.width - WIFI_TARGET_PX)).toBeLessThanOrEqual(40);
     const payload = wifiPayload(SSID, PASSWORD, "WPA");
@@ -151,7 +160,7 @@ describe("wifi routes", () => {
     const special = 'semi;colon"quote:colon,comma\\slash';
     const specialEnv = bindings({ WIFI_SSID: special, WIFI_PASSWORD: special, WIFI_TYPE: "WEP" });
     const specialPng = await worker.fetch(new Request(wifiUrl("png")), specialEnv);
-    const specialImage = readGrayPng(new Uint8Array(await specialPng.arrayBuffer()));
+    const specialImage = readRgbPng(new Uint8Array(await specialPng.arrayBuffer()));
     expect(decodeGray(specialImage.pixels, specialImage.width, specialImage.height)).toBe(
       wifiPayload(special, special, "WEP"),
     );
@@ -167,7 +176,8 @@ describe("wifi routes", () => {
     const jsonEtag = await wifiEtag(SSID, PASSWORD, "json", "WPA");
     const pngEtag = await wifiEtag(SSID, PASSWORD, "png", "WPA");
     expect(jsonEtag).not.toBe(pngEtag);
-    expect(wifiFmtVersion("json", "WPA")).toBe("1|json|WPA|480|q2");
+    expect(wifiFmtVersion("json", "WPA")).toBe("2|json|WPA|480|q2");
+    expect(wifiFmtVersion("png", "WPA")).toBe("2|png|WPA|480|q2");
 
     const first = await worker.fetch(new Request(wifiUrl("json")), env);
     expect(first.headers.get("etag")).toBe(jsonEtag);

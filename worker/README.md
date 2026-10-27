@@ -63,9 +63,9 @@ The header and the `token` query parameter are each compared to `EAGLEWOOD_TOKEN
 
 `wifi.json` and `wifi.png` use that same path check before they read the Wi-Fi secrets. A wrong key is 404 and does not say whether the secrets are set. If `WIFI_SSID` or `WIFI_PASSWORD` is missing or empty, both routes return 503 with an empty body and `Cache-Control: no-store`. The body does not name the missing secret. `WIFI_TYPE` defaults to `WPA` when it is unset or blank.
 
-Characters `\`, `;`, `,`, `"`, and `:` in the network name, password, and type are escaped with a backslash in the QR text. The image is an 8-bit grayscale PNG, about 480 px on a side, with a quiet zone of 2 modules. It is drawn in the worker with the MIT library `uqr`. No outside QR service is called.
+Characters `\`, `;`, `,`, `"`, and `:` in the network name, password, and type are escaped with a backslash in the QR text. The image is a non-interlaced 8-bit RGB PNG, about 480 px on a side, with a quiet zone of 2 modules. It is drawn in the worker with the MIT library `uqr`. No outside QR service is called.
 
-A successful Wi-Fi response sends `Cache-Control: private, max-age=3600` and an `ETag`. The validator is the SHA-256 hex of `ssid|password|fmtVersion`, quoted. `fmtVersion` is `1|<json or png>|<type>|480|q2`, so the JSON and the PNG do not share an ETag. `If-None-Match` with that value, a `W/` prefix, or `*` returns 304 and an empty body. Check-in, checkout, `guest.json`, and `diag.json` are unchanged.
+A successful Wi-Fi response sends `Cache-Control: private, max-age=3600` and an `ETag`. The validator is the SHA-256 hex of `ssid|password|fmtVersion`, quoted. `fmtVersion` is `2|<json or png>|<type>|480|q2`, so the JSON and the PNG do not share an ETag. Version 2 is the RGB PNG. A cached copy from version 1 must be fetched again. `If-None-Match` with that value, a `W/` prefix, or `*` returns 304 and an empty body. Check-in, checkout, `guest.json`, and `diag.json` are unchanged.
 
 Names are HTML-escaped in `guest.json`. That response also sends `Cache-Control: no-store` and `Access-Control-Allow-Origin: *`.
 

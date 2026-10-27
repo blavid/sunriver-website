@@ -32,22 +32,29 @@ async function zlibDeflate(raw: Uint8Array): Promise<Uint8Array> {
   return new Uint8Array(await compressed);
 }
 
-/** 8-bit grayscale PNG. `pixels` is row-major, 0 black through 255 white. */
-export async function encodeGrayPng(width: number, height: number, pixels: Uint8Array): Promise<Uint8Array> {
+/** Non-interlaced 8-bit RGB PNG. `pixels` is row-major gray, 0 black through 255 white. */
+export async function encodeRgbPng(width: number, height: number, pixels: Uint8Array): Promise<Uint8Array> {
   if (pixels.length !== width * height) {
     throw new Error("png size mismatch");
   }
-  const stride = width + 1;
+  const stride = width * 3 + 1;
   const raw = new Uint8Array(stride * height);
   for (let y = 0; y < height; y++) {
-    const start = y * width;
-    raw.set(pixels.subarray(start, start + width), y * stride + 1);
+    const row = y * stride;
+    for (let x = 0; x < width; x++) {
+      const value = pixels[y * width + x];
+      const dest = row + 1 + x * 3;
+      raw[dest] = value;
+      raw[dest + 1] = value;
+      raw[dest + 2] = value;
+    }
   }
   const ihdr = new Uint8Array(13);
   const view = new DataView(ihdr.buffer);
   view.setUint32(0, width);
   view.setUint32(4, height);
   ihdr[8] = 8;
+  ihdr[9] = 2;
   const parts = [PNG_SIGNATURE, chunk("IHDR", ihdr), chunk("IDAT", await zlibDeflate(raw)), chunk("IEND", new Uint8Array())];
   const png = new Uint8Array(parts.reduce((total, part) => total + part.length, 0));
   let offset = 0;

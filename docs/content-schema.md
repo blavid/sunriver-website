@@ -29,7 +29,7 @@ Wi-Fi for the TV QR is also a Worker route, not a file in `public/data`:
 | `GET /tv/<GUEST_PATH_KEY>/wifi.json` | `{ "ssid", "password" }` |
 | `GET /tv/<GUEST_PATH_KEY>/wifi.png` | PNG QR of `WIFI:T:<type>;S:<ssid>;P:<password>;;` |
 
-The same path key as `guest.json` is required. A wrong key is 404. If `WIFI_SSID` or `WIFI_PASSWORD` is unset, both routes are 503 with an empty body. `WIFI_TYPE` is optional and defaults to `WPA`. `\` `;` `,` `"` and `:` in those values are backslash-escaped in the QR text. The PNG is about 480 px with a quiet zone of 2 modules. Responses send `Cache-Control: private, max-age=3600` and an `ETag` of SHA-256(`ssid|password|fmtVersion`). `fmtVersion` is `1|json|<type>|480|q2` or `1|png|<type>|480|q2`. `If-None-Match` returns 304. The worker does not log the values. Blake sets them with `npx wrangler secret put WIFI_SSID` and `npx wrangler secret put WIFI_PASSWORD` (each command prompts). They are not in git.
+The same path key as `guest.json` is required. A wrong key is 404. If `WIFI_SSID` or `WIFI_PASSWORD` is unset, both routes are 503 with an empty body. `WIFI_TYPE` is optional and defaults to `WPA`. `\` `;` `,` `"` and `:` in those values are backslash-escaped in the QR text. The PNG is a non-interlaced 8-bit RGB image, about 480 px, with a quiet zone of 2 modules. Responses send `Cache-Control: private, max-age=3600` and an `ETag` of SHA-256(`ssid|password|fmtVersion`). `fmtVersion` is `2|json|<type>|480|q2` or `2|png|<type>|480|q2`. `If-None-Match` returns 304. The worker does not log the values. Blake sets them with `npx wrangler secret put WIFI_SSID` and `npx wrangler secret put WIFI_PASSWORD` (each command prompts). They are not in git.
 
 ## Versioning
 

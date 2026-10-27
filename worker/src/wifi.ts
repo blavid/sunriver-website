@@ -1,5 +1,5 @@
 import { encode } from "uqr";
-import { encodeGrayPng } from "./png";
+import { encodeRgbPng } from "./png";
 
 export const WIFI_TARGET_PX = 480;
 export const WIFI_QUIET_MODULES = 2;
@@ -15,7 +15,7 @@ export interface WifiSecrets {
 
 /** Format token mixed into the ETag. Includes the representation so json and png do not share a validator. */
 export function wifiFmtVersion(kind: WifiKind, type: string): string {
-  return `1|${kind}|${type}|${WIFI_TARGET_PX}|q${WIFI_QUIET_MODULES}`;
+  return `2|${kind}|${type}|${WIFI_TARGET_PX}|q${WIFI_QUIET_MODULES}`;
 }
 
 export function escapeWifiField(value: string): string {
@@ -62,7 +62,7 @@ export function wifiBitmap(payload: string): { width: number; scale: number; qui
 
 export async function wifiPng(payload: string): Promise<Uint8Array> {
   const bitmap = wifiBitmap(payload);
-  return encodeGrayPng(bitmap.width, bitmap.width, bitmap.pixels);
+  return encodeRgbPng(bitmap.width, bitmap.width, bitmap.pixels);
 }
 
 export async function wifiEtag(ssid: string, password: string, kind: WifiKind, type: string): Promise<string> {
