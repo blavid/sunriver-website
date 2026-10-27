@@ -254,44 +254,44 @@ const LEGACY_ACTIVITY_IMAGES = new Set([
   "/images/photos/activities/Dining/RioSol.jpg",
   "/images/photos/activities/Dining/ElCaporal.jpg",
   "/images/photos/activities/Dining/BlondiesPizza.jpeg",
-  "/images/photos/activities/Dining/VillageBar&Grill.avif",
+  "/images/photos/activities/Dining/VillageBarAndGrill.jpg",
   "/images/photos/activities/Dining/TheWallow.jpg",
   "/images/photos/activities/Dining/CampfireCucina.jpg",
-  "/images/photos/activities/Dining/CenturyCommonsTapsTrucks.webp",
+  "/images/photos/activities/Dining/CenturyCommonsTapsTrucks.jpg",
   "/images/photos/activities/Dining/JosieKsDeli.jpg",
   "/images/photos/activities/Hiking/BenhamFalls.jpeg",
   "/images/photos/activities/Hiking/smith-rock-vert.jpg",
-  "/images/photos/activities/Hiking/Green-Lakes-Trail.webp",
+  "/images/photos/activities/Hiking/Green-Lakes-Trail.jpg",
   "/images/photos/activities/Hiking/TamMcArthurRimTrail.jpg",
   "/images/photos/activities/Hiking/TumaloFalls.jpeg",
   "/images/photos/activities/Hiking/LavaButte.jpg",
-  "/images/photos/activities/Swimming/SunriverSHARC.avif",
+  "/images/photos/activities/Swimming/SunriverSHARC.jpg",
   "/images/photos/activities/Swimming/ElkLakeResort.jpeg",
   "/images/photos/activities/Swimming/SparksLake.jpg",
   "/images/photos/activities/Swimming/PaulinaLake.jpg",
   "/images/photos/activities/Swimming/DevilsLake.jpg",
   "/images/photos/activities/Swimming/EaglewoodPool.jpg",
   "/images/photos/activities/Rafting/FloatDeschutes.jpg",
-  "/images/photos/activities/Rafting/SunCountryTours.webp",
+  "/images/photos/activities/Rafting/SunCountryTours.jpg",
   "/images/photos/activities/Rafting/BigEddy.jpeg",
-  "/images/photos/activities/Rafting/SUP.webp",
+  "/images/photos/activities/Rafting/SUP.jpg",
   "/images/photos/activities/Skiing/MtBachelor.jpeg",
   "/images/photos/activities/Skiing/NordicCenter.jpeg",
   "/images/photos/activities/Skiing/HoodooSkiArea.jpeg",
-  "/images/photos/activities/Skiing/SummerChairLift.webp",
+  "/images/photos/activities/Skiing/SummerChairLift.jpg",
   "/images/photos/activities/Biking/PhilsTrailComplex.jpg",
   "/images/photos/activities/Biking/WanogaBikeTrails.jpeg",
   "/images/photos/activities/Biking/MtBachelorBikePark.jpg",
-  "/images/photos/activities/Biking/SunriverBike.webp",
+  "/images/photos/activities/Biking/SunriverBike.jpg",
   "/images/photos/activities/Biking/tiddlywinks.jpg",
   "/images/photos/activities/DayTrips/CraterLake.jpg",
   "/images/photos/activities/DayTrips/LavaRiverCave.jpg",
   "/images/photos/activities/DayTrips/HighDesertMusuem.jpg",
   "/images/photos/activities/DayTrips/NewberryNatMonument.jpg",
-  "/images/photos/activities/DayTrips/SunriverObservatory.webp",
-  "/images/photos/activities/Golf/Woodlands.webp",
-  "/images/photos/activities/Golf/Crosswater.gif",
-  "/images/photos/activities/Golf/SunriverStables.webp",
+  "/images/photos/activities/DayTrips/SunriverObservatory.jpg",
+  "/images/photos/activities/Golf/Woodlands.jpg",
+  "/images/photos/activities/Golf/Crosswater.jpg",
+  "/images/photos/activities/Golf/SunriverStables.jpg",
   "/images/photos/activities/Golf/SunriverVillage.jpg",
 ]);
 
@@ -337,6 +337,41 @@ test("checkout.json is only the steps already in the guest guide", () => {
   ]);
   for (const step of checkout.steps) {
     assert.equal(summary.toLowerCase().includes(step.toLowerCase()), true, step);
+  }
+});
+
+test("JSON images are jpeg or png, under 500 KB, and need no URL encoding", () => {
+  const maxBytes = 500 * 1024;
+  const paths = new Set();
+  for (const file of [guide, site, activities, checkout, pages]) {
+    walk(file, (value) => {
+      if (typeof value !== "string" || !value.includes("/images/")) return;
+      const pathname = value.startsWith("http://") || value.startsWith("https://")
+        ? decodeURIComponent(new URL(value).pathname)
+        : value;
+      const match = pathname.match(/\/images\/[^\s"'<>]+/);
+      if (match) paths.add(match[0]);
+    });
+  }
+  assert.ok(paths.size > 20);
+  for (const imagePath of paths) {
+    assert.match(imagePath, /\.(jpe?g|png)$/i, imagePath);
+    const filename = imagePath.split("/").pop();
+    assert.equal(encodeURIComponent(filename), filename, filename);
+    const disk = path.join(root, "public", imagePath);
+    assert.equal(fs.existsSync(disk), true, imagePath);
+    const size = fs.statSync(disk).size;
+    assert.ok(size <= maxBytes, `${imagePath} is ${size} bytes`);
+  }
+  const resized = activities.activitySections
+    .flatMap((section) => section.activities)
+    .filter((activity) => activity.imageCredit?.changes);
+  assert.deepEqual(
+    resized.map((activity) => activity.id),
+    ["viator-ebike-tour", "deschutes-river-trail", "viator-ebike-tour"],
+  );
+  for (const activity of resized) {
+    assert.equal(activity.imageCredit.changes, "Resized", activity.id);
   }
 });
 
