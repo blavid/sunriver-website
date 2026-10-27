@@ -35,13 +35,15 @@ git checkout main && git pull
 npm run deploy:worker
 ```
 
-Run those from the repo root. The script installs the worker packages, including `uqr`, then deploys. `npm install` is required for that dependency. Running `wrangler` from the repo root without the script fails.
+Run those from the repo root. The script changes into `worker/`, installs packages with `npm ci` (including `uqr`), then runs `npx wrangler deploy`. Wrangler has to start in `worker/` so it reads `worker/wrangler.toml` (`eaglewood-tv`). Started from the repo root, it detects the Next.js app and fails with “Unable to detect the version of next”.
 
-The same deploy from the worker directory:
+The same commands by hand:
 
 ```bash
-cd worker && npm install && npx wrangler deploy
+cd worker && npm ci && npx wrangler deploy
 ```
+
+`npm install` is required for the `uqr` dependency. `npm run deploy:worker:dry` is the same path with `--dry-run` and does not publish. Extra flags after `npm run deploy:worker --` do not reach Wrangler, because the script is a `cd` chain.
 
 Set secrets from `worker/` with `npx wrangler secret put <NAME>`.
 
