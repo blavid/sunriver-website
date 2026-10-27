@@ -18,6 +18,7 @@ import {
   ZONE,
   type StayRecord,
 } from "./guest";
+import { wifiResponse, type WifiKind } from "./wifi";
 
 const INDEX_KEY = "idx";
 const MIN_PATH_KEY_LENGTH = 24;
@@ -33,6 +34,9 @@ export interface Env {
   GUEST: GuestKv;
   EAGLEWOOD_TOKEN?: string;
   GUEST_PATH_KEY?: string;
+  WIFI_SSID?: string;
+  WIFI_PASSWORD?: string;
+  WIFI_TYPE?: string;
 }
 
 interface IndexEntry {
@@ -337,6 +341,14 @@ const worker = {
       if (!guestPathAllowed(keyed[1], env.GUEST_PATH_KEY)) return notFound();
       if (request.method !== "GET") return methodNotAllowed("GET");
       return keyed[2] === "diag" ? readDiag(env) : readGuest(env);
+    }
+
+    const wifi = /^\/tv\/([^/]+)\/wifi\.(json|png)$/.exec(path);
+    if (wifi) {
+      if (!guestPathAllowed(wifi[1], env.GUEST_PATH_KEY)) return notFound();
+      if (request.method !== "GET") return methodNotAllowed("GET");
+      const kind: WifiKind = wifi[2] === "png" ? "png" : "json";
+      return wifiResponse(request, env, kind);
     }
 
     return notFound();
