@@ -66,10 +66,11 @@ test("every content file has an integer version", () => {
 });
 
 test("JSON has no secretRef placeholders", () => {
-  for (const name of fs.readdirSync(dataDir)) {
-    assert.equal(name.endsWith(".json"), true);
-    const text = fs.readFileSync(path.join(dataDir, name), "utf8");
-    assert.equal(text.includes("secretRef"), false, name);
+  for (const entry of fs.readdirSync(dataDir, { withFileTypes: true })) {
+    if (entry.isDirectory()) continue;
+    assert.equal(entry.name.endsWith(".json"), true, entry.name);
+    const text = fs.readFileSync(path.join(dataDir, entry.name), "utf8");
+    assert.equal(text.includes("secretRef"), false, entry.name);
     walk(JSON.parse(text), (value) => {
       if (value && typeof value === "object" && !Array.isArray(value)) {
         assert.equal(Object.hasOwn(value, "secretRef"), false);

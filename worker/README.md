@@ -14,10 +14,14 @@ npm install
 npx wrangler login
 npx wrangler secret put EAGLEWOOD_TOKEN
 openssl rand -hex 16 | npx wrangler secret put GUEST_PATH_KEY
+npx wrangler secret put WIFI_SSID
+npx wrangler secret put WIFI_PASSWORD
 npx wrangler deploy
 ```
 
 `openssl rand -hex 16` prints 32 hex characters. `GUEST_PATH_KEY` must be at least 24 characters. The worker reads it only from that secret. Do not hard-code it, commit it, or paste the guest URL into a public log. The URL path is the secret.
+
+`npx wrangler secret put WIFI_SSID` and `npx wrangler secret put WIFI_PASSWORD` prompt for the value. Type it at the prompt. Do not pass it as an argument, commit it, or log it. The worker does not log the network name, the password, or the QR text. `WIFI_TYPE` is optional and defaults to `WPA`. Set it only when the network is not WPA, the same way: `npx wrangler secret put WIFI_TYPE`.
 
 `wrangler deploy` publishes the worker, attaches the route `sunrivertownhome.com/tv/*` on the existing zone, and registers the cron in `wrangler.toml`: `15 8 * * *` (08:15 UTC, which is 00:15 PST or 01:15 PDT). There is no separate cron command. The Workers Free plan allows 5 cron triggers per account ([Workers limits](https://developers.cloudflare.com/workers/platform/limits/)). Deploy does not create DNS records. `workers_dev` stays on, so the same paths also work on the `*.workers.dev` hostname printed after deploy.
 
@@ -33,6 +37,8 @@ Generate `EAGLEWOOD_TOKEN` the same way (`openssl rand -hex 16`) and pass it onl
 | `OPTIONS` on those paths | None | `204` CORS preflight. No token and no KV write |
 | `GET /tv/<GUEST_PATH_KEY>/guest.json` | Path secret | The in-progress stay as `{firstName, lastName, checkout}`, or `{}` |
 | `GET /tv/<GUEST_PATH_KEY>/diag.json` | Path secret | The last authorized POST, redacted: content-type, top-level key names, value types and lengths |
+| `GET /tv/<GUEST_PATH_KEY>/wifi.json` | Path secret | `{ssid, password}` from the `WIFI_SSID` and `WIFI_PASSWORD` secrets |
+| `GET /tv/<GUEST_PATH_KEY>/wifi.png` | Path secret | PNG QR of `WIFI:T:<type>;S:<ssid>;P:<password>;;`, about 480 px, quiet zone of 2 modules |
 | Anything else | | `404`, or `405` when the path is known and the method is wrong |
 
 Each stay is its own KV key, `s:<reservation id>`. The value is only `{firstName, lastName, checkin, checkout}`. A small `idx` key lists ids and dates so `guest.json` does not call KV `list`. Host Tools reservation ids are `document._id` in the [reservation webhook schema](https://docs.hosttools.com/reference/post_webhooks-reservation) (required; example `5e7a6c0b0f2c9c0017b0b0b0`). That schema has no `id` field. If `_id` is missing and `id` is present, that value is used instead.
@@ -53,7 +59,13 @@ Check-in and checkout dates may be `YYYY-MM-DD`, an ISO timestamp, or a human da
 
 Every authorized `POST` writes KV key `diag:last` for 7 days. The value is the content-type, the body's top-level key names, and each value's type and length. It does not contain field values, the query string, or the token. `GET /tv/<GUEST_PATH_KEY>/diag.json` returns that object with `Cache-Control: no-store`. A missing or wrong token writes a separate key, `diag:lastUnauthorized`, for 7 days: the method, the content-type, and two booleans for whether a `token` query parameter and the `X-Eaglewood-Token` header were present. That record does not contain the token or the body. `GET` and `HEAD` with a valid token write nothing.
 
-The header and the `token` query parameter are each compared to `EAGLEWOOD_TOKEN` in constant time. Either match is enough. A missing or wrong token is 401. If `EAGLEWOOD_TOKEN` is unset, check-in and checkout return 500. The worker does not log the request URL or the token. If `GUEST_PATH_KEY` is unset, shorter than 24 characters, or not an exact match, the guest URL is 404.
+The header and the `token` query parameter are each compared to `EAGLEWOOD_TOKEN` in constant time. Either match is enough. A missing or wrong token is 401. If `EAGLEWOOD_TOKEN` is unset, check-in and checkout return 500. The worker does not log the request URL or the token. If `GUEST_PATH_KEY` is unset, shorter than 24 characters, or not an exact match, `guest.json`, `diag.json`, `wifi.json`, and `wifi.png` are 404.
+
+`wifi.json` and `wifi.png` use that same path check before they read the Wi-Fi secrets. A wrong key is 404 and does not say whether the secrets are set. If `WIFI_SSID` or `WIFI_PASSWORD` is missing or empty, both routes return 503 with an empty body and `Cache-Control: no-store`. The body does not name the missing secret. `WIFI_TYPE` defaults to `WPA` when it is unset or blank.
+
+Characters `\`, `;`, `,`, `"`, and `:` in the network name, password, and type are escaped with a backslash in the QR text. The image is an 8-bit grayscale PNG, about 480 px on a side, with a quiet zone of 2 modules. It is drawn in the worker with the MIT library `uqr`. No outside QR service is called.
+
+A successful Wi-Fi response sends `Cache-Control: private, max-age=3600` and an `ETag`. The validator is the SHA-256 hex of `ssid|password|fmtVersion`, quoted. `fmtVersion` is `1|<json or png>|<type>|480|q2`, so the JSON and the PNG do not share an ETag. `If-None-Match` with that value, a `W/` prefix, or `*` returns 304 and an empty body. Check-in, checkout, `guest.json`, and `diag.json` are unchanged.
 
 Names are HTML-escaped in `guest.json`. That response also sends `Cache-Control: no-store` and `Access-Control-Allow-Origin: *`.
 

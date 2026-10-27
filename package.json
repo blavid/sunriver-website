@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/content.test.mjs"
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/content.test.mjs tests/tv-assets.test.mjs"
   },
   "dependencies": {
     "next": "16.2.9",
@@ -21,8 +21,10 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.2.9",
+    "jsqr": "^1.4.0",
     "puppeteer": "^25.3.0",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "uqr": "^0.1.2"
   }
 }

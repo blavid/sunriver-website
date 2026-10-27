@@ -48,6 +48,33 @@ export type QuickReferenceItem = {
   value: string;
 };
 
+export type BookDirectIcon = "house" | "mountain" | "dining" | "pines" | "more";
+
+export type BookDirectPerk = {
+  id: string;
+  label: string;
+  icon: BookDirectIcon;
+};
+
+/** TV Book Direct screen. The website does not render this block. */
+export type BookDirect = {
+  version: number;
+  headline: string[];
+  banner: string;
+  body: string;
+  savingsText: string;
+  siteUrl: string;
+  bookingUrl: string;
+  qrImageUrl: string;
+  bookingQrImageUrl: string;
+  photoUrl: string;
+  photoTvUrl: string;
+  perks: BookDirectPerk[];
+  signOff: string;
+  homePromptTitle: string;
+  homePromptSub: string;
+};
+
 export type GuideFile = {
   version: number;
   siteConfig: SiteConfig;
@@ -55,6 +82,7 @@ export type GuideFile = {
   troubleshooting: TroubleshootingItem[];
   guestGuideSections: GuestGuideSection[];
   quickReference: QuickReferenceItem[];
+  bookDirect: BookDirect;
 };
 
 export type Highlight = {
@@ -110,6 +138,8 @@ export type ActivityJson = {
   description: string;
   image: string;
   imageUrl: string;
+  /** JPEG about 640 px on the long edge. The website does not render this. */
+  imageTvUrl: string;
   imageAlt: string;
   imageCredit?: ImageCredit;
   distance?: string;
@@ -128,6 +158,8 @@ export type ActivityJson = {
   seasonRank?: SeasonRank;
   tip?: string;
   url?: string;
+  /** PNG QR of `url` only. Omitted when `url` is omitted. The website does not render this. */
+  qrUrl?: string;
   affiliateUrl?: string;
 };
 

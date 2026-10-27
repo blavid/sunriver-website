@@ -36,7 +36,7 @@ Guest copy, activities, and page text live in `public/data/*.json`. The website 
 
 ### Adding an activity
 
-Add one object to a section's `activities` array in `public/data/activities.json`. That position is the order on the website. Set `season`, `seasonLabel`, and a photo (`image`, `imageUrl`, `imageAlt`). A photo that was not already on the site also needs `imageCredit` (author, license, license URL, and Commons source). Then set `seasonRank` if the TV should feature it in a season.
+Add one object to a section's `activities` array in `public/data/activities.json`. That position is the order on the website. Set `season`, `seasonLabel`, and a photo (`image`, `imageUrl`, `imageAlt`). A photo that was not already on the site also needs `imageCredit` (author, license, license URL, and Commons source). Then set `seasonRank` if the TV should feature it in a season. Run `node scripts/render-tv-images.mjs` and `node scripts/render-qr.mjs` so `imageTvUrl` and, when `url` is set, `qrUrl` stay in sync. The website does not show those two fields.
 
 Ranks are positive integers, one per season (`winter`, `spring`, `summer`, `fall`), spaced by 10. Lower sorts earlier. Omit a season to sort after every ranked activity in that season. To insert between two activities, use a number between their ranks (`15` sits between `10` and `20`). No other activity needs to change. The website does not read `seasonRank`.
 
