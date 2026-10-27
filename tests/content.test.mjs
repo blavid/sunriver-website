@@ -376,6 +376,47 @@ test("JSON images are jpeg or png, under 500 KB, and need no URL encoding", () =
   }
 });
 
+function jpegHasSof2(buf) {
+  if (buf.length < 4 || buf[0] !== 0xff || buf[1] !== 0xd8) {
+    throw new Error("not a jpeg");
+  }
+  let i = 2;
+  while (i < buf.length - 1) {
+    if (buf[i] !== 0xff) break;
+    while (buf[i] === 0xff) i += 1;
+    const marker = buf[i];
+    i += 1;
+    if (marker === 0xd9 || marker === 0xda) break;
+    if (marker === 0x01 || (marker >= 0xd0 && marker <= 0xd7)) continue;
+    if (i + 1 >= buf.length) break;
+    const length = (buf[i] << 8) | buf[i + 1];
+    if (marker === 0xc2) return true;
+    if (length < 2) break;
+    i += length;
+  }
+  return false;
+}
+
+test("JPEGs under public/images are baseline, not progressive", () => {
+  const imagesDir = path.join(root, "public/images");
+  const files = [];
+  const stack = [imagesDir];
+  while (stack.length > 0) {
+    const dir = stack.pop();
+    for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+      const full = path.join(dir, entry.name);
+      if (entry.isDirectory()) stack.push(full);
+      else if (/\.jpe?g$/i.test(entry.name)) files.push(full);
+    }
+  }
+  assert.ok(files.length > 100);
+  const progressive = files.filter((file) => jpegHasSof2(fs.readFileSync(file)));
+  assert.deepEqual(
+    progressive.map((file) => path.relative(root, file)),
+    [],
+  );
+});
+
 test("rendered pages do not show the host phone", () => {
   const buildDir = path.join(root, ".next/server/app");
   for (const [built] of ROUTES) {

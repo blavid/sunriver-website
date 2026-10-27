@@ -27,8 +27,15 @@ function insertAfter(object, afterKey, key, value) {
   return next;
 }
 
+// Baseline (SOF0). mozjpeg:true forces a progressive scan, which Roku Poster does not load.
 function jpeg(input) {
-  return input.toColorspace("srgb").jpeg({ quality: 80, mozjpeg: true });
+  return input.toColorspace("srgb").jpeg({
+    quality: 80,
+    progressive: false,
+    trellisQuantisation: true,
+    overshootDeringing: true,
+    quantisationTable: 3,
+  });
 }
 
 const activities = JSON.parse(fs.readFileSync(activitiesPath, "utf8"));
@@ -57,7 +64,7 @@ await jpeg(sharp(livingSource).resize(960, 540, { fit: "cover", position: "centr
 await sharp({
   create: { width: 64, height: 64, channels: 3, background: { r: 232, g: 226, b: 214 } },
 })
-  .jpeg({ quality: 80 })
+  .jpeg({ quality: 80, progressive: false })
   .toFile(path.join(tvDir, "tv-placeholder.jpg"));
 
 for (const file of fs.readdirSync(tvDir)) {
