@@ -1,0 +1,253 @@
+{
+  "version": 1,
+  "heroImage": {
+    "src": "/images/photos/house/pool.jpg",
+    "url": "https://sunrivertownhome.com/images/photos/house/pool.jpg"
+  },
+  "pageBackgrounds": {
+    "home": {
+      "src": "/images/photos/house/pool.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/pool.jpg"
+    },
+    "theHome": {
+      "src": "/images/photos/house/living-dining-kitchen.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/living-dining-kitchen.jpg"
+    },
+    "guestGuide": {
+      "src": "/images/photos/house/kitchen-3.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/kitchen-3.jpg"
+    },
+    "book": {
+      "src": "/images/photos/house/back-bedroom-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/back-bedroom-1.jpg"
+    },
+    "activities": {
+      "src": "/images/photos/activities/Golf/SunriverStables.webp",
+      "url": "https://sunrivertownhome.com/images/photos/activities/Golf/SunriverStables.webp"
+    }
+  },
+  "photos": [
+    {
+      "src": "/images/photos/house/exterior-front-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/exterior-front-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/living-room-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/living-room-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/kitchen-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/kitchen-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/kitchen-dining.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/kitchen-dining.jpg"
+    },
+    {
+      "src": "/images/photos/house/dining-room-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/dining-room-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/back-bedroom-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/back-bedroom-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/front-bedroom-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/front-bedroom-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/kids-room-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/kids-room-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/front-bath-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/front-bath-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/back-bath-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/back-bath-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/living-room-2.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/living-room-2.jpg"
+    },
+    {
+      "src": "/images/photos/house/kitchen-2.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/kitchen-2.jpg"
+    },
+    {
+      "src": "/images/photos/house/hot-tub-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/hot-tub-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/back-deck-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/back-deck-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/pool.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/pool.jpg"
+    },
+    {
+      "src": "/images/photos/house/exterior-front-2.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/exterior-front-2.jpg"
+    },
+    {
+      "src": "/images/photos/house/exterior-back-1.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/exterior-back-1.jpg"
+    },
+    {
+      "src": "/images/photos/house/front-porch.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/front-porch.jpg"
+    },
+    {
+      "src": "/images/photos/house/garage.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/garage.jpg"
+    },
+    {
+      "src": "/images/photos/house/living-room-3.jpg",
+      "url": "https://sunrivertownhome.com/images/photos/house/living-room-3.jpg"
+    },
+    {
+      "src": "/images/photos/house/floor-plan.jpeg",
+      "url": "https://sunrivertownhome.com/images/photos/house/floor-plan.jpeg"
+    }
+  ],
+  "highlights": [
+    {
+      "title": "2 Master Suites",
+      "description": "Enormous king suites, each with a private bath and vaulted ceilings and a twin hide-a-bed",
+      "icon": "bed"
+    },
+    {
+      "title": "Hot Tub & Deck",
+      "description": "Private deck overlooking the common greeway with a spacious hot tub.",
+      "icon": "spa"
+    },
+    {
+      "title": "SHARC Passes",
+      "description": "8 passes included for Sunriver's premier aquatic recreation center.",
+      "icon": "pool"
+    },
+    {
+      "title": "Bikes & Trails",
+      "description": "10 bikes in the garage plus 34+ miles of paved paths right outside.",
+      "icon": "bike"
+    },
+    {
+      "title": "Smart Home",
+      "description": "Control lights, heat, and locks from switches or voice commands.",
+      "icon": "home"
+    },
+    {
+      "title": "Fast WiFi",
+      "description": "Super-fast 1 Gbps fiberinternet for streaming, remote work, or video calls.",
+      "icon": "wifi"
+    }
+  ],
+  "guestReviews": [
+    "Your place was the most thoughtfully appointed rental I have stayed in.",
+    "The kids have decided they'd like to live here.",
+    "Your home is cozy and comfortable and perfectly suited to our needs.",
+    "It's a real kitchen vs the usual rental castoffs. It makes cooking meals a breeze!"
+  ],
+  "rooms": [
+    {
+      "name": "Master Suite 1",
+      "features": [
+        "King bed, sleeps 2",
+        "Twin hide-a-bed",
+        "Full private bath",
+        "Vaulted ceilings & walk-in closet",
+        "40\" TV with Netflix & Prime Video",
+        "Amazon Alexa & sitting/reading area"
+      ]
+    },
+    {
+      "name": "Master Suite 2",
+      "features": [
+        "King bed, sleeps 2",
+        "Twin hide-a-bed",
+        "Full private bath",
+        "40\" TV with Netflix & Prime Video",
+        "Desk with large monitor & Amazon Alexa"
+      ]
+    },
+    {
+      "name": "Bedroom 3",
+      "features": [
+        "Bunk bed, twin/queen, sleeps 2 or 3",
+        "40\" TV with Netflix & Prime Video"
+      ]
+    },
+    {
+      "name": "Living Area",
+      "features": [
+        "Open concept living, dining & kitchen",
+        "Giant sectional leathercouch",
+        "65\" TV with Netflix & Prime Video",
+        "Dining table seats up to 8",
+        "Bar area with 3 stools"
+      ]
+    },
+    {
+      "name": "Garage",
+      "features": [
+        "10 bikes (5 adult, 2 junior, 2 tiny tots, 1 two-person tandem)",
+        "2 bike trailers (enclosed & pedal)",
+        "Infant rear-mount bike seat",
+        "Summer pool toys",
+        "Winter snow toys (snowshoes, sleds, etc.)",
+        "Boot warmer (snow boots only)"
+      ]
+    },
+    {
+      "name": "Laundry Room",
+      "features": [
+        "Large capacity washer & dryer",
+        "Iron & ironing board",
+        "Laundry detergent"
+      ]
+    }
+  ],
+  "amenities": [
+    "Kitchen",
+    "Air conditioning",
+    "High-speed WiFi",
+    "TV",
+    "Hot tub",
+    "Pool access",
+    "Washer/dryer",
+    "Dishwasher",
+    "BBQ/Picnic area",
+    "Private entrance",
+    "Laptop-friendly workspace",
+    "Baby crib",
+    "Coffee/tea maker",
+    "Microwave",
+    "Bathtub",
+    "Iron & hairdryer",
+    "Fire extinguishers"
+  ],
+  "navLinks": [
+    {
+      "href": "/",
+      "label": "Home"
+    },
+    {
+      "href": "/the-home",
+      "label": "The Home"
+    },
+    {
+      "href": "/guest-guide",
+      "label": "Guest Guide"
+    },
+    {
+      "href": "/activities",
+      "label": "Activities"
+    },
+    {
+      "href": "/book",
+      "label": "Book"
+    }
+  ]
+}

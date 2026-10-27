@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { navLinks, siteConfig } from "@/lib/content";
+import { navLinks, pages, siteConfig } from "@/lib/content";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -12,10 +12,10 @@ export function Header() {
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-4 sm:px-6">
         <Link href="/" className="group" onClick={() => setOpen(false)}>
           <span className="font-display text-xl tracking-tight text-sage-900 sm:text-2xl">
-            Sunriver Townhome
+            {siteConfig.name}
           </span>
           <span className="mt-0.5 block text-xs font-medium uppercase tracking-widest text-sage-500">
-            Eaglewood Escape
+            {pages.header.brandSubtitle}
           </span>
         </Link>
 
@@ -33,7 +33,7 @@ export function Header() {
             href="/book"
             className="rounded-full bg-sage-800 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-sage-700"
           >
-            Book Now
+            {pages.header.bookNow}
           </Link>
         </nav>
 
@@ -74,7 +74,7 @@ export function Header() {
               className="mt-2 rounded-full bg-sage-800 px-5 py-3 text-center text-base font-medium text-white"
               onClick={() => setOpen(false)}
             >
-              Book Now
+              {pages.header.bookNow}
             </Link>
           </div>
         </nav>
@@ -89,17 +89,14 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
         <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
           <div>
-            <p className="font-display text-xl text-white">Sunriver Townhome</p>
+            <p className="font-display text-xl text-white">{siteConfig.name}</p>
             <p className="mt-2 text-sm">{siteConfig.tagline}</p>
-            <p className="mt-4 text-sm leading-relaxed">
-              A luxury vacation home on the Woodlands Golf Course — your basecamp for
-              Central Oregon adventure.
-            </p>
+            <p className="mt-4 text-sm leading-relaxed">{pages.footer.blurb}</p>
           </div>
 
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-sage-400">
-              Explore
+              {pages.footer.exploreHeading}
             </p>
             <ul className="mt-4 space-y-2">
               {navLinks.map((link) => (
@@ -114,22 +111,22 @@ export function Footer() {
 
           <div>
             <p className="text-sm font-semibold uppercase tracking-wider text-sage-400">
-              Book & Contact
+              {pages.footer.bookHeading}
             </p>
             <ul className="mt-4 space-y-2 text-sm">
               <li>
                 <a href={siteConfig.bookUrl} className="hover:text-white" target="_blank" rel="noopener noreferrer">
-                  Direct Booking
+                  {pages.footer.directBooking}
                 </a>
               </li>
               <li>
                 <a href={siteConfig.airbnbUrl} className="hover:text-white" target="_blank" rel="noopener noreferrer">
-                  Airbnb
+                  {pages.footer.airbnb}
                 </a>
               </li>
               <li>
                 <a href={siteConfig.vrboUrl} className="hover:text-white" target="_blank" rel="noopener noreferrer">
-                  VRBO
+                  {pages.footer.vrbo}
                 </a>
               </li>
               <li>
@@ -142,7 +139,7 @@ export function Footer() {
         </div>
 
         <div className="mt-10 border-t border-sage-800 pt-8 text-center text-sm text-sage-500">
-          © {new Date().getFullYear()} {siteConfig.domain} · Hosted by {siteConfig.host.name}
+          © {new Date().getFullYear()} {siteConfig.domain} · {pages.footer.hostedBy} {siteConfig.host.name}
         </div>
       </div>
     </footer>

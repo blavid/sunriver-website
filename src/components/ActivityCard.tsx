@@ -23,7 +23,16 @@ export function ActivityCard({ activity }: { activity: Activity }) {
 
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-display text-xl text-sage-900">{activity.name}</h3>
+          {activity.difficulty ? (
+            <div>
+              <h3 className="font-display text-xl text-sage-900">{activity.name}</h3>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-sage-500">
+                {activity.difficulty}
+              </p>
+            </div>
+          ) : (
+            <h3 className="font-display text-xl text-sage-900">{activity.name}</h3>
+          )}
           {activity.distance && (
             <span className="shrink-0 rounded-full bg-sage-100 px-2.5 py-1 text-xs font-medium text-sage-600">
               {activity.distance}
@@ -35,9 +44,44 @@ export function ActivityCard({ activity }: { activity: Activity }) {
           {activity.description}
         </p>
 
+        {activity.trailDistance && (
+          <p className="mt-3 text-sm text-sage-600">
+            <span className="font-semibold text-sage-700">Trail:</span> {activity.trailDistance}
+          </p>
+        )}
+
+        {activity.gettingThere && (
+          <p className="mt-3 text-sm text-sage-600">
+            <span className="font-semibold text-sage-700">Getting there:</span> {activity.gettingThere}
+          </p>
+        )}
+
         {activity.tip && (
           <p className="mt-3 text-sm text-sage-500">
             <span className="font-semibold text-sage-700">Tip:</span> {activity.tip}
+          </p>
+        )}
+
+        {activity.imageCredit && (
+          <p className="mt-3 text-xs leading-relaxed text-sage-500">
+            Photo: {activity.imageCredit.author},{" "}
+            <a
+              href={activity.imageCredit.licenseUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-sage-300 underline-offset-2 hover:text-sage-700"
+            >
+              {activity.imageCredit.license}
+            </a>
+            {activity.imageCredit.changes ? ` (${activity.imageCredit.changes})` : ""}.{" "}
+            <a
+              href={activity.imageCredit.source}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="underline decoration-sage-300 underline-offset-2 hover:text-sage-700"
+            >
+              Wikimedia Commons
+            </a>
           </p>
         )}
 

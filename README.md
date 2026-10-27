@@ -28,12 +28,25 @@ npm start
 
 Deploy to Vercel, Netlify, or any Node.js host. Point `sunrivertownhome.com` DNS to your deployment.
 
-## Customization
+## Content
 
-- **Content** — Edit `src/lib/content.ts` for property details, restaurants, hikes, troubleshooting
-- **Photos** — Photo URLs are in `src/lib/content.ts`; replace with locally hosted images in `public/` for production
-- **Contact email** — Update `siteConfig.host.email` in `src/lib/content.ts`
-- **VRBO link** — Add your VRBO listing URL to `siteConfig` when ready
+Guest copy, activities, and page text live in `public/data/*.json`. The website and the Roku guest guide both read those files. Field reference: `docs/content-schema.md`.
+
+`src/lib/content.ts` and `src/lib/activities.ts` are typed wrappers. They do not hold their own copy. The Book page's marketing sentences stay in `src/app/book/page.tsx`.
+
+### Adding an activity
+
+Add one object to a section's `activities` array in `public/data/activities.json`. That position is the order on the website. Set `season`, `seasonLabel`, and a photo (`image`, `imageUrl`, `imageAlt`). A photo that was not already on the site also needs `imageCredit` (author, license, license URL, and Commons source). Then set `seasonRank` if the TV should feature it in a season.
+
+Ranks are positive integers, one per season (`winter`, `spring`, `summer`, `fall`), spaced by 10. Lower sorts earlier. Omit a season to sort after every ranked activity in that season. To insert between two activities, use a number between their ranks (`15` sits between `10` and `20`). No other activity needs to change. The website does not read `seasonRank`.
+
+`src/lib/season-order.ts` (`compareSeasonRank`) is the TV sort. Details and a copy-paste example are in `docs/content-schema.md`.
+
+```bash
+npm test
+```
+
+`npm test` checks the JSON shape and compares prerendered HTML to `tests/fixtures`. Run `npm run build` first.
 
 ## Tech Stack
 

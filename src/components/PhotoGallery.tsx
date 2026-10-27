@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useState } from "react";
-import { photos } from "@/lib/content";
+import { pages, photos } from "@/lib/content";
 
 export function PhotoGallery({ limit }: { limit?: number }) {
   const [lightbox, setLightbox] = useState<number | null>(null);
@@ -22,14 +22,14 @@ export function PhotoGallery({ limit }: { limit?: number }) {
           >
             <Image
               src={src}
-              alt={`Sunriver townhome photo ${i + 1}`}
+              alt={`${pages.photoGallery.altPrefix} ${i + 1}`}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
               sizes={i === 0 && limit ? "(max-width: 640px) 100vw, 50vw" : "(max-width: 640px) 50vw, 25vw"}
             />
             {limit && i === limit - 1 && photos.length > limit && (
               <div className="absolute inset-0 flex items-center justify-center bg-sage-900/50 text-lg font-semibold text-white">
-                +{photos.length - limit} more
+                +{photos.length - limit} {pages.photoGallery.moreLabel}
               </div>
             )}
           </button>
@@ -71,7 +71,7 @@ export function PhotoGallery({ limit }: { limit?: number }) {
           <div className="relative h-[70vh] w-full max-w-5xl" onClick={(e) => e.stopPropagation()}>
             <Image
               src={photos[lightbox]}
-              alt={`Sunriver townhome photo ${lightbox + 1}`}
+              alt={`${pages.photoGallery.altPrefix} ${lightbox + 1}`}
               fill
               className="object-contain"
               sizes="100vw"

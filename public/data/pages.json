@@ -1,0 +1,169 @@
+{
+  "version": 2,
+  "metadata": {
+    "title": {
+      "default": "Sunriver Townhome | Eaglewood Vacation Rental",
+      "template": "%s | Sunriver Townhome"
+    },
+    "description": "Luxury 3-bedroom townhome on the Woodlands Golf Course in Sunriver, Oregon. Hot tub, SHARC passes, bikes, and smart home features. Book direct or explore our guest guide.",
+    "keywords": [
+      "Sunriver vacation rental",
+      "Eaglewood townhome",
+      "Central Oregon",
+      "SHARC passes",
+      "Woodlands Golf Course"
+    ],
+    "openGraph": {
+      "title": "Sunriver Townhome | Eaglewood Vacation Rental",
+      "description": "Newly remodeled 3-bedroom luxury townhome with hot tub, SHARC passes, and bikes in Sunriver, Oregon.",
+      "url": "https://sunrivertownhome.com",
+      "siteName": "Sunriver Townhome",
+      "locale": "en_US",
+      "type": "website"
+    }
+  },
+  "header": {
+    "brandSubtitle": "Eaglewood Escape",
+    "bookNow": "Book Now"
+  },
+  "footer": {
+    "blurb": "A luxury vacation home on the Woodlands Golf Course — your basecamp for Central Oregon adventure.",
+    "exploreHeading": "Explore",
+    "bookHeading": "Book & Contact",
+    "directBooking": "Direct Booking",
+    "airbnb": "Airbnb",
+    "vrbo": "VRBO",
+    "hostedBy": "Hosted by"
+  },
+  "photoGallery": {
+    "altPrefix": "Sunriver townhome photo",
+    "moreLabel": "more"
+  },
+  "home": {
+    "hero": {
+      "imageAlt": "Sunriver townhome deck with hot tub overlooking the golf course",
+      "eyebrow": "Sunriver, Oregon",
+      "title": "Your Central Oregon home base",
+      "subtitle": "Newly remodeled luxury townhome on the Woodlands Golf Course — hot tub, SHARC passes, bikes, and everything you need for an unforgettable stay.",
+      "primaryCta": "Check Availability",
+      "secondaryCta": "Explore the Home"
+    },
+    "stats": {
+      "guests": "Guests",
+      "bedrooms": "Bedrooms",
+      "bathrooms": "Bathrooms"
+    },
+    "intro": {
+      "title": "Thoughtfully appointed, perfectly located",
+      "subtitle": "Tucked between the 1st and 10th holes of the Woodlands Golf Course, our townhouse offers everything you'd expect from a luxury vacation home.",
+      "paragraphs": [
+        "Whether you crave the serenity of the Oregon high desert or the thrill of outdoor adventure, our home will not disappoint. Featuring three bedrooms — two enormous master suites with private baths — this home is perfect for families or small groups vacationing together.",
+        "Hit the slopes at Mt. Bachelor, just 24 minutes away, then come home to wind down in the hot tub. Or grab a bike from the garage and ride to the Village for dinner."
+      ],
+      "cta": "See Full Details"
+    },
+    "reviews": {
+      "title": "What guests are saying",
+      "subtitle": "We're proud of the experience we've created — here's what recent guests have shared."
+    },
+    "gallery": {
+      "title": "Photo gallery",
+      "subtitle": "{count} photos of the home, deck, and surroundings.",
+      "cta": "View All Photos",
+      "previewLimit": 9
+    },
+    "booking": {
+      "title": "Planning your Sunriver getaway?",
+      "body": "Book direct for the best rates, or browse our guest guide for local dining, hikes, and everything you need during your stay.",
+      "bookDirect": "Book Direct",
+      "guestGuide": "Guest Guide",
+      "activities": "Activities Guide"
+    },
+    "resources": {
+      "title": "More than a place to stay",
+      "subtitle": "This site is your resource before, during, and after your visit.",
+      "learnMore": "Learn more",
+      "cards": [
+        {
+          "title": "Guest Guide",
+          "description": "WiFi, house rules, check-in info, and troubleshooting for common issues.",
+          "href": "/guest-guide"
+        },
+        {
+          "title": "Activities Guide",
+          "description": "Dining, hiking, swimming, river floats, skiing, mountain biking, and more.",
+          "href": "/activities#dining"
+        },
+        {
+          "title": "Hikes & Outdoors",
+          "description": "Trails, waterfalls, and adventures — many starting just minutes from the door.",
+          "href": "/activities#hiking"
+        }
+      ]
+    }
+  },
+  "theHome": {
+    "metadata": {
+      "title": "The Home",
+      "description": "3 bedrooms, 3 baths, hot tub, SHARC passes, bikes, and smart home features. Full details on our Sunriver Eaglewood townhome."
+    },
+    "hero": {
+      "alt": "The home background image",
+      "title": "The Home",
+      "subtitle": "Newly remodeled 2 master suites, hot tub, SHARC passes, and bikes — everything you need for a luxury Sunriver stay."
+    },
+    "intro": [
+      "Enjoy all that Central Oregon offers from the comfort and convenience of our well-appointed, newly remodeled home. Tucked between the 1st and 10th holes of the Woodlands Golf course, our townhouse offers everything you would expect from a luxury vacation home.",
+      "Featuring three bedrooms, two of which are enormous master suites with full private baths, this home is perfect for a large family or small family groups vacationing together. The well-appointed kitchen features all of the cooking, serving, and eating utensils you'll need for any family feast.",
+      "The large, open-concept living area is perfect for socializing, eating, and enjoying the big screen TV or gathering together to play a game or work on a jigsaw puzzle."
+    ],
+    "sections": {
+      "highlights": "What people love",
+      "rooms": "Rooms & layout",
+      "galleryTitle": "Photo gallery",
+      "gallerySubtitle": "Every corner of the home, inside and out.",
+      "amenities": "Amenities",
+      "houseRules": "House rules"
+    }
+  },
+  "guestGuide": {
+    "metadata": {
+      "title": "Guest Guide",
+      "description": "Everything you need for your stay — check-in info, house rules, WiFi, SHARC passes, and troubleshooting tips."
+    },
+    "hero": {
+      "alt": "Guest guide background image",
+      "title": "Guest Guide",
+      "subtitle": "Everything you need before, during, and after your stay. Save this page for quick reference."
+    },
+    "quickReference": {
+      "title": "Quick reference",
+      "subtitle": "The essentials at a glance."
+    },
+    "troubleshooting": {
+      "title": "Troubleshooting",
+      "subtitle": "Common issues and how to fix them. Still stuck? Reach out anytime — we're here to help."
+    },
+    "help": {
+      "title": "Need help?",
+      "body": "We're immediately available to handle anything that may arise. We have a network of professionals available 24/7 for household emergencies.",
+      "contactPrefix": "Contact"
+    }
+  },
+  "activities": {
+    "metadata": {
+      "title": "Activities Guide",
+      "description": "The best things to do in Central Oregon — dining, hiking, swimming, river floats, skiing, mountain biking, and more near Sunriver."
+    },
+    "hero": {
+      "alt": "Activities guide background image",
+      "title": "Central Oregon Activities Guide",
+      "subtitle": "Our curated guide to the best dining, trails, water, snow, and adventures — all within reach of your Sunriver home base."
+    },
+    "navLabel": "Activity categories",
+    "closing": {
+      "title": "Ready to explore?",
+      "body": "Your stay includes SHARC passes, bikes, and a hot tub waiting for you after every adventure. We're glad you're here."
+    }
+  }
+}

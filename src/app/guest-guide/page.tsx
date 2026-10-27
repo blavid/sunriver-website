@@ -1,11 +1,19 @@
 import type { Metadata } from "next";
-import { PageHeader, PageHero, Section, SectionTitle } from "@/components/ui";
-import { guestGuideSections, pageBackgrounds, siteConfig, troubleshooting } from "@/lib/content";
+import { PageHero, Section, SectionTitle } from "@/components/ui";
+import {
+  guestGuideSections,
+  pageBackgrounds,
+  pages,
+  quickReference,
+  siteConfig,
+  troubleshooting,
+} from "@/lib/content";
+
+const guestGuide = pages.guestGuide;
 
 export const metadata: Metadata = {
-  title: "Guest Guide",
-  description:
-    "Everything you need for your stay — check-in info, house rules, WiFi, SHARC passes, and troubleshooting tips.",
+  title: guestGuide.metadata.title,
+  description: guestGuide.metadata.description,
 };
 
 export default function GuestGuidePage() {
@@ -13,9 +21,9 @@ export default function GuestGuidePage() {
     <>
       <PageHero
         src={pageBackgrounds.guestGuide}
-        alt="Guest guide background image"
-        title="Guest Guide"
-        subtitle="Everything you need before, during, and after your stay. Save this page for quick reference."
+        alt={guestGuide.hero.alt}
+        title={guestGuide.hero.title}
+        subtitle={guestGuide.hero.subtitle}
       />
 
       <Section>
@@ -38,20 +46,11 @@ export default function GuestGuidePage() {
 
       <Section className="bg-white">
         <SectionTitle
-          title="Quick reference"
-          subtitle="The essentials at a glance."
+          title={guestGuide.quickReference.title}
+          subtitle={guestGuide.quickReference.subtitle}
         />
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { label: "Check-in", value: siteConfig.checkIn },
-            { label: "Check-out", value: siteConfig.checkOut },
-            { label: "WiFi", value: "See note on wall in kitchen" },
-            { label: "SHARC passes", value: "8 passes hanging in the entry" },
-            { label: "Bikes", value: "Garage — helmets on hooks" },
-            { label: "Hot tub", value: "Back deck — cover when done" },
-            { label: "Trash day", value: "Collection on Thursday morning" },
-            { label: "Emergency", value: "Call or text Blake" },
-          ].map((item) => (
+          {quickReference.map((item) => (
             <div key={item.label} className="rounded-xl bg-sage-50 p-4">
               <p className="text-xs font-semibold uppercase tracking-wider text-sage-500">
                 {item.label}
@@ -64,8 +63,8 @@ export default function GuestGuidePage() {
 
       <Section>
         <SectionTitle
-          title="Troubleshooting"
-          subtitle="Common issues and how to fix them. Still stuck? Reach out anytime — we're here to help."
+          title={guestGuide.troubleshooting.title}
+          subtitle={guestGuide.troubleshooting.subtitle}
         />
         <div className="space-y-4">
           {troubleshooting.map((item) => (
@@ -101,16 +100,13 @@ export default function GuestGuidePage() {
 
       <Section className="bg-sage-800">
         <div className="text-center">
-          <h2 className="font-display text-2xl text-white sm:text-3xl">Need help?</h2>
-          <p className="mx-auto mt-3 max-w-lg text-sage-300">
-            We&apos;re immediately available to handle anything that may arise. We have
-            a network of professionals available 24/7 for household emergencies.
-          </p>
+          <h2 className="font-display text-2xl text-white sm:text-3xl">{guestGuide.help.title}</h2>
+          <p className="mx-auto mt-3 max-w-lg text-sage-300">{guestGuide.help.body}</p>
           <a
             href={`mailto:${siteConfig.host.email}`}
             className="mt-6 inline-flex rounded-full bg-cedar-600 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-cedar-500"
           >
-            Contact {siteConfig.host.name}
+            {guestGuide.help.contactPrefix} {siteConfig.host.name}
           </a>
         </div>
       </Section>
