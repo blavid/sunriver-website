@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { ActivityCard } from "@/components/ActivityCard";
-import { PageHeader, PageHero, Section, SectionTitle } from "@/components/ui";
+import { PageHero, Section, SectionTitle } from "@/components/ui";
 import { activitySections } from "@/lib/activities";
-import { pageBackgrounds } from "@/lib/content";
+import { pageBackgrounds, pages } from "@/lib/content";
+
+const activitiesPage = pages.activities;
 
 export const metadata: Metadata = {
-  title: "Activities Guide",
-  description:
-    "The best things to do in Central Oregon — dining, hiking, swimming, river floats, skiing, mountain biking, and more near Sunriver.",
+  title: activitiesPage.metadata.title,
+  description: activitiesPage.metadata.description,
 };
 
 export default function ActivitiesPage() {
@@ -15,15 +16,15 @@ export default function ActivitiesPage() {
     <>
       <PageHero
         src={pageBackgrounds.activities}
-        alt="Activities guide background image"
-        title="Central Oregon Activities Guide"
-        subtitle="Our curated guide to the best dining, trails, water, snow, and adventures — all within reach of your Sunriver home base."
+        alt={activitiesPage.hero.alt}
+        title={activitiesPage.hero.title}
+        subtitle={activitiesPage.hero.subtitle}
       />
 
       <div className="sticky top-[73px] z-40 border-b border-sage-200 bg-sage-50/95 backdrop-blur-md">
         <nav
           className="mx-auto flex max-w-6xl gap-1 overflow-x-auto px-4 py-3 sm:px-6"
-          aria-label="Activity categories"
+          aria-label={activitiesPage.navLabel}
         >
           {activitySections.map((section) => (
             <a
@@ -55,12 +56,9 @@ export default function ActivitiesPage() {
       <Section className="bg-sage-800">
         <div className="text-center">
           <h2 className="font-display text-2xl text-white sm:text-3xl">
-            Ready to explore?
+            {activitiesPage.closing.title}
           </h2>
-          <p className="mx-auto mt-3 max-w-lg text-sage-300">
-            Your stay includes SHARC passes, bikes, and a hot tub waiting for you
-            after every adventure. We&apos;re glad you&apos;re here.
-          </p>
+          <p className="mx-auto mt-3 max-w-lg text-sage-300">{activitiesPage.closing.body}</p>
         </div>
       </Section>
     </>

@@ -28,12 +28,17 @@ npm start
 
 Deploy to Vercel, Netlify, or any Node.js host. Point `sunrivertownhome.com` DNS to your deployment.
 
-## Customization
+## Content
 
-- **Content** — Edit `src/lib/content.ts` for property details, restaurants, hikes, troubleshooting
-- **Photos** — Photo URLs are in `src/lib/content.ts`; replace with locally hosted images in `public/` for production
-- **Contact email** — Update `siteConfig.host.email` in `src/lib/content.ts`
-- **VRBO link** — Add your VRBO listing URL to `siteConfig` when ready
+Guest copy, activities, and page text live in `public/data/*.json`. The website and the Roku guest guide both read those files. Field reference: `docs/content-schema.md`.
+
+`src/lib/content.ts` and `src/lib/activities.ts` are typed wrappers. They do not hold their own copy. The Book page's marketing sentences stay in `src/app/book/page.tsx`.
+
+```bash
+npm test
+```
+
+`npm test` checks the JSON shape and compares prerendered HTML to `tests/fixtures`. Run `npm run build` first.
 
 ## Tech Stack
 
