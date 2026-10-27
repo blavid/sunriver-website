@@ -28,6 +28,25 @@ npm start
 
 Deploy to Vercel, Netlify, or any Node.js host. Point `sunrivertownhome.com` DNS to your deployment.
 
+## Deploying the TV Worker
+
+```bash
+git checkout main && git pull
+npm run deploy:worker
+```
+
+Run those from the repo root. The script installs the worker packages, including `uqr`, then deploys. `npm install` is required for that dependency. Running `wrangler` from the repo root without the script fails.
+
+The same deploy from the worker directory:
+
+```bash
+cd worker && npm install && npx wrangler deploy
+```
+
+Set secrets from `worker/` with `npx wrangler secret put <NAME>`.
+
+Pages static files can stay edge-cached for up to 4 hours. After a change under `/data/qr/` or `/images/tv/`, purge those paths in Cloudflare.
+
 ## Content
 
 Guest copy, activities, and page text live in `public/data/*.json`. The website and the Roku guest guide both read those files. Field reference: `docs/content-schema.md`.
