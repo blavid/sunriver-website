@@ -25,8 +25,13 @@ function loadActivities(file: typeof activitiesJson): ActivitiesFile {
           }
         }
       }
-      if (!activity.image || !activity.imageUrl || !activity.imageAlt) {
+      if (!activity.image || !activity.imageUrl || !activity.imageAlt || !activity.imageTvUrl) {
         throw new Error(`Missing image on ${activity.id}`);
+      }
+      if (activity.url) {
+        if (!activity.qrUrl) throw new Error(`Missing qrUrl on ${activity.id}`);
+      } else if ("qrUrl" in activity && activity.qrUrl) {
+        throw new Error(`qrUrl set without url on ${activity.id}`);
       }
       if ("imageCredit" in activity && activity.imageCredit) {
         const { author, license, licenseUrl, source } = activity.imageCredit;

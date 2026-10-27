@@ -22,6 +22,15 @@ The Roku app should fetch **guide**, **activities**, and **checkout**. `site.jso
 
 `guest.json` (per-stay name and checkout date) is still the Worker route `/tv/<key>/guest.json`. It is not one of these files. Keep treating it as `cache-control: no-store`.
 
+Wi-Fi for the TV QR is also a Worker route, not a file in `public/data`:
+
+| Request | Result |
+|---|---|
+| `GET /tv/<GUEST_PATH_KEY>/wifi.json` | `{ "ssid", "password" }` |
+| `GET /tv/<GUEST_PATH_KEY>/wifi.png` | PNG QR of `WIFI:T:<type>;S:<ssid>;P:<password>;;` |
+
+The same path key as `guest.json` is required. A wrong key is 404. If `WIFI_SSID` or `WIFI_PASSWORD` is unset, both routes are 503 with an empty body. `WIFI_TYPE` is optional and defaults to `WPA`. `\` `;` `,` `"` and `:` in those values are backslash-escaped in the QR text. The PNG is about 480 px with a quiet zone of 2 modules. Responses send `Cache-Control: private, max-age=3600` and an `ETag` of SHA-256(`ssid|password|fmtVersion`). `fmtVersion` is `1|json|<type>|480|q2` or `1|png|<type>|480|q2`. `If-None-Match` returns 304. The worker does not log the values. Blake sets them with `npx wrangler secret put WIFI_SSID` and `npx wrangler secret put WIFI_PASSWORD` (each command prompts). They are not in git.
+
 ## Versioning
 
 Each file has its own integer `version`, starting at `1`.
@@ -51,7 +60,7 @@ Suggested TV schedule, same as the guest-guide brief:
 - Revalidate `guest.json` about every 15 minutes. That route stays `no-store`; do not apply this ETag plan to it.
 - Do not wait for `max-age`. The TV's own timer is the refresh policy.
 
-Images use the absolute `url` / `imageUrl` fields. This change does not generate resized TV variants. Card art should still be downscaled before it is held on the device (about 640×360). One full-screen background is enough.
+Activity cards on the TV load `imageTvUrl` (a JPEG about 640 px on the long edge). The website keeps using `image` / `imageUrl`. One full-screen background is enough; do not fetch the full-size house photos as card art.
 
 ## Offline
 
@@ -62,7 +71,7 @@ Order when the network fails:
 3. Snapshot bundled in the Roku package (`pkg:/data/guide.json`, `activities.json`, `checkout.json`), taken from these public URLs at package time.
 4. Short built-in fallback text. Greeting falls back to "Welcome to Eaglewood".
 
-The Wi-Fi network name and password, and the bike-lock combination, are ordinary sentences in `guide.json` (see Troubleshooting). They are not Worker secrets. A bundled snapshot of `guide.json` includes them, same as the public site.
+The Wi-Fi network name and password, and the bike-lock combination, stay ordinary sentences in `guide.json` troubleshooting. A bundled snapshot of `guide.json` includes them, same as the public site. The TV join QR is separate: the worker draws `wifi.png` from its own secrets and does not read this file.
 
 ## What the website renders
 
@@ -76,7 +85,7 @@ The site imports these files and shows the same strings as before.
 | `pages.json` | Headlines and section chrome, except the Book page |
 | `checkout.json` | Nothing new. The guest guide still shows `summary` because that sentence is also a "During Your Stay" item |
 
-Ignored by the website, present for the TV: `season`, `seasonSpecified`, `seasonRank`, `imageUrl`, `url` on images, `host.phone`, and `checkout.steps` as a separate list.
+Ignored by the website, present for the TV: `season`, `seasonSpecified`, `seasonRank`, `imageUrl`, `imageTvUrl`, `qrUrl`, `url` on images, `host.phone`, `bookDirect`, `photoTvUrl`, and `checkout.steps` as a separate list.
 
 `src/lib/activities.ts` copies `seasonLabel` onto the card's `season` prop. It also copies `difficulty`, `trailDistance`, `gettingThere`, and `imageCredit` when those fields are set. Section order in the JSON is the website order. The site does not sort by `seasonRank`.
 
@@ -103,6 +112,7 @@ The home-page gallery subtitle is `"{count} photos of the home, deck, and surrou
   troubleshooting: { issue: string, steps: string[] }[]
   guestGuideSections: { title: string, items: string[] }[]
   quickReference: { label: string, value: string }[]
+  bookDirect: BookDirect
 }
 ```
 
@@ -113,6 +123,32 @@ The home-page gallery subtitle is `"{count} photos of the home, deck, and surrou
 - Book page "Questions before booking?", beside the email.
 
 `guide.json` no longer has a `hikes` array. Hiking is the `hiking` section of `activities.json`.
+
+### bookDirect
+
+TV-only. The website does not render it, and `src/app/book/page.tsx` keeps its own marketing sentences. `savingsText` uses the same wording as that page, including **up to about 10% less**.
+
+```ts
+BookDirect = {
+  version: number
+  headline: string[]          // 1–3 lines
+  banner: string
+  body: string
+  savingsText: string
+  siteUrl: string             // large QR on the Book Direct screen
+  bookingUrl: string          // corner-badge QR; same value as siteConfig.bookUrl
+  qrImageUrl: string          // https://sunrivertownhome.com/data/qr/book-direct-site.png
+  bookingQrImageUrl: string   // https://sunrivertownhome.com/data/qr/book-direct-booking.png
+  photoUrl: string            // full living-room photo
+  photoTvUrl: string          // https://sunrivertownhome.com/images/tv/book-direct-living.jpg (~960×540)
+  perks: { id: string, label: string, icon: "house" | "mountain" | "dining" | "pines" | "more" }[]
+  signOff: string
+  homePromptTitle: string
+  homePromptSub: string
+}
+```
+
+`qrImageUrl` encodes `siteUrl`. `bookingQrImageUrl` encodes `bookingUrl`. Those are the Phase 2 defaults: the Book Direct screen QR is the marketing site, and the corner badge is the booking site. `photoTvUrl` is a JPEG under `public/images/tv/`, not `public/data/tv/`.
 
 `quickReference` is the eight cards on the guest-guide page. Check-in and check-out values match `siteConfig.checkIn` and `siteConfig.checkOut`. The Wi-Fi card says "See note on wall in kitchen". It does not repeat the password. The password is in troubleshooting.
 
@@ -173,6 +209,7 @@ Activity = {
   description: string
   image: string          // site path, "/images/..."
   imageUrl: string       // https://sunrivertownhome.com/images/...
+  imageTvUrl: string     // https://sunrivertownhome.com/images/tv/<id>.jpg
   imageAlt: string
   imageCredit?: {
     author: string
@@ -191,6 +228,7 @@ Activity = {
   seasonRank?: { winter?: number, spring?: number, summer?: number, fall?: number }
   tip?: string
   url?: string
+  qrUrl?: string         // https://sunrivertownhome.com/data/qr/<id>.png when url is set
   affiliateUrl?: string  // reserved; none are set today
 }
 
@@ -201,13 +239,17 @@ Nine sections, in website order: Guided tours and activities, Dining, Hiking, Sw
 
 Hiking is this section only. `guide.json` used to have a separate write-up list; those facts now live on the hiking cards. Lava Butte and the Lava Lands Trail are one card, `lava-butte`. Its drive badge is "10 min drive". Deschutes River Trail and Todd Lake Loop are cards in this section. Their `season` values were read from the write-ups: the river trail names no season, so it is `year-round`; Todd Lake names summer wildflowers, so it is `["summer"]` with the badge "Wildflowers in summer". Smith Rock, Tam McArthur Rim, and Tumalo Falls were already cards and did not gain hike fields.
 
-`image` is what the website passes to `next/image`. `imageUrl` is `https://sunrivertownhome.com` plus that site path. Image filenames use letters, numbers, hyphens, underscores, and dots, so they do not need extra URL encoding. Activity and house photos are JPEG or PNG, about 1600px on the long edge and under 500 KB. Every activity has a photo.
+`image` is what the website passes to `next/image`. `imageUrl` is `https://sunrivertownhome.com` plus that site path. `imageTvUrl` is `https://sunrivertownhome.com/images/tv/<id>.jpg`, a JPEG with the long edge at about 640 px, written by `scripts/render-tv-images.mjs`. The website does not show it. Two Electric Bike Tour cards share the id `viator-ebike-tour` and the same photo, so they share one TV file. Image filenames use letters, numbers, hyphens, underscores, and dots, so they do not need extra URL encoding. Activity and house photos are JPEG or PNG, about 1600px on the long edge and under 500 KB. Every activity has a photo.
+
+`https://sunrivertownhome.com/images/tv/tv-placeholder.jpg` is a 64×64 JPEG for the TV to use when a card image is missing. It is not referenced from the JSON.
+
+`https://sunrivertownhome.com/images/tv/book-direct-living.jpg` is the living-room hero at about 960×540. `bookDirect.photoTvUrl` points at it. `bookDirect.photoUrl` stays the full `living-room-1.jpg`.
 
 `imageCredit` is only on photos added from Wikimedia Commons. Photos that were already on the site do not get a credit. The Electric Bike Tour cards already named `Viator/E-bikeTour.jpg`, but that file was not in the repo, so that photo is new and credited too. When `imageCredit` is set, the card shows one line under the tip: the author, the license name linked to `licenseUrl`, `changes` in parentheses when the file was resized, and a "Wikimedia Commons" link to `source`. That line is the attribution. `changes` is `"Resized"` on the Deschutes River Trail photo because the Commons original was scaled down. The Todd Lake photo is the original 1600px file and is public domain (`PD-USGov-USDA`), so `changes` is omitted. Licenses are public domain, CC0, CC BY, or CC BY-SA only. The TV should show the same credit wherever it shows the photo.
 
 `url` is copied exactly, with no trailing space. `chocolate-tour` previously ended with a space; that space is gone.
 
-`affiliateUrl`, when it is added later, wins over `url` (`getActivityLink` already does that). QR codes on the TV should use `affiliateUrl ?? url`, and omit the QR when both are missing.
+`qrUrl` is `https://sunrivertownhome.com/data/qr/<id>.png`. The PNG encodes the activity's plain `url` and nothing else. Activities with no `url` have no `qrUrl` and no PNG. `affiliateUrl` is not encoded. `scripts/render-qr.mjs` writes the files. The same script writes `book-direct-site.png` (`siteUrl`) and `book-direct-booking.png` (`bookingUrl`). On the website, `getActivityLink` still prefers `affiliateUrl` when that field is added later. That preference does not apply to these QR files.
 
 ### Season
 
@@ -249,7 +291,7 @@ The TV should sort by the stored numbers, not recompute that table. A hand-edite
 
 ### Adding an activity
 
-One new object in the right section's `activities` array. Its position in that array is the website order. Set `id`, `name`, `description`, `season`, and `seasonLabel`. Add `image`, `imageUrl`, and `imageAlt` together when you have a photo. Then set `seasonRank`.
+One new object in the right section's `activities` array. Its position in that array is the website order. Set `id`, `name`, `description`, `season`, and `seasonLabel`. Add `image`, `imageUrl`, and `imageAlt` together when you have a photo. Then set `seasonRank`. Run `node scripts/render-tv-images.mjs` to refresh `imageTvUrl`, and `node scripts/render-qr.mjs` when `url` is set or changed. Bump `version` when a field is added. The scripts do not bump it past 4.
 
 To leave it at the end of a season on the TV, omit that season's key. To place it between two activities, pick a number between their ranks. Ranks step by 10, so `15` sits between `10` and `20` and nothing else has to change.
 
@@ -358,7 +400,8 @@ Website headlines, button labels, and section titles for Home, The Home, Guest G
 | Dining | section `id` `dining`, same season sort |
 | Hiking | the `hiking` section only. One list. Difficulty, trail length, and getting there are fields on those activities. Lava Butte and Lava Lands are one card, `lava-butte` |
 | Checkout | `checkout.json` `steps` and `checkOut`, plus the guest's date from `guest.json` |
-| Wi-Fi | network name and password from the `"WiFi not connecting"` steps |
-| Promo | `siteConfig.domain` and `siteConfig.bookUrl` |
+| Wi-Fi | Worker `wifi.json` and `wifi.png`. Troubleshooting steps remain the text fallback |
+| Book Direct | `guide.json` `bookDirect`. Large QR is `siteUrl`. Corner badge is `bookingUrl` |
+| Dining / Hiking / Things to do detail | activity `url` via `qrUrl`. No QR when `url` is absent |
 
-Phone-sized actions (booking, tour pages, maps) stay QR codes of `affiliateUrl ?? url` or `bookUrl`. The TV does not open a browser.
+Phone-sized actions stay those QR codes. The TV does not open a browser. Card photos should use `imageTvUrl`.
