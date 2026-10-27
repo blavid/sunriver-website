@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import fs from "node:fs";
 import path from "node:path";
 import test from "node:test";
+import { compareSeasonRank } from "../src/lib/season-order.ts";
 import { normalizeHtml, ROUTES } from "./normalize-html.mjs";
 
 const root = path.resolve(import.meta.dirname, "..");
@@ -81,14 +82,14 @@ test("guide.json matches the guest-guide contract", () => {
   assert.equal(guide.siteConfig.stats.guests, 9);
   assert.equal(guide.siteConfig.stats.bedrooms, 3);
   assert.equal(guide.siteConfig.stats.bathrooms, 3);
-  assert.equal(guide.siteConfig.host.phone, null);
+  assert.equal(guide.siteConfig.host.phone, "503-475-0157");
   assert.equal(typeof guide.siteConfig.host.name, "string");
   assert.ok(guide.siteConfig.host.name.length > 0);
   assert.ok(guide.siteConfig.host.email.includes("@"));
   assert.equal(guide.houseRules.length, 6);
   assert.equal(guide.troubleshooting.length, 13);
   assert.equal(guide.guestGuideSections.length, 3);
-  assert.equal(guide.hikes.length, 6);
+  assert.equal(Object.hasOwn(guide, "hikes"), false);
   assert.equal(guide.quickReference.length, 8);
 
   const checkIn = guide.quickReference.find((item) => item.label === "Check-in");
@@ -105,6 +106,18 @@ test("guide.json matches the guest-guide contract", () => {
     assert.ok(item.steps.length > 0);
     for (const step of item.steps) assert.equal(typeof step, "string");
   }
+
+  const trash = guide.troubleshooting.find((item) => item.issue === "Where do I put the trash and recycling?");
+  assert.deepEqual(trash.steps, [
+    "Trash and recycling bins are located on the front porch in the trash closet.",
+    "Please separate recyclables from trash. Trash is on the left, recycling on the right.",
+    "Glass bottles and jars should be rinsed and placed in the recycling bin. Please do not put glass in the trash or with the mixed recyclables.",
+  ]);
+  const during = guide.guestGuideSections.find((section) => section.title === "During Your Stay");
+  assert.equal(
+    during.items.find((item) => item.includes("Trash")),
+    trash.steps.join(" "),
+  );
 
   const wifi = guide.troubleshooting.find((item) => item.issue === "WiFi not connecting");
   const lock = guide.troubleshooting.find((item) => item.issue === "How do I lock the bikes?");
@@ -137,12 +150,7 @@ test("activities.json seasons, labels, and TV sort hints", () => {
   let count = 0;
   for (const section of activities.activitySections) {
     assert.equal(typeof section.title, "string");
-    if (section.seasonPriority) {
-      for (const [season, rank] of Object.entries(section.seasonPriority)) {
-        assert.ok(CALENDAR.includes(season), season);
-        assert.equal(typeof rank, "number");
-      }
-    }
+    assert.equal(Object.hasOwn(section, "seasonPriority"), false, section.id);
     for (const activity of section.activities) {
       count += 1;
       assert.ok(Array.isArray(activity.season) && activity.season.length > 0, activity.id);
@@ -152,12 +160,21 @@ test("activities.json seasons, labels, and TV sort hints", () => {
       }
       assert.equal(typeof activity.seasonLabel, "string");
       assert.ok(activity.seasonLabel.length > 0, activity.id);
-      assert.ok(activity.image.startsWith("/"), activity.id);
-      assert.equal(
-        activity.imageUrl,
-        absoluteUrl(activity.image, guide.siteConfig.domain),
-        activity.id,
-      );
+      if (activity.image) {
+        assert.ok(activity.image.startsWith("/"), activity.id);
+        assert.equal(
+          activity.imageUrl,
+          absoluteUrl(activity.image, guide.siteConfig.domain),
+          activity.id,
+        );
+      } else {
+        assert.equal(activity.imageUrl, undefined, activity.id);
+      }
+      assert.equal(Object.keys(activity.seasonRank).length, 4, activity.id);
+      for (const season of CALENDAR) {
+        const rank = activity.seasonRank[season];
+        assert.equal(Number.isInteger(rank) && rank >= 1, true, `${activity.id} ${season}`);
+      }
       if (activity.seasonSpecified === false) {
         assert.deepEqual(activity.season, CALENDAR, activity.id);
       } else {
@@ -166,13 +183,47 @@ test("activities.json seasons, labels, and TV sort hints", () => {
     }
   }
 
-  assert.equal(count, 64);
-  assert.deepEqual(activities.activitySections.find((s) => s.id === "skiing-snowboarding").seasonPriority, {
-    winter: 1,
-  });
-  assert.deepEqual(activities.activitySections.find((s) => s.id === "river-floats").seasonPriority, {
-    summer: 1,
-  });
+  assert.equal(count, 66);
+  const hiking = activities.activitySections.find((section) => section.id === "hiking");
+  assert.deepEqual(
+    hiking.activities.map((activity) => activity.id),
+    [
+      "benham-falls",
+      "deschutes-river-trail",
+      "smith-rock",
+      "green-lakes",
+      "todd-lake-loop",
+      "tam-mcarthur-rim",
+      "tumalo-falls",
+      "lava-butte",
+    ],
+  );
+  assert.equal(hiking.activities.find((activity) => activity.id === "deschutes-river-trail").image, undefined);
+  assert.equal(hiking.activities.find((activity) => activity.id === "todd-lake-loop").image, undefined);
+
+  const flat = activities.activitySections.flatMap((section) =>
+    section.activities.map((activity) => ({ activity, sectionId: section.id })),
+  );
+  for (const season of CALENDAR) {
+    const ranks = flat.map((item) => item.activity.seasonRank[season]);
+    assert.equal(new Set(ranks).size, ranks.length, season);
+  }
+  const bySeason = (season) =>
+    [...flat].sort((a, b) =>
+      compareSeasonRank(season, a.activity, b.activity, flat.indexOf(a), flat.indexOf(b)),
+    );
+  assert.equal(bySeason("winter")[0].sectionId, "skiing-snowboarding");
+  assert.equal(bySeason("summer")[0].sectionId, "river-floats");
+  const unranked = { id: "new", seasonRank: { winter: 15 } };
+  const sorted = [unranked, { id: "early", seasonRank: { winter: 10 } }, { id: "late" }]
+    .map((activity, index) => ({ activity, index }))
+    .sort((a, b) => compareSeasonRank("winter", a.activity, b.activity, a.index, b.index))
+    .map((item) => item.activity.id);
+  assert.deepEqual(sorted, ["early", "new", "late"]);
+
+  const chocolate = flat.find((item) => item.activity.id === "chocolate-tour").activity;
+  assert.equal(chocolate.url.endsWith(" "), false);
+  assert.equal(chocolate.url.endsWith("medium=link"), true);
   const unspecified = activities.activitySections
     .flatMap((section) => section.activities)
     .filter((activity) => activity.seasonSpecified === false)
@@ -195,7 +246,16 @@ test("checkout.json is only the steps already in the guest guide", () => {
   }
 });
 
-test("rendered route HTML matches the pre-migration snapshot", () => {
+test("rendered pages do not show the host phone", () => {
+  const buildDir = path.join(root, ".next/server/app");
+  for (const [built] of ROUTES) {
+    const actual = normalizeHtml(fs.readFileSync(path.join(buildDir, built), "utf8"));
+    assert.equal(actual.includes(guide.siteConfig.host.phone), false, built);
+    assert.equal(actual.includes("47 photos"), false, built);
+  }
+});
+
+test("rendered route HTML matches the snapshot", () => {
   const buildDir = path.join(root, ".next/server/app");
   for (const [built, fixture] of ROUTES) {
     const builtPath = path.join(buildDir, built);

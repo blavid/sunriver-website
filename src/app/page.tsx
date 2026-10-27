@@ -3,7 +3,7 @@ import Link from "next/link";
 import { HighlightIcon, StatBadge } from "@/components/Icons";
 import { PhotoGallery } from "@/components/PhotoGallery";
 import { Button, Section, SectionTitle } from "@/components/ui";
-import { guestReviews, heroImage, highlights, pages, siteConfig } from "@/lib/content";
+import { guestReviews, heroImage, highlights, pages, photos, siteConfig } from "@/lib/content";
 
 export default function HomePage() {
   const home = pages.home;
@@ -100,7 +100,10 @@ export default function HomePage() {
       </Section>
 
       <Section className="bg-white">
-        <SectionTitle title={home.gallery.title} subtitle={home.gallery.subtitle} />
+        <SectionTitle
+          title={home.gallery.title}
+          subtitle={home.gallery.subtitle.replaceAll("{count}", String(photos.length))}
+        />
         <PhotoGallery limit={home.gallery.previewLimit} />
         <div className="mt-8 text-center">
           <Button href="/the-home#gallery">{home.gallery.cta}</Button>

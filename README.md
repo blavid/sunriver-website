@@ -34,6 +34,14 @@ Guest copy, activities, and page text live in `public/data/*.json`. The website 
 
 `src/lib/content.ts` and `src/lib/activities.ts` are typed wrappers. They do not hold their own copy. The Book page's marketing sentences stay in `src/app/book/page.tsx`.
 
+### Adding an activity
+
+Add one object to a section's `activities` array in `public/data/activities.json`. That position is the order on the website. Set `season` and `seasonLabel`. Then set `seasonRank` if the TV should feature it in a season.
+
+Ranks are positive integers, one per season (`winter`, `spring`, `summer`, `fall`), spaced by 10. Lower sorts earlier. Omit a season to sort after every ranked activity in that season. To insert between two activities, use a number between their ranks (`15` sits between `10` and `20`). No other activity needs to change. The website does not read `seasonRank`.
+
+`src/lib/season-order.ts` (`compareSeasonRank`) is the TV sort. Details and a copy-paste example are in `docs/content-schema.md`.
+
 ```bash
 npm test
 ```

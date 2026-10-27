@@ -7,13 +7,15 @@ export function ActivityCard({ activity }: { activity: Activity }) {
   return (
     <article className="group overflow-hidden rounded-2xl border border-sage-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <div className="relative aspect-[16/10] overflow-hidden bg-sage-100">
-        <Image
-          src={activity.image}
-          alt={activity.imageAlt}
-          fill
-          className="object-cover transition-transform duration-500 group-hover:scale-105"
-          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-        />
+        {activity.image && (
+          <Image
+            src={activity.image}
+            alt={activity.imageAlt ?? activity.name}
+            fill
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        )}
         {activity.season && (
           <span className="absolute left-3 top-3 rounded-full bg-white/90 px-3 py-1 text-xs font-semibold text-sage-800 backdrop-blur-sm">
             {activity.season}
@@ -23,7 +25,16 @@ export function ActivityCard({ activity }: { activity: Activity }) {
 
       <div className="p-5 sm:p-6">
         <div className="flex items-start justify-between gap-3">
-          <h3 className="font-display text-xl text-sage-900">{activity.name}</h3>
+          {activity.difficulty ? (
+            <div>
+              <h3 className="font-display text-xl text-sage-900">{activity.name}</h3>
+              <p className="mt-1 text-xs font-semibold uppercase tracking-wide text-sage-500">
+                {activity.difficulty}
+              </p>
+            </div>
+          ) : (
+            <h3 className="font-display text-xl text-sage-900">{activity.name}</h3>
+          )}
           {activity.distance && (
             <span className="shrink-0 rounded-full bg-sage-100 px-2.5 py-1 text-xs font-medium text-sage-600">
               {activity.distance}
@@ -34,6 +45,18 @@ export function ActivityCard({ activity }: { activity: Activity }) {
         <p className="mt-3 text-sm leading-relaxed text-sage-700">
           {activity.description}
         </p>
+
+        {activity.trailDistance && (
+          <p className="mt-3 text-sm text-sage-600">
+            <span className="font-semibold text-sage-700">Trail:</span> {activity.trailDistance}
+          </p>
+        )}
+
+        {activity.gettingThere && (
+          <p className="mt-3 text-sm text-sage-600">
+            <span className="font-semibold text-sage-700">Getting there:</span> {activity.gettingThere}
+          </p>
+        )}
 
         {activity.tip && (
           <p className="mt-3 text-sm text-sage-500">

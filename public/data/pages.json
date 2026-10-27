@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "metadata": {
     "title": {
       "default": "Sunriver Townhome | Eaglewood Vacation Rental",
@@ -68,7 +68,7 @@
     },
     "gallery": {
       "title": "Photo gallery",
-      "subtitle": "47 photos of the home, deck, and surroundings.",
+      "subtitle": "{count} photos of the home, deck, and surroundings.",
       "cta": "View All Photos",
       "previewLimit": 9
     },

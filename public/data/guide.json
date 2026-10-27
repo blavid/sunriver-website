@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "siteConfig": {
     "name": "Sunriver Townhome",
     "tagline": "Eaglewood · Sunriver, Oregon",
@@ -10,7 +10,7 @@
     "host": {
       "name": "Blake Clough",
       "email": "blake@sunrivertownhome.com",
-      "phone": null
+      "phone": "503-475-0157"
     },
     "stats": {
       "guests": 9,
@@ -150,7 +150,7 @@
         "SHARC passes (8 included) are in the kitchen drawer — see sharc website for hours.",
         "Community pool is steps from the back deck (seasonal, Eaglewood residents only).",
         "Bikes and helmets are in the garage — please lock them when out and about.",
-        "Trash: bins in the garage. Recycling on the left, garbage on the right.",
+        "Trash and recycling bins are located on the front porch in the trash closet. Please separate recyclables from trash. Trash is on the left, recycling on the right. Glass bottles and jars should be rinsed and placed in the recycling bin. Please do not put glass in the trash or with the mixed recyclables.",
         "Checkout is 11:00 AM — please start the dishwasher and leave used towels in the laundry room."
       ]
     },
@@ -196,56 +196,6 @@
     {
       "label": "Emergency",
       "value": "Call or text Blake"
-    }
-  ],
-  "hikes": [
-    {
-      "name": "Benham Falls",
-      "difficulty": "Easy",
-      "distance": "2.4 miles round trip",
-      "description": "The largest waterfall on the upper Deschutes River, cascading through a rugged lava canyon. Family-friendly and mostly flat.",
-      "gettingThere": "Short drive or bike ride from Sunriver. Trailhead parking off Forest Road 41.",
-      "tip": "Best in spring when water flow is highest."
-    },
-    {
-      "name": "Lava Butte",
-      "difficulty": "Easy–Moderate",
-      "distance": "1.5 miles round trip",
-      "description": "Short climb to a fire lookout with panoramic views of the Newberry volcanic landscape and Cascade peaks.",
-      "gettingThere": "10 min drive to Lava Lands Visitor Center. May require a timed entry pass in summer.",
-      "tip": "Combine with the Lava River Cave or Lava Cast Forest for a full volcanic day."
-    },
-    {
-      "name": "Deschutes River Trail",
-      "difficulty": "Easy",
-      "distance": "Varies — up to 18 miles",
-      "description": "Paved and dirt paths following the Deschutes River through pine forest. Walk or bike from Sunriver toward Benham Falls.",
-      "gettingThere": "Access from multiple points in Sunriver — ask us for the closest trailhead.",
-      "tip": "Flat and scenic — perfect for an evening stroll."
-    },
-    {
-      "name": "Todd Lake Loop",
-      "difficulty": "Easy",
-      "distance": "1.1 miles",
-      "description": "Alpine lake loop at 6,500 ft with wildflowers in summer and Mt. Bachelor views. Cool escape on hot days.",
-      "gettingThere": "25 min drive up Cascade Lakes Highway from Mt. Bachelor turnoff.",
-      "tip": "Arrive early — small parking lot fills quickly on weekends."
-    },
-    {
-      "name": "Green Lakes Trail",
-      "difficulty": "Moderate–Strenuous",
-      "distance": "4.5–9 miles",
-      "description": "Classic Central Oregon hike through meadows and lava fields to stunning alpine lakes beneath South Sister.",
-      "gettingThere": "45 min drive to trailhead off Cascade Lakes Highway.",
-      "tip": "Start early and bring layers — elevation gain and afternoon storms are real."
-    },
-    {
-      "name": "Lava Lands Trail",
-      "difficulty": "Easy",
-      "distance": "0.5 miles",
-      "description": "Accessible paved loop through jagged lava fields with interpretive signs. Great for all ages.",
-      "gettingThere": "10 min drive — starts at the Lava Lands Visitor Center near Lava Butte.",
-      "tip": "Pair with the visitor center exhibits for context on the volcanic history."
     }
   ]
 }

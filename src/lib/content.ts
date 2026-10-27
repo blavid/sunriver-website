@@ -16,7 +16,6 @@ export const houseRules = guide.houseRules;
 export const troubleshooting = guide.troubleshooting;
 export const guestGuideSections = guide.guestGuideSections;
 export const quickReference = guide.quickReference;
-export const hikes = guide.hikes;
 
 export const heroImage = site.heroImage.src;
 export const pageBackgrounds = {

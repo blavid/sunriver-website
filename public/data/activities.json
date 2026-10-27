@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "activitySections": [
     {
       "id": "guided-tours-and-activities",
@@ -19,7 +19,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Includes e-bike and helmet; wear closed-toe shoes.",
-          "url": "https://www.viator.com/tours/Bend/Electric-Bike-Tour-of-Bend-and-Deschutes-River/d22372-348862P1?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Electric-Bike-Tour-of-Bend-and-Deschutes-River/d22372-348862P1?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 170,
+            "spring": 380,
+            "summer": 510,
+            "fall": 450
+          }
         },
         {
           "id": "ride-the-river-ebike",
@@ -34,7 +40,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Smaller groups sell out on weekends; book ahead.",
-          "url": "https://www.viator.com/tours/Bend/Guided-E-Bike-Tour-of-Bend/d22372-443338P3?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Guided-E-Bike-Tour-of-Bend/d22372-443338P3?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 180,
+            "spring": 390,
+            "summer": 520,
+            "fall": 460
+          }
         },
         {
           "id": "deschutes-ebike",
@@ -49,7 +61,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Bring a water bottle and camera for river views.",
-          "url": "https://www.viator.com/tours/Bend/Deschutes-River-E-bike-Tour/d22372-5593697P2?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Deschutes-River-E-bike-Tour/d22372-5593697P2?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 190,
+            "spring": 400,
+            "summer": 530,
+            "fall": 470
+          }
         },
         {
           "id": "cascade-lakes-kayak",
@@ -64,7 +82,13 @@
           ],
           "seasonLabel": "Summer",
           "tip": "Dress in layers; water can be chilly even on warm days.",
-          "url": "https://www.viator.com/tours/Bend/Cascade-Lakes-Kayaking-Tour-Bend-Oregon/d22372-408340P3?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Cascade-Lakes-Kayaking-Tour-Bend-Oregon/d22372-408340P3?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 450,
+            "spring": 570,
+            "summer": 210,
+            "fall": 590
+          }
         },
         {
           "id": "high-cascades-atv",
@@ -81,7 +105,13 @@
           ],
           "seasonLabel": "Late spring through fall",
           "tip": "Closed-toe shoes required; bring sun protection and gloves if you have them.",
-          "url": "https://www.viator.com/tours/Bend/High-Cascades-Scenic-ATV-Tour/d22372-454771P3?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/High-Cascades-Scenic-ATV-Tour/d22372-454771P3?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 460,
+            "spring": 110,
+            "summer": 220,
+            "fall": 120
+          }
         },
         {
           "id": "deschutes-horse-ride",
@@ -98,7 +128,13 @@
           ],
           "seasonLabel": "Spring through fall",
           "tip": "Wear long pants and closed-toe shoes; bring a camera for riverside views.",
-          "url": "https://www.viator.com/tours/Bend/Deschutes-River-Horse-Ride/d22372-158741P1?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Deschutes-River-Horse-Ride/d22372-158741P1?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 470,
+            "spring": 120,
+            "summer": 230,
+            "fall": 130
+          }
         },
         {
           "id": "moonlight-canoe",
@@ -113,7 +149,13 @@
           ],
           "seasonLabel": "Summer (clear nights)",
           "tip": "Check moon phase and weather; tours run on calm nights.",
-          "url": "https://www.viator.com/tours/Bend/Cascade-Lakes-Moonlight-and-Starlight-Canoe-Tour/d22372-408340P1"
+          "url": "https://www.viator.com/tours/Bend/Cascade-Lakes-Moonlight-and-Starlight-Canoe-Tour/d22372-408340P1",
+          "seasonRank": {
+            "winter": 480,
+            "spring": 580,
+            "summer": 240,
+            "fall": 600
+          }
         },
         {
           "id": "lava-tube-guided",
@@ -130,7 +172,13 @@
           ],
           "seasonLabel": "Late spring through early fall",
           "tip": "Wear warm layers and sturdy shoes; tours often require bending and uneven footing.",
-          "url": "https://www.viator.com/tours/Bend/Guided-Lava-Tube-Cave-Tour-Bend-Oregon/d22372-408340P2?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Guided-Lava-Tube-Cave-Tour-Bend-Oregon/d22372-408340P2?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 490,
+            "spring": 130,
+            "summer": 250,
+            "fall": 140
+          }
         },
         {
           "id": "limited-lava-tube",
@@ -147,7 +195,13 @@
           ],
           "seasonLabel": "Late spring through early fall",
           "tip": "Limited-entry tours may require advance booking and have minimum fitness levels.",
-          "url": "https://www.viator.com/tours/Bend/Limited-Entry-Lava-Tube-Cave-Tour-in-Bend-Oregon/d22372-408340P7?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Limited-Entry-Lava-Tube-Cave-Tour-in-Bend-Oregon/d22372-408340P7?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 500,
+            "spring": 140,
+            "summer": 260,
+            "fall": 150
+          }
         },
         {
           "id": "alpaca-picnic",
@@ -164,7 +218,13 @@
           ],
           "seasonLabel": "Spring through fall",
           "tip": "Perfect for kids and small groups — book for a private time slot.",
-          "url": "https://www.viator.com/tours/Bend/The-Original-Alpaca-Picnic-Experience/d22372-405907P1?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/The-Original-Alpaca-Picnic-Experience/d22372-405907P1?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 510,
+            "spring": 150,
+            "summer": 270,
+            "fall": 160
+          }
         },
         {
           "id": "chocolate-tour",
@@ -179,7 +239,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Great as a half-day indulgence — bring comfortable shoes.",
-          "url": "https://www.viator.com/tours/Bend/Chocolate-Tour-Including-Hot-Chocolate-and-Samples/d22372-348862P4?pid=P00286716&mcid=42383&medium=link "
+          "url": "https://www.viator.com/tours/Bend/Chocolate-Tour-Including-Hot-Chocolate-and-Samples/d22372-348862P4?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 200,
+            "spring": 410,
+            "summer": 540,
+            "fall": 480
+          }
         },
         {
           "id": "food-truck-brewery-tour",
@@ -194,7 +260,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Designated driver or transportation recommended when sampling beers.",
-          "url": "https://www.viator.com/tours/Bend/Food-Truck-and-Brewery-Tour-with-Complimentary-Tastings/d22372-348862P8?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Food-Truck-and-Brewery-Tour-with-Complimentary-Tastings/d22372-348862P8?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 210,
+            "spring": 420,
+            "summer": 550,
+            "fall": 490
+          }
         },
         {
           "id": "craft-brewery-tour",
@@ -209,7 +281,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Bring ID; tours often include transportation between stops.",
-          "url": "https://www.viator.com/tours/Bend/Craft-Brewery-Tour-and-Tastings-Everything-Included/d22372-348862P6?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Craft-Brewery-Tour-and-Tastings-Everything-Included/d22372-348862P6?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 220,
+            "spring": 430,
+            "summer": 560,
+            "fall": 500
+          }
         },
         {
           "id": "ultimate-scavenger-downtown",
@@ -224,7 +302,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Works well for team outings or family groups; wear comfortable shoes.",
-          "url": "https://www.viator.com/tours/Bend/Ultimate-Scavenger-Downtown-Bend/d22372-121288P3?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Ultimate-Scavenger-Downtown-Bend/d22372-121288P3?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 230,
+            "spring": 440,
+            "summer": 570,
+            "fall": 510
+          }
         },
         {
           "id": "night-sky-photo-tour",
@@ -239,7 +323,13 @@
           ],
           "seasonLabel": "Clear nights, year-round",
           "tip": "Bring a tripod and spare batteries; instructors often provide remote triggers.",
-          "url": "https://www.viator.com/tours/Bend/Night-Sky-Private-Photo-Tour/d22372-16533P5?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Night-Sky-Private-Photo-Tour/d22372-16533P5?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 240,
+            "spring": 450,
+            "summer": 580,
+            "fall": 520
+          }
         },
         {
           "id": "personal-photo-tutoring",
@@ -254,7 +344,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Share your gear and learning goals when booking for a tailored session.",
-          "url": "https://www.viator.com/tours/Bend/Personal-Photography-Tutoring-in-Bend/d22372-16533P3?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Personal-Photography-Tutoring-in-Bend/d22372-16533P3?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 250,
+            "spring": 460,
+            "summer": 590,
+            "fall": 530
+          }
         },
         {
           "id": "private-photo-tour",
@@ -269,7 +365,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Book a morning slot for softer light and fewer people.",
-          "url": "https://www.viator.com/tours/Bend/Bend-Street-Photography-Private-Tour/d22372-16533P6?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Bend-Street-Photography-Private-Tour/d22372-16533P6?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 260,
+            "spring": 470,
+            "summer": 600,
+            "fall": 540
+          }
         },
         {
           "id": "paddleboard-happy-hour",
@@ -284,7 +386,13 @@
           ],
           "seasonLabel": "Summer",
           "tip": "Bring swimwear and a towel; tours often include light snacks.",
-          "url": "https://www.viator.com/tours/Bend/Small-Group-Paddle-Board-and-Happy-Hour-in-Cascade-Lakes/d22372-348862P3?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Small-Group-Paddle-Board-and-Happy-Hour-in-Cascade-Lakes/d22372-348862P3?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 520,
+            "spring": 590,
+            "summer": 280,
+            "fall": 610
+          }
         },
         {
           "id": "murder-mystery",
@@ -299,7 +407,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Fun for groups — good for rainy-day entertainment.",
-          "url": "https://www.viator.com/tours/Bend/Murder-Mystery-Detective-Experience-in-Bend-OR/d22372-371631P106?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Murder-Mystery-Detective-Experience-in-Bend-OR/d22372-371631P106?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 270,
+            "spring": 480,
+            "summer": 610,
+            "fall": 550
+          }
         }
       ]
     },
@@ -321,7 +435,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Arrive before 9:30 AM in peak season.",
-          "url": "https://www.hotlavabakery.com/"
+          "url": "https://www.hotlavabakery.com/",
+          "seasonRank": {
+            "winter": 40,
+            "spring": 280,
+            "summer": 410,
+            "fall": 350
+          }
         },
         {
           "id": "sparrow-bakery",
@@ -336,7 +456,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Ocean rolls sell out — go early or pre-order.",
-          "url": "https://www.thesparrowbakery.net/restaurant/"
+          "url": "https://www.thesparrowbakery.net/restaurant/",
+          "seasonRank": {
+            "winter": 50,
+            "spring": 290,
+            "summer": 420,
+            "fall": 360
+          }
         },
         {
           "id": "rio-sol",
@@ -355,7 +481,13 @@
           "seasonLabel": "Seasonal — check hours",
           "seasonSpecified": false,
           "tip": "Request a patio table for golden-hour views.",
-          "url": "https://www.riosollatinkitchen.com/"
+          "url": "https://www.riosollatinkitchen.com/",
+          "seasonRank": {
+            "winter": 60,
+            "spring": 300,
+            "summer": 430,
+            "fall": 370
+          }
         },
         {
           "id": "el-caporal",
@@ -370,7 +502,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Try the carne asada tacos and house margaritas.",
-          "url": "https://www.elcaporalco.com/"
+          "url": "https://www.elcaporalco.com/",
+          "seasonRank": {
+            "winter": 70,
+            "spring": 310,
+            "summer": 440,
+            "fall": 380
+          }
         },
         {
           "id": "blondies-pizza",
@@ -385,7 +523,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Order ahead on busy summer nights.",
-          "url": "https://blondiespizzasunriver.com/"
+          "url": "https://blondiespizzasunriver.com/",
+          "seasonRank": {
+            "winter": 80,
+            "spring": 320,
+            "summer": 450,
+            "fall": 390
+          }
         },
         {
           "id": "village-bar-grill",
@@ -400,7 +544,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Good spot for families and late-night bites.",
-          "url": "https://www.sunrivervbag.com/"
+          "url": "https://www.sunrivervbag.com/",
+          "seasonRank": {
+            "winter": 90,
+            "spring": 330,
+            "summer": 460,
+            "fall": 400
+          }
         },
         {
           "id": "the-wallow",
@@ -415,7 +565,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Excellent for date nights and special occasions.",
-          "url": "https://www.thewallowgrill.com/"
+          "url": "https://www.thewallowgrill.com/",
+          "seasonRank": {
+            "winter": 100,
+            "spring": 340,
+            "summer": 470,
+            "fall": 410
+          }
         },
         {
           "id": "campfire-cucina",
@@ -430,7 +586,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Great for groups — try a few small plates to share.",
-          "url": "https://www.pizzasunriver.com/"
+          "url": "https://www.pizzasunriver.com/",
+          "seasonRank": {
+            "winter": 110,
+            "spring": 350,
+            "summer": 480,
+            "fall": 420
+          }
         },
         {
           "id": "century-common-taps-and-trucks",
@@ -449,7 +611,13 @@
           "seasonLabel": "Seasonal — check schedule",
           "seasonSpecified": false,
           "tip": "Check the events calendar for truck lineups and tap takeovers.",
-          "url": "https://www.centurycommonstaps.com/"
+          "url": "https://www.centurycommonstaps.com/",
+          "seasonRank": {
+            "winter": 120,
+            "spring": 360,
+            "summer": 490,
+            "fall": 430
+          }
         },
         {
           "id": "josie-ks-deli",
@@ -464,7 +632,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Perfect for picnic boxes and quick lunches.",
-          "url": "https://www.josiek.com/"
+          "url": "https://www.josiek.com/",
+          "seasonRank": {
+            "winter": 130,
+            "spring": 370,
+            "summer": 500,
+            "fall": 440
+          }
         }
       ]
     },
@@ -485,7 +659,35 @@
             "spring"
           ],
           "seasonLabel": "Best in spring for peak flow",
-          "tip": "Combine with a bike ride on the Deschutes River Trail."
+          "tip": "Combine with a bike ride on the Deschutes River Trail.",
+          "difficulty": "Easy",
+          "trailDistance": "2.4 miles round trip",
+          "gettingThere": "Short drive or bike ride from Sunriver. Trailhead parking off Forest Road 41.",
+          "seasonRank": {
+            "winter": 560,
+            "spring": 40,
+            "summer": 620,
+            "fall": 570
+          }
+        },
+        {
+          "id": "deschutes-river-trail",
+          "name": "Deschutes River Trail",
+          "description": "Paved and dirt paths following the Deschutes River through pine forest. Walk or bike from Sunriver toward Benham Falls.",
+          "distance": "Varies — up to 18 miles",
+          "difficulty": "Easy",
+          "gettingThere": "Access from multiple points in Sunriver — ask us for the closest trailhead.",
+          "season": [
+            "year-round"
+          ],
+          "seasonLabel": "Year-round",
+          "tip": "Flat and scenic — perfect for an evening stroll.",
+          "seasonRank": {
+            "winter": 300,
+            "spring": 180,
+            "summer": 310,
+            "fall": 250
+          }
         },
         {
           "id": "smith-rock",
@@ -501,7 +703,13 @@
           ],
           "seasonLabel": "Spring and fall are ideal",
           "tip": "Start early — the trail gets hot and crowded by midday in summer.",
-          "url": "https://stateparks.oregon.gov/index.cfm?do=park.profile&parkId=36"
+          "url": "https://stateparks.oregon.gov/index.cfm?do=park.profile&parkId=36",
+          "seasonRank": {
+            "winter": 570,
+            "spring": 50,
+            "summer": 630,
+            "fall": 10
+          }
         },
         {
           "id": "green-lakes",
@@ -516,7 +724,35 @@
             "fall"
           ],
           "seasonLabel": "July through September",
-          "tip": "Arrive before 7 AM on weekends — the trailhead fills fast."
+          "tip": "Arrive before 7 AM on weekends — the trailhead fills fast. Start early and bring layers — elevation gain and afternoon storms are real.",
+          "difficulty": "Moderate–Strenuous",
+          "trailDistance": "4.5–9 miles",
+          "gettingThere": "45 min drive to trailhead off Cascade Lakes Highway.",
+          "seasonRank": {
+            "winter": 580,
+            "spring": 510,
+            "summer": 100,
+            "fall": 20
+          }
+        },
+        {
+          "id": "todd-lake-loop",
+          "name": "Todd Lake Loop",
+          "description": "Alpine lake loop at 6,500 ft with wildflowers in summer and Mt. Bachelor views. Cool escape on hot days.",
+          "distance": "1.1 miles",
+          "difficulty": "Easy",
+          "gettingThere": "25 min drive up Cascade Lakes Highway from Mt. Bachelor turnoff.",
+          "season": [
+            "summer"
+          ],
+          "seasonLabel": "Wildflowers in summer",
+          "tip": "Arrive early — small parking lot fills quickly on weekends.",
+          "seasonRank": {
+            "winter": 590,
+            "spring": 520,
+            "summer": 110,
+            "fall": 580
+          }
         },
         {
           "id": "tam-mcarthur-rim",
@@ -531,7 +767,13 @@
             "fall"
           ],
           "seasonLabel": "Late June through October",
-          "tip": "Wildflowers peak in July. Bring layers — it's exposed at the top."
+          "tip": "Wildflowers peak in July. Bring layers — it's exposed at the top.",
+          "seasonRank": {
+            "winter": 600,
+            "spring": 530,
+            "summer": 120,
+            "fall": 30
+          }
         },
         {
           "id": "tumalo-falls",
@@ -545,7 +787,13 @@
             "year-round"
           ],
           "seasonLabel": "Year-round — check road access in winter",
-          "tip": "The upper trail gives you views most visitors miss."
+          "tip": "The upper trail gives you views most visitors miss.",
+          "seasonRank": {
+            "winter": 310,
+            "spring": 190,
+            "summer": 320,
+            "fall": 260
+          }
         },
         {
           "id": "lava-butte",
@@ -554,13 +802,22 @@
           "image": "/images/photos/activities/Hiking/LavaButte.jpg",
           "imageUrl": "https://sunrivertownhome.com/images/photos/activities/Hiking/LavaButte.jpg",
           "imageAlt": "Lava Butte cinder cone with volcanic landscape",
-          "distance": "15 min drive",
+          "distance": "10 min drive",
           "season": [
             "year-round"
           ],
           "seasonLabel": "Year-round",
-          "tip": "Timed entry may be required in summer — check recreation.gov.",
-          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/lava-lands-visitor-center"
+          "tip": "Timed entry may be required in summer — check recreation.gov. Combine with the Lava River Cave or Lava Cast Forest for a full volcanic day.",
+          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/lava-lands-visitor-center",
+          "difficulty": "Easy–Moderate",
+          "trailDistance": "Lava Butte 1.5 miles round trip; Lava Lands Trail 0.5 miles",
+          "gettingThere": "10 min drive to Lava Lands Visitor Center. May require a timed entry pass in summer.",
+          "seasonRank": {
+            "winter": 320,
+            "spring": 200,
+            "summer": 330,
+            "fall": 270
+          }
         }
       ]
     },
@@ -582,7 +839,13 @@
           ],
           "seasonLabel": "Year-round (indoor/outdoor)",
           "tip": "Passes are in the kitchen drawer at the house.",
-          "url": "https://www.sunriversharc.com/"
+          "url": "https://www.sunriversharc.com/",
+          "seasonRank": {
+            "winter": 140,
+            "spring": 490,
+            "summer": 300,
+            "fall": 560
+          }
         },
         {
           "id": "elk-lake",
@@ -597,7 +860,13 @@
             "fall"
           ],
           "seasonLabel": "June through September",
-          "tip": "Grab lunch at the Elk Lake Resort cafe on the shore."
+          "tip": "Grab lunch at the Elk Lake Resort cafe on the shore.",
+          "seasonRank": {
+            "winter": 370,
+            "spring": 600,
+            "summer": 50,
+            "fall": 190
+          }
         },
         {
           "id": "sparks-lake",
@@ -612,7 +881,13 @@
             "fall"
           ],
           "seasonLabel": "July through September",
-          "tip": "Sunrise here is magical — bring a camera."
+          "tip": "Sunrise here is magical — bring a camera.",
+          "seasonRank": {
+            "winter": 380,
+            "spring": 610,
+            "summer": 60,
+            "fall": 200
+          }
         },
         {
           "id": "paulina-lake",
@@ -628,7 +903,13 @@
           ],
           "seasonLabel": "June through October",
           "tip": "Hike to Paulina Peak for a caldera overview before swimming.",
-          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/paulina-lake-day-use-area"
+          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/paulina-lake-day-use-area",
+          "seasonRank": {
+            "winter": 390,
+            "spring": 620,
+            "summer": 70,
+            "fall": 210
+          }
         },
         {
           "id": "devils-lake",
@@ -643,7 +924,13 @@
             "fall"
           ],
           "seasonLabel": "July through September",
-          "tip": "Arrive early — parking fills quickly on weekends."
+          "tip": "Arrive early — parking fills quickly on weekends.",
+          "seasonRank": {
+            "winter": 400,
+            "spring": 630,
+            "summer": 80,
+            "fall": 220
+          }
         },
         {
           "id": "eaglewood-pool",
@@ -657,7 +944,13 @@
             "summer"
           ],
           "seasonLabel": "Summer only",
-          "tip": "Check the HOA board by the pool for seasonal hours."
+          "tip": "Check the HOA board by the pool for seasonal hours.",
+          "seasonRank": {
+            "winter": 410,
+            "spring": 640,
+            "summer": 90,
+            "fall": 640
+          }
         }
       ]
     },
@@ -665,9 +958,6 @@
       "id": "river-floats",
       "title": "River Floats & Rafting",
       "subtitle": "The Deschutes River is Central Oregon's summer playground — from lazy floats to whitewater thrills.",
-      "seasonPriority": {
-        "summer": 1
-      },
       "activities": [
         {
           "id": "deschutes-float",
@@ -681,7 +971,13 @@
             "summer"
           ],
           "seasonLabel": "June through August",
-          "tip": "Rent tubes at the Sunriver Marina or in Bend. Bring sunscreen and a dry bag."
+          "tip": "Rent tubes at the Sunriver Marina or in Bend. Bring sunscreen and a dry bag.",
+          "seasonRank": {
+            "winter": 630,
+            "spring": 650,
+            "summer": 10,
+            "fall": 650
+          }
         },
         {
           "id": "sun-country-tours",
@@ -698,7 +994,13 @@
           ],
           "seasonLabel": "May through September",
           "tip": "Book the Big Eddy Thriller for families with teens.",
-          "url": "https://www.suncountrytours.com/"
+          "url": "https://www.suncountrytours.com/",
+          "seasonRank": {
+            "winter": 640,
+            "spring": 160,
+            "summer": 20,
+            "fall": 230
+          }
         },
         {
           "id": "big-eddy",
@@ -714,7 +1016,13 @@
           ],
           "seasonLabel": "May through August",
           "tip": "Wear a swimsuit under the wetsuit — you'll get soaked.",
-          "url": "https://www.suncountrytours.com/rafting/big-eddy-thriller/"
+          "url": "https://www.suncountrytours.com/rafting/big-eddy-thriller/",
+          "seasonRank": {
+            "winter": 650,
+            "spring": 170,
+            "summer": 30,
+            "fall": 660
+          }
         },
         {
           "id": "standup-paddle-deschtues",
@@ -729,7 +1037,13 @@
             "fall"
           ],
           "seasonLabel": "June through September",
-          "tip": "Morning water is glassy — best for SUP."
+          "tip": "Morning water is glassy — best for SUP.",
+          "seasonRank": {
+            "winter": 660,
+            "spring": 660,
+            "summer": 40,
+            "fall": 240
+          }
         }
       ]
     },
@@ -737,9 +1051,6 @@
       "id": "skiing-snowboarding",
       "title": "Skiing & Snowboarding",
       "subtitle": "World-class Cascades skiing just up the road — and cross-country trails when the snow flies.",
-      "seasonPriority": {
-        "winter": 1
-      },
       "activities": [
         {
           "id": "mt-bachelor",
@@ -756,7 +1067,13 @@
           ],
           "seasonLabel": "November through May",
           "tip": "Buy lift tickets online in advance during peak weeks.",
-          "url": "https://www.mtbachelor.com/"
+          "url": "https://www.mtbachelor.com/",
+          "seasonRank": {
+            "winter": 10,
+            "spring": 10,
+            "summer": 640,
+            "fall": 170
+          }
         },
         {
           "id": "bachelor-nordic",
@@ -772,7 +1089,13 @@
           ],
           "seasonLabel": "December through March",
           "tip": "The Twilight Trail is magical under the lights.",
-          "url": "https://www.mtbachelor.com/nordic/"
+          "url": "https://www.mtbachelor.com/nordic/",
+          "seasonRank": {
+            "winter": 20,
+            "spring": 20,
+            "summer": 650,
+            "fall": 620
+          }
         },
         {
           "id": "hoodoo-ski",
@@ -788,7 +1111,13 @@
           ],
           "seasonLabel": "December through March",
           "tip": "Night skiing on weekends is a unique experience.",
-          "url": "https://www.hoodoo.com/"
+          "url": "https://www.hoodoo.com/",
+          "seasonRank": {
+            "winter": 30,
+            "spring": 30,
+            "summer": 660,
+            "fall": 630
+          }
         },
         {
           "id": "bachelor-summer-lift",
@@ -804,7 +1133,13 @@
           ],
           "seasonLabel": "July through September",
           "tip": "Bring a jacket — it's 20° cooler at the top.",
-          "url": "https://www.mtbachelor.com/summer/"
+          "url": "https://www.mtbachelor.com/summer/",
+          "seasonRank": {
+            "winter": 360,
+            "spring": 500,
+            "summer": 290,
+            "fall": 180
+          }
         }
       ]
     },
@@ -828,7 +1163,13 @@
           ],
           "seasonLabel": "April through October",
           "tip": "Start with 'Phil's Trail' proper — the original and still the best intro.",
-          "url": "https://visitcentraloregon.com/things-to-do/attractions/phils-trail-complex/"
+          "url": "https://visitcentraloregon.com/things-to-do/attractions/phils-trail-complex/",
+          "seasonRank": {
+            "winter": 530,
+            "spring": 60,
+            "summer": 130,
+            "fall": 90
+          }
         },
         {
           "id": "wanoga-snow",
@@ -842,7 +1183,13 @@
             "year-round"
           ],
           "seasonLabel": "Year-round (seasonal trail conditions vary)",
-          "tip": "Check Trailforks for current trail conditions before heading out."
+          "tip": "Check Trailforks for current trail conditions before heading out.",
+          "seasonRank": {
+            "winter": 280,
+            "spring": 210,
+            "summer": 340,
+            "fall": 330
+          }
         },
         {
           "id": "bachelor-bike-park",
@@ -858,7 +1205,13 @@
           ],
           "seasonLabel": "June through September",
           "tip": "Rent a downhill bike at the base — it's worth it.",
-          "url": "https://www.mtbachelor.com/the-mountain/bike-park/info/"
+          "url": "https://www.mtbachelor.com/the-mountain/bike-park/info/",
+          "seasonRank": {
+            "winter": 540,
+            "spring": 540,
+            "summer": 140,
+            "fall": 100
+          }
         },
         {
           "id": "sunriver-paths",
@@ -872,7 +1225,13 @@
             "year-round"
           ],
           "seasonLabel": "Year-round",
-          "tip": "Ride to the Village for breakfast, then loop back via the river trail."
+          "tip": "Ride to the Village for breakfast, then loop back via the river trail.",
+          "seasonRank": {
+            "winter": 290,
+            "spring": 220,
+            "summer": 350,
+            "fall": 340
+          }
         },
         {
           "id": "tiddlywinks",
@@ -888,7 +1247,13 @@
             "fall"
           ],
           "seasonLabel": "May through October",
-          "tip": "Ride mid-week to avoid crowds."
+          "tip": "Ride mid-week to avoid crowds.",
+          "seasonRank": {
+            "winter": 550,
+            "spring": 70,
+            "summer": 150,
+            "fall": 110
+          }
         }
       ]
     },
@@ -911,7 +1276,13 @@
           ],
           "seasonLabel": "June through October (full Rim Drive)",
           "tip": "Enter from the north entrance for the shortest drive from Sunriver.",
-          "url": "https://www.nps.gov/crla/"
+          "url": "https://www.nps.gov/crla/",
+          "seasonRank": {
+            "winter": 420,
+            "spring": 550,
+            "summer": 180,
+            "fall": 40
+          }
         },
         {
           "id": "lava-river-cave",
@@ -928,7 +1299,13 @@
           ],
           "seasonLabel": "May through September",
           "tip": "Rent lanterns at the entrance — phone flashlights aren't enough.",
-          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/lava-river-cave-interpretive-site"
+          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/lava-river-cave-interpretive-site",
+          "seasonRank": {
+            "winter": 430,
+            "spring": 100,
+            "summer": 190,
+            "fall": 50
+          }
         },
         {
           "id": "high-desert-museum",
@@ -943,7 +1320,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Allow at least 3 hours — there's a lot to see.",
-          "url": "https://www.highdesertmuseum.org/"
+          "url": "https://www.highdesertmuseum.org/",
+          "seasonRank": {
+            "winter": 150,
+            "spring": 260,
+            "summer": 390,
+            "fall": 280
+          }
         },
         {
           "id": "newberry-caldera",
@@ -959,7 +1342,13 @@
           ],
           "seasonLabel": "June through October",
           "tip": "Stop at Paulina Falls on the way in — a quick, rewarding hike.",
-          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/newberry-national-volcanic-monument-deschutes-nf"
+          "url": "https://www.fs.usda.gov/r06/deschutes/recreation/newberry-national-volcanic-monument-deschutes-nf",
+          "seasonRank": {
+            "winter": 440,
+            "spring": 560,
+            "summer": 200,
+            "fall": 60
+          }
         },
         {
           "id": "stargazing",
@@ -973,7 +1362,13 @@
             "year-round"
           ],
           "seasonLabel": "Clear nights, year-round",
-          "tip": "New moon weeks are best. Turn off deck lights for 10 minutes."
+          "tip": "New moon weeks are best. Turn off deck lights for 10 minutes.",
+          "seasonRank": {
+            "winter": 160,
+            "spring": 270,
+            "summer": 400,
+            "fall": 290
+          }
         }
       ]
     },
@@ -997,7 +1392,13 @@
           ],
           "seasonLabel": "April through October",
           "tip": "McDivot's Cafe at the clubhouse is perfect for a post-round drink.",
-          "url": "https://www.sunriverresort.com/play/golf/golf-woodlands"
+          "url": "https://www.sunriverresort.com/play/golf/golf-woodlands",
+          "seasonRank": {
+            "winter": 610,
+            "spring": 80,
+            "summer": 160,
+            "fall": 70
+          }
         },
         {
           "id": "crosswater",
@@ -1014,7 +1415,13 @@
           ],
           "seasonLabel": "April through October",
           "tip": "Book well ahead — this is a bucket-list course.",
-          "url": "https://www.crosswater.com/"
+          "url": "https://www.crosswater.com/",
+          "seasonRank": {
+            "winter": 620,
+            "spring": 90,
+            "summer": 170,
+            "fall": 80
+          }
         },
         {
           "id": "sunriver-stables",
@@ -1029,7 +1436,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Book the sunset ride for golden light through the trees.",
-          "url": "https://www.sunriverresort.com/play/stables"
+          "url": "https://www.sunriverresort.com/play/stables",
+          "seasonRank": {
+            "winter": 330,
+            "spring": 230,
+            "summer": 360,
+            "fall": 300
+          }
         },
         {
           "id": "village-sunriver",
@@ -1044,7 +1457,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Check the events calendar for concerts and festivals.",
-          "url": "https://www.villageatsunriver.com/"
+          "url": "https://www.villageatsunriver.com/",
+          "seasonRank": {
+            "winter": 340,
+            "spring": 240,
+            "summer": 370,
+            "fall": 310
+          }
         },
         {
           "id": "viator-ebike-tour",
@@ -1059,7 +1478,13 @@
           ],
           "seasonLabel": "Year-round",
           "tip": "Includes use of premium e-bike and helmet",
-          "url": "https://www.viator.com/tours/Bend/Electric-Bike-Tour-of-Bend-and-Deschutes-River/d22372-348862P1?pid=P00286716&mcid=42383&medium=link"
+          "url": "https://www.viator.com/tours/Bend/Electric-Bike-Tour-of-Bend-and-Deschutes-River/d22372-348862P1?pid=P00286716&mcid=42383&medium=link",
+          "seasonRank": {
+            "winter": 350,
+            "spring": 250,
+            "summer": 380,
+            "fall": 320
+          }
         }
       ]
     }

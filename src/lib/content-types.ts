@@ -12,7 +12,7 @@ export type ImageRef = {
 export type Host = {
   name: string;
   email: string;
-  /** No phone number is published on the site. Null until the host adds one. */
+  /** Shown on the TV. The website does not render this. */
   phone: string | null;
 };
 
@@ -48,15 +48,6 @@ export type QuickReferenceItem = {
   value: string;
 };
 
-export type Hike = {
-  name: string;
-  difficulty: string;
-  distance: string;
-  description: string;
-  gettingThere: string;
-  tip: string;
-};
-
 export type GuideFile = {
   version: number;
   siteConfig: SiteConfig;
@@ -64,7 +55,6 @@ export type GuideFile = {
   troubleshooting: TroubleshootingItem[];
   guestGuideSections: GuestGuideSection[];
   quickReference: QuickReferenceItem[];
-  hikes: Hike[];
 };
 
 export type Highlight = {
@@ -101,18 +91,29 @@ export type SiteFile = {
   navLinks: NavLink[];
 };
 
+export type SeasonRank = Partial<Record<CalendarSeason, number>>;
+
 export type ActivityJson = {
   id: string;
   name: string;
   description: string;
-  image: string;
-  imageUrl: string;
-  imageAlt: string;
+  image?: string;
+  imageUrl?: string;
+  imageAlt?: string;
   distance?: string;
+  /** Trail length when it is not already the `distance` badge. */
+  trailDistance?: string;
+  difficulty?: string;
+  gettingThere?: string;
   season: Season[];
   seasonLabel: string;
   /** False when the display label names no season. Omitted when the label does. */
   seasonSpecified?: boolean;
+  /**
+   * One positive integer per calendar season. Lower sorts earlier on the TV.
+   * A missing key sorts after every ranked activity. The website ignores this.
+   */
+  seasonRank?: SeasonRank;
   tip?: string;
   url?: string;
   affiliateUrl?: string;
@@ -122,8 +123,6 @@ export type ActivitySectionJson = {
   id: string;
   title: string;
   subtitle?: string;
-  /** Lower number sorts earlier for that season. Omitted seasons keep source order. */
-  seasonPriority?: Partial<Record<CalendarSeason, number>>;
   activities: ActivityJson[];
 };
 
@@ -137,10 +136,13 @@ export type Activity = {
   id: string;
   name: string;
   description: string;
-  image: string;
-  imageAlt: string;
+  image?: string;
+  imageAlt?: string;
   distance?: string;
   season?: string;
+  difficulty?: string;
+  trailDistance?: string;
+  gettingThere?: string;
   tip?: string;
   url?: string;
   affiliateUrl?: string;

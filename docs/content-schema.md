@@ -76,9 +76,11 @@ The site imports these files and shows the same strings as before.
 | `pages.json` | Headlines and section chrome, except the Book page |
 | `checkout.json` | Nothing new. The guest guide still shows `summary` because that sentence is also a "During Your Stay" item |
 
-Ignored by the website, present for the TV: `season`, `seasonSpecified`, `seasonPriority`, `imageUrl`, `url` on images, `host.phone`, and `checkout.steps` as a separate list.
+Ignored by the website, present for the TV: `season`, `seasonSpecified`, `seasonRank`, `imageUrl`, `url` on images, `host.phone`, and `checkout.steps` as a separate list.
 
-`src/lib/activities.ts` copies `seasonLabel` onto the card's `season` prop so the existing component does not change. Section order in the JSON is the website order. The site does not sort by `seasonPriority`.
+`src/lib/activities.ts` copies `seasonLabel` onto the card's `season` prop. It also copies `difficulty`, `trailDistance`, and `gettingThere` when those fields are set, and it omits `image` when a hike has no photo. Section order in the JSON is the website order. The site does not sort by `seasonRank`.
+
+The home-page gallery subtitle is `"{count} photos of the home, deck, and surroundings."` The page replaces `{count}` with `site.json` `photos.length` (21 today).
 
 ## guide.json
 
@@ -101,18 +103,16 @@ Ignored by the website, present for the TV: `season`, `seasonSpecified`, `season
   troubleshooting: { issue: string, steps: string[] }[]
   guestGuideSections: { title: string, items: string[] }[]
   quickReference: { label: string, value: string }[]
-  hikes: {
-    name: string
-    difficulty: string
-    distance: string
-    description: string
-    gettingThere: string
-    tip: string
-  }[]
 }
 ```
 
-`host.phone` is `null`. The repo has a name and an email only. The TV should not invent a number. The website contact buttons use `host.email` and `host.name`.
+`host.phone` is `"503-475-0157"`. The TV should show it. The website does not. Contact spots that already show the email, where a phone would go if it is added to the site later:
+
+- Footer column "Book & Contact", beside the mailto link.
+- Guest guide "Need help?" mailto button, and the Emergency quick-reference card ("Call or text Blake").
+- Book page "Questions before booking?", beside the email.
+
+`guide.json` no longer has a `hikes` array. Hiking is the `hiking` section of `activities.json`.
 
 `quickReference` is the eight cards on the guest-guide page. Check-in and check-out values match `siteConfig.checkIn` and `siteConfig.checkOut`. The Wi-Fi card says "See note on wall in kitchen". It does not repeat the password. The password is in troubleshooting.
 
@@ -150,11 +150,9 @@ Three sections: "Before You Arrive", "During Your Stay", "Getting Around". Each 
 
 One "During Your Stay" item is the checkout sentence. That exact string is also `checkout.json`'s `summary`.
 
-### Hikes
+Trash is one instruction. The troubleshooting entry "Where do I put the trash and recycling?" is the source. The "During Your Stay" bullet is those three steps joined with spaces:
 
-Six write-ups (Benham Falls, Lava Butte, Deschutes River Trail, Todd Lake Loop, Green Lakes Trail, Lava Lands Trail). They have difficulty, distance, how to get there, and a tip. They do not have photos.
-
-The activities file has a separate `hiking` section with photos and a different list (Smith Rock, Tam McArthur Rim, Tumalo Falls, and a combined "Lava Butte & Lava Lands"). Names do not all match. The TV can merge on exact `name` where it matches (Benham Falls, Green Lakes Trail) and should not assume the two lists are the same trail.
+> Trash and recycling bins are located on the front porch in the trash closet. Please separate recyclables from trash. Trash is on the left, recycling on the right. Glass bottles and jars should be rinsed and placed in the recycling bin. Please do not put glass in the trash or with the mixed recyclables.
 
 ## activities.json
 
@@ -165,7 +163,6 @@ The activities file has a separate `hiking` section with photos and a different 
     id: string
     title: string
     subtitle?: string
-    seasonPriority?: { winter?: number, spring?: number, summer?: number, fall?: number }
     activities: Activity[]
   }[]
 }
@@ -174,13 +171,17 @@ Activity = {
   id: string
   name: string
   description: string
-  image: string          // site path, "/images/..."
-  imageUrl: string       // https://sunrivertownhome.com/images/...
-  imageAlt: string
-  distance?: string      // may be "" 
+  image?: string         // site path, "/images/..."; omitted when there is no photo
+  imageUrl?: string      // https://sunrivertownhome.com/images/...
+  imageAlt?: string
+  distance?: string      // drive time or, for some hikes, the trail length
+  trailDistance?: string // trail length when `distance` is a drive time
+  difficulty?: string
+  gettingThere?: string
   season: Season[]       // structured, for the TV
   seasonLabel: string    // exact badge text the website shows
   seasonSpecified?: false
+  seasonRank?: { winter?: number, spring?: number, summer?: number, fall?: number }
   tip?: string
   url?: string
   affiliateUrl?: string  // reserved; none are set today
@@ -189,11 +190,13 @@ Activity = {
 Season = "winter" | "spring" | "summer" | "fall" | "year-round"
 ```
 
-Nine sections, in website order: Guided tours and activities, Dining, Hiking, Swimming, River Floats & Rafting, Skiing & Snowboarding, Mountain Biking, Scenic & Day Trips, Golf & Family Fun. 64 activities. The website must keep this order.
+Nine sections, in website order: Guided tours and activities, Dining, Hiking, Swimming, River Floats & Rafting, Skiing & Snowboarding, Mountain Biking, Scenic & Day Trips, Golf & Family Fun. 66 activities. The website must keep this array order. `seasonRank` is not a website sort.
 
-`image` is what the website passes to `next/image`. `imageUrl` is the absolute URL for the TV. Path segments are percent-encoded (`&` in `VillageBar&Grill.avif` is `%26`).
+Hiking is this section only. `guide.json` used to have a separate write-up list; those facts now live on the hiking cards. Lava Butte and the Lava Lands Trail are one card, `lava-butte`. Deschutes River Trail and Todd Lake Loop are cards without photos. Their `season` values were read from the write-ups: the river trail names no season, so it is `year-round`; Todd Lake names summer wildflowers, so it is `["summer"]` with the badge "Wildflowers in summer". Smith Rock, Tam McArthur Rim, and Tumalo Falls were already cards and did not gain hike fields.
 
-`url` is copied exactly. `chocolate-tour` has a trailing space in its URL today; it was left in place so the site link does not change.
+`image` is what the website passes to `next/image`. `imageUrl` is the absolute URL for the TV. Path segments are percent-encoded (`&` in `VillageBar&Grill.avif` is `%26`). Deschutes River Trail and Todd Lake Loop have no photo, so `image`, `imageUrl`, and `imageAlt` are omitted. The card keeps the empty sage-colored frame.
+
+`url` is copied exactly, with no trailing space. `chocolate-tour` previously ended with a space; that space is gone.
 
 `affiliateUrl`, when it is added later, wins over `url` (`getActivityLink` already does that). QR codes on the TV should use `affiliateUrl ?? url`, and omit the QR when both are missing.
 
@@ -212,31 +215,47 @@ Otherwise the label is read as follows:
 
 Benham Falls' activity label is "Best in spring for peak flow", so its structured season is `["spring"]`. The description also says the falls are beautiful year-round. The hike tip says the same. The structured field follows the badge, not the description.
 
-### seasonPriority
+### seasonRank
 
-Optional hint so the TV can feature skiing in winter and river floats in summer without changing the website.
+Every activity has one positive integer for each of `winter`, `spring`, `summer`, and `fall`. That number is the TV order for that season. Lower sorts earlier. The same activity can be first in winter and last in summer.
+
+`src/lib/season-order.ts` `compareSeasonRank` is the sort. A missing `seasonRank`, or a missing key for that season, sorts after every activity that has a rank. Ties break by the activity's index in the file (section order, then array order). Do not invent a default like `100`. An unranked activity must land after the ranked ones even if someone later uses ranks above 100.
+
+The numbers already on each activity were spaced by 10. They were filled in this order, per season:
+
+1. Activities whose `season` array names that season.
+2. `year-round`, and labels that did not name a season (`seasonSpecified: false`).
+3. Everything else.
+
+Inside each of those groups, sections go in this order, then file order:
+
+| Season | Sections, first to last |
+|---|---|
+| winter | skiing, dining, swimming, scenic, guided tours, biking, hiking, golf, floats |
+| spring | skiing, hiking, biking, golf, scenic, dining, guided tours, swimming, floats |
+| summer | floats, swimming, hiking, biking, golf, scenic, dining, guided tours, skiing |
+| fall | hiking, scenic, golf, biking, dining, guided tours, skiing, swimming, floats |
+
+The TV should sort by the stored numbers, not recompute that table. A hand-edited rank is the source of truth. Today, winter starts with Mt. Bachelor and summer starts with the Deschutes River Float.
+
+### Adding an activity
+
+One new object in the right section's `activities` array. Its position in that array is the website order. Set `id`, `name`, `description`, `season`, and `seasonLabel`. Add `image`, `imageUrl`, and `imageAlt` together when you have a photo. Then set `seasonRank`.
+
+To leave it at the end of a season on the TV, omit that season's key. To place it between two activities, pick a number between their ranks. Ranks step by 10, so `15` sits between `10` and `20` and nothing else has to change.
 
 ```json
-{ "id": "skiing-snowboarding", "seasonPriority": { "winter": 1 } }
-{ "id": "river-floats", "seasonPriority": { "summer": 1 } }
-```
-
-Lower rank sorts earlier. A missing season key means "no hint." Sort hint first, then original index:
-
-```
-function sortSections(sections, season) {
-  return sections
-    .map((section, index) => ({ section, index }))
-    .sort((a, b) => {
-      const rankA = a.section.seasonPriority?.[season] ?? 100
-      const rankB = b.section.seasonPriority?.[season] ?? 100
-      return rankA - rankB || a.index - b.index
-    })
-    .map((entry) => entry.section)
+{
+  "id": "new-summer-float",
+  "name": "New summer float",
+  "description": "One sentence.",
+  "season": ["summer"],
+  "seasonLabel": "Summer only",
+  "seasonRank": { "summer": 15 }
 }
 ```
 
-In winter, skiing is first and every other section stays in source order. In summer, river floats are first and the rest stay in source order. Spring and fall have no hints, so the source order is unchanged. No other section has `seasonPriority`.
+`summer: 15` puts it between whatever is `10` and `20` in summer. Winter, spring, and fall are omitted, so on those seasons it sorts after every ranked activity. No other activity needs a new number.
 
 ### Example
 
@@ -255,6 +274,8 @@ In winter, skiing is first and every other section stays in source order. In sum
   "url": "https://www.hotlavabakery.com/"
 }
 ```
+
+The live Hot Lava Bakery object also has `seasonRank` for all four seasons. The example leaves it out so the card fields stay easy to read.
 
 ## checkout.json
 
@@ -307,7 +328,7 @@ ImageRef = { src: string, url: string }
 
 `highlights[].icon` is one of `bed`, `spa`, `pool`, `bike`, `home`, `wifi`. Those keys select SVG icons in the website. They are not image files.
 
-The home page says "47 photos" in `pages.json`. The `photos` array is the gallery the site actually renders (21 files). That subtitle was already on the site and was not changed.
+`photos` is the gallery (21 files). The home page subtitle comes from `pages.json` `home.gallery.subtitle`, with `{count}` replaced by `photos.length`. It is not a hardcoded 47.
 
 ## pages.json
 
@@ -324,9 +345,9 @@ Website headlines, button labels, and section titles for Home, The Home, Guest G
 | Home | `guest.json` name and checkout date, `siteConfig.checkOut`, the quiet-hours house rule |
 | House rules | `houseRules`, with `siteConfig.checkIn` / `checkOut` if a screen needs the times alone |
 | Quick Fixes | `troubleshooting`. Hide the Wi-Fi row and open the Wi-Fi screen instead |
-| Things to do | `activitySections` except `dining` and `hiking`. Optional reorder with `seasonPriority` |
-| Dining | section `id` `dining` |
-| Hiking | `hikes` for difficulty and `gettingThere`, plus the `hiking` section for photos. Do not assume the lists match |
+| Things to do | `activitySections` except `dining` and `hiking`, sorted with `compareSeasonRank` |
+| Dining | section `id` `dining`, same season sort |
+| Hiking | the `hiking` section only. One list. Difficulty, trail length, and getting there are fields on those activities. Lava Butte and Lava Lands are one card, `lava-butte` |
 | Checkout | `checkout.json` `steps` and `checkOut`, plus the guest's date from `guest.json` |
 | Wi-Fi | network name and password from the `"WiFi not connecting"` steps |
 | Promo | `siteConfig.domain` and `siteConfig.bookUrl` |
