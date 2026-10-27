@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --test tests/content.test.mjs tests/tv-assets.test.mjs",
-    "deploy:worker": "npm --prefix worker ci && npm --prefix worker exec -- wrangler deploy"
+    "deploy:worker": "cd worker && npm ci && npx wrangler deploy",
+    "deploy:worker:dry": "cd worker && npm ci && npx wrangler deploy --dry-run"
   },
   "dependencies": {
     "next": "16.2.9",
