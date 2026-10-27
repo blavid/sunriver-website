@@ -89,6 +89,25 @@ test("activity QR pngs decode to the plain url and book-direct QR pngs match boo
   );
 });
 
+function pngColor(file) {
+  const buf = fs.readFileSync(file);
+  assert.equal(buf[0], 0x89, file);
+  assert.equal(buf.toString("ascii", 12, 16), "IHDR", file);
+  return { bitDepth: buf[24], colorType: buf[25], interlace: buf[28] };
+}
+
+test("QR pngs are non-interlaced 8-bit RGB", () => {
+  const files = fs.readdirSync(path.join(root, "public/data/qr")).filter((name) => name.endsWith(".png"));
+  assert.ok(files.length > 40);
+  for (const name of files) {
+    const header = pngColor(path.join(root, "public/data/qr", name));
+    assert.equal(header.bitDepth, 8, name);
+    assert.notEqual(header.colorType, 0, name);
+    assert.ok(header.colorType === 2 || header.colorType === 6, name);
+    assert.equal(header.interlace, 0, name);
+  }
+});
+
 test("TV jpgs are about 640 px and the living-room hero is 960 by 540", async () => {
   const flat = activitiesFlat();
   const ids = new Set(flat.map((activity) => activity.id));

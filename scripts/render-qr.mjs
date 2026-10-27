@@ -53,8 +53,20 @@ const bookDirect = guide.bookDirect;
 expected.set("book-direct-site.png", bookDirect.siteUrl);
 expected.set("book-direct-booking.png", bookDirect.bookingUrl);
 
+function assertRgbPng(png, filename) {
+  if (png[12] !== 73 || png[13] !== 72 || png[14] !== 68 || png[15] !== 82) {
+    throw new Error(`${filename} is missing an IHDR chunk`);
+  }
+  const colorType = png[25];
+  const interlace = png[28];
+  if (png[24] !== 8 || colorType !== 2 || interlace !== 0) {
+    throw new Error(`${filename} must be a non-interlaced 8-bit RGB PNG`);
+  }
+}
+
 for (const [filename, payload] of expected) {
   const { png } = qrPng(payload);
+  assertRgbPng(png, filename);
   fs.writeFileSync(path.join(qrDir, filename), png);
 }
 
