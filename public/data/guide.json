@@ -23,14 +23,14 @@
   "houseRules": [
     "Check-in after 4:00 PM",
     "Check-out before 11:00 AM",
-    "Dogs only, limited to one dog",
+    "If you have a pet, Dogs only, limited to one dog",
     "Please do not let pets on furniture or beds",
     "No smoking or vaping",
     "Quiet hours after 10:00 PM"
   ],
   "troubleshooting": [
     {
-      "issue": "Circuit breaker tripped",
+      "issue": "No power - Circuit breaker tripped",
       "steps": [
         "Locate the breaker panel in the downstairs bedroom behind the skiing picture. The picture frame is on a hinge. Just pull it open to reveal the panel.",
         "Reset the tripped breaker by flipping it all the way to OFF and then back to ON."
