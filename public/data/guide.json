@@ -23,7 +23,7 @@
   "houseRules": [
     "Check-in after 4:00 PM",
     "Check-out before 11:00 AM",
-    "If you have a pet, Dogs only, limited to one dog",
+    "Pets are limited to one dogs only, pet fee applies",
     "Please do not let pets on furniture or beds",
     "No smoking or vaping",
     "Quiet hours after 10:00 PM"
@@ -65,7 +65,7 @@
       "steps": [
         "Open the cabinet under the grill and ensure that the propane tank valve is fully open.",
         "If the grill still doesn't light, check that the igniter button is working. If not, use a long lighter to ignite the burners.",
-        "If the propane tank is empty, there is a spare tank in the garage. Please return the empty tank to the garage when you leave."
+        "If the propane tank is empty, there is a spare tank in the garage. Please return the empty tank to the garage."
       ]
     },
     {
@@ -130,6 +130,8 @@
         "All TVs are logged into Netflix and Prime Video — just select the app and pick a profile.",
         "If you log into a service with your own account, please log out before you leave.",
         "You can also use Airplay to stream from your phone or tablet to the TV.",
+        "We also have some cables to connect your device to the HDMI port on the TV.",
+        "The soundbar is controlled separately from the TV volume.",
         "We do not provide cable or satellite TV service, but you can use streaming services like Hulu, Disney+, and YouTube TV with your own accounts."
       ]
     }
@@ -139,26 +141,27 @@
       "title": "Before You Arrive",
       "items": [
         "Check-in is at 4:00 PM. Early check-in may be available — just ask.",
-        "Your door code will be sent the morning of arrival.",
-        "Parking: two spots in the garage plus one in the driveway.",
+        "Address, directions, and your door code will be sent a few days prior to arrival.",
+        "Parking: You may park in the driveway directly in front of the garage or in any space marked 'GUEST'.",
         "The home is in Eaglewood, between the 1st and 10th holes of Woodlands Golf Course."
       ]
     },
     {
       "title": "During Your Stay",
       "items": [
-        "SHARC passes (8 included) are in the kitchen drawer — see sharc website for hours.",
+        "SHARC passes (8 included) are hanging in the entryway — see SHARC website for hours.",
         "Community pool is steps from the back deck (seasonal, Eaglewood residents only).",
-        "Bikes and helmets are in the garage — please lock them when out and about.",
+        "Bikes and helmets are in the garage — please lock them when out and about. The combination is 0-0-1-9",
         "Trash and recycling bins are located on the front porch in the trash closet. Please separate recyclables from trash. Trash is on the left, recycling on the right. Glass bottles and jars should be rinsed and placed in the recycling bin. Please do not put glass in the trash or with the mixed recyclables.",
-        "Checkout is 11:00 AM — please start the dishwasher and leave used towels in the laundry room."
+        "Checkout is 11:00 AM — please start the dishwasher and start a laundry load of towels. It is very helpful to the cleaners."
       ]
     },
     {
       "title": "Getting Around",
       "items": [
         "Sunriver has 34+ miles of paved bike/walking paths — the best way to explore.",
-        "The Village at Sunriver is a 5-minute bike ride — shops, restaurants, and the general store.",
+        "The Village at Sunriver is a 10-minute bike ride — shops, restaurants, and the general store.",
+        "The Sunriver Country Store is located near the house on Cottonwood Road, a very short bike ride away.",
         "McDivot's Cafe at the golf course is a short walk for breakfast or lunch.",
         "Mt. Bachelor is about 24 minutes by car for skiing and summer hiking."
       ]
@@ -175,7 +178,7 @@
     },
     {
       "label": "WiFi",
-      "value": "See note on wall in kitchen"
+      "value": "See note on wall in kitchen or in the welcome book"
     },
     {
       "label": "SHARC passes",
@@ -183,15 +186,15 @@
     },
     {
       "label": "Bikes",
-      "value": "Garage — helmets on hooks"
+      "value": "Garage — helmets and bikes on hooks. There are adult bikes, youth bikes, a tandem bike, and bike trailers. Something for everyone."
     },
     {
       "label": "Hot tub",
-      "value": "Back deck — cover when done"
+      "value": "Back deck — Please replace the cover when not in use."
     },
     {
       "label": "Trash day",
-      "value": "Collection on Thursday morning"
+      "value": "Collection takes place on Thursday morning."
     },
     {
       "label": "Emergency",
@@ -202,7 +205,7 @@
     "version": 1,
     "headline": ["Love our home?", "Want to come back?", "Like saving money?"],
     "banner": "Book direct and save!",
-    "body": "Our website has lots of great information about the house, local activities, dining, outdoor adventures and more!",
+    "body": "Our website has lots of great information about the house, local activities, dining, outdoor adventures and more! Get dining suggestions, hiking ideas, and interesting activities.",
     "savingsText": "Book direct and pay up to about 10% less than Airbnb or Vrbo, plus no booking-site service fees.",
     "siteUrl": "https://sunrivertownhome.com",
     "bookingUrl": "https://book.sunrivertownhome.com",
@@ -218,7 +221,7 @@
       { "id": "more", "label": "And more!", "icon": "more" }
     ],
     "signOff": "Thanks for staying!",
-    "homePromptTitle": "Book direct & save",
+    "homePromptTitle": "Book direct & SAVE!",
     "homePromptSub": "Up to about 10% less than Airbnb or Vrbo"
   }
 }
